@@ -54,7 +54,7 @@ Map illustrating the incredible diversity of the California’s Central Valley a
 
 __[Source Code](https://github.com/heremaps/xyz-showcase/tree/master/florida-collisions) - [Live Map](https://heremaps.github.io/xyz-showcase/florida-collisions)__
 
-Map comparing locations of non-motorist roadway casualties in daytime versus nighttime in Florida’s metropolitan areas.
+Compare locations of non-motorist roadway casualties in daytime versus nighttime in Florida’s metropolitan areas.
 
 ### Landuse: New York City vs. Los Angeles
 
