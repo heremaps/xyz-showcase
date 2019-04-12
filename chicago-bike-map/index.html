@@ -1,0 +1,116 @@
+<html lang="en-us">
+
+<head>
+   <meta charset="utf-8">
+   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+   <title>Chicago Bike Map</title>
+   <script src="https://unpkg.com/leaflet@1.0.1/dist/leaflet.js"></script>
+   <script src="https://unpkg.com/tangram/dist/tangram.min.js"></script>
+   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.1/dist/leaflet.css" />
+   <link rel="stylesheet" href="index.css">
+   <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
+   <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700" rel="stylesheet">
+
+
+   <meta name="twitter:card" content="summary_large_image" />
+   <meta name="twitter:site" content="@here" />
+   <meta name="twitter:title" content="Chicago Bike Map" />
+   <meta name="twitter:description" content="Explore Chicago bike routes by neighborhood" />
+   <meta name="twitter:image" content="https://dbabbs.github.io/chicago-bike-map/map.png" />
+
+   <meta property="og:url" content="https://dbabbs.github.io/chicago-bike-map" />
+   <meta property="og:type" content="website" />
+   <meta property="og:title" content="Chicago Bike Map" />
+   <meta property="og:description" content="Explore Chicago bike routes by neighborhood" />
+   <meta property="og:image" content="https://dbabbs.github.io/chicago-bike-map/map.png" />
+
+</head>
+<body>
+   <div id="sidebar">
+      <div class="title-row">
+         <div class="title">
+            Chicago Bike Map
+         </div>
+         <img src="loading.svg" id="loading" alt="loading">
+      </div>
+
+      <div class="subtitle">
+         Map of Chicago bike infrastructure. Data from the
+         <a href="https://data.cityofchicago.org/Transportation/Bike-Routes/3w5d-sru8">Chicago Data Portal</a>.
+      </div>
+      <div class="subtitle">
+         Select a neighborhood to explore its infrastructure.
+      </div>
+      <div>
+         <input type="checkbox" id="clip" checked />
+         <label for="clip">Clip routes to neighborhood shape on click</label>
+      </div>
+      <div id="neighborhood">
+         City of Chicago
+      </div>
+      <div class="bar-container">
+         <div class="row" id="total" style="top: 0;">
+            <div id="total-bar" class="bar" style="background: white; color: black;">
+               <div class="bar-title">
+                  Total <span id="total-text" class="text" style="color: #434343;"></span>
+               </div>
+            </div>
+         </div>
+         <div class="row" id="ACCESS PATH" style="top: 40px;">
+            <div id="ACCESS PATH-bar" class="bar" style="background: #1A9850;">
+               <div class="bar-title">
+                  Access Path <span id="ACCESS PATH-text" class="text"></span>
+               </div>
+            </div>
+         </div>
+         <div class="row" id="BIKE LANE" style="top: 80px;">
+            <div id="BIKE LANE-bar" class="bar" style="background: #FFD150;">
+               <div class="bar-title">
+                  Bike Lane <span id="BIKE LANE-text" class="text"></span>
+               </div>
+            </div>
+         </div>
+         <div class="row" id="BUFFERED BIKE LANE" style="top: 120px;">
+            <div id="BUFFERED BIKE LANE-bar" class="bar" style="background: #D9EF8B;">
+               <div class="bar-title">
+                  Buffered Bike Lane <span id="BUFFERED BIKE LANE-text" class="text"></span>
+               </div>
+            </div>
+         </div>
+         <div class="row" id="NEIGHBORHOOD GREENWAY" style="top: 160px;">
+            <div id="NEIGHBORHOOD GREENWAY-bar" class="bar" style="background: #FC8D59;">
+               <div class="bar-title">
+                  Neighborhood Greenway <span id="NEIGHBORHOOD GREENWAY-text" class="text"></span>
+               </div>
+            </div>
+         </div>
+         <div class="row" id="OFF-STREET TRAIL" style="top: 200px;">
+            <div id="OFF-STREET TRAIL-bar" class="bar" style="background: #2B7DB4;">
+               <div class="bar-title">
+                  Off Street Trail <span id="OFF-STREET TRAIL-text" class="text"></span>
+               </div>
+            </div>
+         </div>
+         <div class="row" id="PROTECTED BIKE LANE" style="top: 240px;">
+            <div id="PROTECTED BIKE LANE-bar" class="bar" style="background: #91CF60;">
+               <div class="bar-title">
+                  Protected Bike Lane <span id="PROTECTED BIKE LANE-text" class="text"></span>
+               </div>
+            </div>
+         </div>
+         <div class="row" id="SHARED-LANE" style="top: 280px;">
+            <div id="SHARED-LANE-bar" class="bar" style="background: #D72F27;">
+               <div class="bar-title">
+                  Shared Lane <span id="SHARED-LANE-text" class="text"></span>
+               </div>
+            </div>
+         </div>
+      </div>
+      <button id="clear">Clear Neighborhood Selection</button>
+      <a id="mappy" target="_blank" href="https://explore.xyz.here.com">Get Mappy with HERE XYZ</a>
+   </div>
+   <div id="map"></div>
+   <script src="index.js"></script>
+</body>
+</html>

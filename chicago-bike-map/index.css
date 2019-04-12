@@ -1,0 +1,157 @@
+:root {
+   --sidebar-width: 300px;
+   --sidebar-padding: 15px;
+   --primary-color: #A4CEFF;
+   --grey: #C7C7C7;
+}
+
+body {
+   margin: 0px;
+   border: 0px;
+   padding: 0px;
+   font-family: 'Roboto', sans-serif;
+   font-size: 14px;
+}
+
+
+a {
+   color: var(--primary-color);
+   text-decoration: none;
+}
+
+a:hover {
+   color: var(--primary-color);
+   text-decoration: underline;
+}
+
+#map {
+   height: 100%;
+   width: 100%;
+   position: absolute;
+}
+
+#sidebar {
+   background: #181A1A;
+   width: var(--sidebar-width);
+   color: white;
+   top: 0;
+   left: 0;
+   margin: 15px;
+   padding: var(--sidebar-padding);
+   z-index: 10000;
+   position: absolute;
+   border-radius: 3px;
+}
+
+#loading {
+   height: 40px;
+}
+
+.title-row {
+   display: flex;
+   align-items: center;
+}
+
+.title {
+   font-weight: 500;
+   font-size: 22px;
+}
+
+.subtitle {
+   color: var(--grey);
+   margin: 20px 0;
+}
+
+label {
+   color: var(--grey);
+}
+
+#neighborhood {
+   color: white;
+   font-weight: 500;
+   font-size: 18px;
+   margin: 20px 0;
+}
+
+.bar-container {
+   display: flex;
+   flex-direction: column;
+   transition: 1s all;
+   position: relative;
+   height: 330px;
+   width: calc(var(--sidebar-width));
+
+}
+
+.row {
+   margin-bottom: 10px;
+   position: absolute;
+   transition: .8s all ease-out;
+   width: calc(var(--sidebar-width));
+}
+
+.bar {
+   width: 0%;
+   background: blue;
+   border-radius: 2px;
+   transition: .7s all ease-out;
+   padding: 5px 3px;
+   box-sizing: border-box;
+   white-space: nowrap;
+}
+
+.bar-title {
+   margin-left: 8px;
+   /* color: var(--grey); */
+}
+
+
+.text {
+   color: var(--grey);
+}
+
+#mappy {
+   margin-top: 20px;
+   display: block;
+}
+
+#clear {
+   visibility: hidden;
+}
+
+button {
+   padding: 9px 12px;
+   border: 1.2px solid var(--grey);
+   color: white;
+   font-family: 'Roboto', sans-serif;
+   border-radius: 3px;
+   font-size: 14px;
+   background: none;
+   transition: .2s all;
+}
+
+button:hover {
+   cursor:pointer;
+   background: darkgrey;
+}
+
+.custom .leaflet-popup-tip {
+   display: none;
+}
+.custom .leaflet-popup-content-wrapper {
+   background: #181A1A;
+   color: var(--grey);
+   padding: 0;
+   border-radius: 0;
+   box-shadow: none;
+   font-family: 'Roboto';
+   font-size: 14px;
+   padding: 5px 0;
+   border-radius: 3px;
+   margin: 0;
+
+}
+
+.leaflet-fade-anim .leaflet-popup {
+  transition: none;
+}

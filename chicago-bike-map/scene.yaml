@@ -1,0 +1,235 @@
+cameras:
+    camera1:
+        type: perspective
+sources:
+    xyz_osm:
+        type: MVT
+        url: https://xyz.api.here.com/tiles/osmbase/256/all/{z}/{x}/{y}.mvt
+        max_zoom: 16
+        url_params:
+            access_token: AZL4Ab9z2cBFt9d2PQ2hh0k
+    _routes:
+        type: GeoJSON
+        url: https://xyz.api.here.com/hub/spaces/Pqh7dfFY/tile/web/{z}_{x}_{y}
+        url_params:
+            access_token: AZL4Ab9z2cBFt9d2PQ2hh0k
+    _neighborhoods:
+        type: GeoJSON
+        url: https://xyz.api.here.com/hub/spaces/5kwzZmtK/tile/web/{z}_{x}_{y}
+        url_params:
+            access_token: AZL4Ab9z2cBFt9d2PQ2hh0k
+            clip: true
+
+global:
+    language: en
+    language_text_source: |
+        function() {
+            return (global.language && feature['name:'+global.language]) || feature.name;
+        }
+styles:
+    polygons_transparent:
+        base: polygons
+        blend: overlay
+        blend_order: 1
+    short-dashed-lines:
+        base: lines
+        dash: [1, 2]
+
+layers:
+    routes:
+        data: { source: _routes}
+        draw:
+            lines:
+                order: 10000000
+                color: |
+                    function() {
+                        if (feature.bikeroute === 'OFF-STREET TRAIL') {
+                           return '#2B7DB4';
+                        } else if (feature.bikeroute === 'ACCESS PATH') {
+                           return '#1A9850'
+                        } else if (feature.bikeroute === 'PROTECTED BIKE LANE') {
+                           return '#91CF60';
+                        } else if (feature.bikeroute === 'BUFFERED BIKE LANE') {
+                           return '#D9EF8B';
+                        } else if (feature.bikeroute === 'BIKE LANE') {
+                           return '#FFD150'
+                        } else if (feature.bikeroute === 'NEIGHBORHOOD GREENWAY') {
+                           return '#FC8D59';
+                        } else if (feature.bikeroute === 'SHARED-LANE') {
+                           return '#D72F27'
+                        }
+                    }
+                width: [[0, 1px], [10, 1.5px], [20,4px]]
+                collide: false
+    neighborhoods2:
+        data: { source: _neighborhoods}
+        draw:
+            short-dashed-lines:
+                order: 9999
+                color: '#7B7B7B'
+                width: 2px
+                collide: false
+    places:
+        data: { source: xyz_osm }
+        city-points:
+            filter:
+                kind: locality
+                kind_detail: city
+                $zoom: { max: 18 }
+            draw:
+                 text:
+                     text_source: global.language_text_source
+                     priority: 10
+                     order: 999
+                     font:
+                         family: Roboto
+                         fill: '#787878'
+                         stroke: { color: [0.000, 0.000, 0.000, 1.00], width: 4 }
+                         size: [[4, 15px], [8, 18px], [12, 26px], [16, 30px]]
+                         buffer: 2px
+        neighborhoods:
+            filter:
+                - { kind: [neighbourhood, macrohood], $zoom: { min: 11 } }
+                - { kind: microhood, $zoom: { min: 15 } }
+            draw:
+                 text:
+                     text_source: global.language_text_source
+                     priority: 10
+                     order: 999
+                     font:
+                         family: Roboto
+                         transform: uppercase
+                         fill: '#787878'
+                         stroke: { color: [0.024, 0.000, 0.000, 0.97], width: 2}
+                         size: [[11, 10px], [15,24px]]
+                         buffer: 2px
+    earth:
+        data: { source: xyz_osm }
+        draw:
+            polygons:
+                order: function() { return feature.sort_rank; }
+                color: [0.153, 0.157, 0.153, 1.00]
+
+    landuse:
+        data: { source: xyz_osm }
+        draw:
+            polygons:
+                order: function() { return feature.sort_rank; }
+                color: '#181818'
+    water:
+        data: { source: xyz_osm }
+        draw:
+            polygons:
+                order: function() { return feature.sort_rank; }
+                color: '#181A1A'
+    roads:
+        data: { source: xyz_osm }
+        highway:
+            filter:
+                kind: highway
+            draw:
+                lines:
+                    order: 100000
+                    color: [0.251, 0.247, 0.247, 1.00]
+                    width: [[5, 5000], [8, 800], [10, 200], [12, 150],[14,120], [18, 20]]
+                    outline:
+                        color: [0.141, 0.137, 0.137, 1.00]
+                        width: [[14, 8], [18, 3]]
+                text:
+                     priority: 10
+                     order: 999
+                     font:
+                         family: Roboto
+                         fill: '#787878'
+                         stroke: { color: [0.024, 0.000, 0.000, 0.97], width: 2}
+                         size: [[11, 10px], [15,14px]]
+                         buffer: 2px
+
+        major_road:
+            filter:
+                kind: major_road
+                $zoom: { min: 10}
+            draw:
+                lines:
+                    order: function() { return feature.sort_rank; }
+                    color: '#373737'
+                    width: [[10,90], [15, 18],[18,20]]
+
+            primary_labels:
+                filter:
+                    $zoom: { min: 13}
+                    kind_detail: [primary]
+                draw:
+                    text:
+                         priority: 10
+                         order: 999
+                         font:
+                             family: Roboto
+                             fill: '#787878'
+                             stroke: { color: [0.024, 0.000, 0.000, 0.97], width: 2}
+                             size: [[11, 10px], [15, 14px]]
+                             buffer: 2px
+            secondary_labels:
+                filter:
+                    $zoom: { min: 14}
+                    kind_detail: [secondary]
+                draw:
+                    text:
+                         priority: 10
+                         order: 999
+                         font:
+                             family: Roboto
+                             fill: '#787878'
+                             stroke: { color: [0.024, 0.000, 0.000, 0.97], width: 2}
+                             size: [[11, 9px], [15, 13px]]
+                             buffer: 2px
+            teriary_labels:
+                filter:
+                    $zoom: { min: 15}
+                    kind_detail: [secondary,tertiary]
+                draw:
+                    text:
+                         priority: 10
+                         order: 999
+                         font:
+                             family: Roboto
+                             fill: '#787878'
+                             stroke: { color: [0.024, 0.000, 0.000, 0.97], width: 2}
+                             size: [[11, 8px], [15, 12px]]
+                             buffer: 2px
+        minor_road:
+            filter:
+                kind: minor_road
+                $zoom: { min: 15}
+            draw:
+                lines:
+                    order: function() { return feature.sort_rank; }
+                    color: '#373737'
+                    width: [[13,15], [15, 15],[18,20]]
+            labels:
+                filter:
+                    $zoom: { min: 15}
+                draw:
+                    text:
+                         priority: 10
+                         order: 999
+                         font:
+                             family: Roboto
+                             fill: '#787878'
+                             stroke: { color: [0.024, 0.000, 0.000, 0.97], width: 2}
+                             size: [[11, 7px], [15, 11px]]
+                             buffer: 2px
+
+    buildings:
+        data: { source: xyz_osm }
+        filter:
+            $zoom: { min: 13}
+        draw:
+            polygons:
+                order: function() { return feature.sort_rank; }
+                color: [0.173, 0.173, 0.169, 1.00]
+        3d-buildings:
+            filter: { $zoom: { min: 15 } }
+            draw:
+                polygons:
+                    extrude: function () { return feature.height > 20 || $zoom >= 16; }
