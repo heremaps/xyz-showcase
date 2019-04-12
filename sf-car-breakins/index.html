@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.js"></script>
+    <title>California Crops</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.3/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Sans:300,400,400i,700|Fira+Mono">
+    <link rel="stylesheet" href="../styles/normalize.css">
+    <link rel="stylesheet" href="../styles/main.css">
+  </head>
+
+  <body>
+    <div id='modal' class='modal car-breakins-modal'>
+      <div class='modal-container'>
+        <img id="modal-close" class='modal-close' src="../images/close.svg" alt="close">
+        <div class='modal-images'>
+          <img src="../images/car_breakins_modal.png" srcset="../images/car_breakins_modal@2x.png 2x">
+          <img class='modal-image-fit' src="../images/car_breakins_modal2.png" srcset="../images/car_breakins_modal2@2x.png 2x">
+        </div>
+        <div class="modal-title">Mapping car break-ins in San Francisco</div>
+        <p>
+          Over the last few years, car break-ins in San Francisco have reached record-breaking
+          highs. Inspired by <a class="modal-link" target="_blank" href="https://projects.sfchronicle.com/trackers/sf-car-breakins/">SF Chronicle’s Car Break-In Tracker</a>, we used XYZ Studio
+          and the <a class="modal-link" target="_blank" href="https://data.sfgov.org/Public-Safety/Police-Department-Incident-Reports-2018-to-Present/wg3w-h783">same public data set</a>
+          to display the locations of car break-ins across the city from 2018 to
+          the present, using conditional rules and data editing to take the visualization to the
+          next level.
+        </p>
+
+        <p>
+          Zoom out to the whole city and you’ll get a clear picture of these crimes of opportunity;
+           one of the biggest hotspots is the Great Highway, a stretch of road between Golden Gate
+           Park and the Pacific Ocean that is a popular spot for beachgoers and surfers. Another
+           hotspot is on the cusp of the city’s famous Ghirardelli Square, a popular tourist
+           attraction.
+        </p>
+        <p>
+          Source files and data can be accessed on <a href="https://github.com/stamen/here-xyz-gallery">GitHub</a>.
+        </p>
+      </div>
+      <div class='modal-container'>
+        <p align='center'>
+          <img src="../images/stamen.png"
+              srcset="../images/stamen@2x.png 2x,
+                      ../images/stamen@3x.png 3x"
+              class="stamen">
+
+        </p>
+        <p align='center'>
+          This map was designed and built by <a href="https://stamen.com">Stamen Design</a> with publicly available data.
+        </p>
+      </div>
+    </div>
+    <div class='open-modal' id='open-modal'>
+      About this map
+    </div>
+    <iframe
+      src="https://xyz.here.com/viewer/?project_id=481ffe53-4a3e-4522-9774-681006f27587"
+      frameborder="0"
+      style="overflow:hidden;height:100vh;width:100%""></iframe>
+    <script>
+      var close = document.getElementById("modal-close");
+      var modal = document.getElementById("modal");
+      var open = document.getElementById("open-modal");
+
+      close.addEventListener('click',function(){
+        modal.style.display = "none";
+      })
+
+      open.addEventListener('click',function(){
+        modal.style.display = "block";
+      })
+
+      window.onclick = function(event) {
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>Deadly Roadways</title>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.3/dist/leaflet.css" />
+    <link rel="stylesheet" href="../styles/main.css">
+
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+        .legend {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            width: 216px;
+            height: 239px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border-radius: 8px;
+            background-color: #E0E0E0;
+            color: #424242;
+            z-index: 999;
+            border: 0.1em solid #A5A5A5BF;
+        }
+        .night {
+            color: #E0E0E0;
+            background-color: #424242;
+            border: 0.1em solid #323323BF;
+        }
+        .legend-top {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            padding: 15px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+        .legend-title {
+            font-family: 'Fira Sans', sans-serif;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .legend-subtitle {
+            font-size: 17px;
+            font-weight: 450;
+        }
+        .button {
+            font-family: 'Fira Sans', sans-serif;
+            font-size: 14px;
+            background-color: #ABABAB;
+            border-radius: 2px;
+            box-sizing: border-box;
+            padding: 0.35em 1.2em;
+            cursor: pointer;
+            color: #424242;
+        }
+        .pressed {
+            color: #E0E0E0;
+            background: #001A26;
+        }
+        .controls {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-evenly;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            width: 300px;
+        }
+        a.leaflet-control-zoom-in,
+        a.leaflet-control-zoom-out {
+            background-color: #E0E0E0;
+            color: #424242;
+        }
+        .leaflet-popup-tip,
+        .leaflet-popup-content-wrapper {
+            background-color: #C3C3C1;
+            color: #424242;
+            font-size: 14px;
+            line-height: 30px;
+        }
+        .leaflet-popup-content-wrapper {
+            border-radius: 3px;
+        }
+        .leaflet-popup-close-button {
+            display: none;
+        }
+        .leaflet-popup-content {
+            margin: 5px;
+            font-weight: 450;
+            opacity: 0.9;
+        }
+        .labels {
+            font-family: 'Fira Sans', sans-serif;
+            font-size: 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-bottom: 5px;
+            width: 200px;
+        }
+        .row {
+            display: flex;
+            flex-direction: row;
+            justify-content: left;
+            padding-top: 3px;
+            padding-bottom: 3px;
+            padding-left: 10px;
+            align-items: center;
+        }
+        .label {
+            padding-left: 5px;
+        }
+        /* Change cursor when over entire map */
+        .leaflet-container {
+          cursor: default !important;
+        }
+    </style>
+</head>
+<body>
+  <div id='modal' class='modal pedestrian-collisions-modal'>
+    <div class='modal-container'>
+      <img id="modal-close" class='modal-close' src="../images/close.svg" alt="close">
+      <div class='modal-images'>
+        <img class='modal-image-fit' src="../images/collisions_modal.png" srcset="../images/collisions_modal@2x.png 2x">
+        <img class='modal-image-fit' src="../images/collisions_modal2.png" srcset="../images/collisions_modal2@2x.png 2x">
+      </div>
+      <div class="modal-title">Pedestrian Roadway Casualties in Florida</div>
+      <p>
+        Amid recent concerns about the future impact of self-driving cars, the <a class="modal-link" target="_blank" href="https://www.citylab.com/transportation/2019/03/traffic-deaths-data-pedestrian-fatalities-self-driving-cars/583960/">alarming uptick in pedestrian deaths</a> observed across the U.S. is in the news. Through <a class="modal-link" target="_blank" href="https://visionzeronetwork.org/">Vision Zero</a> and similar efforts, cities around the world are organizing on this issue by collecting and sharing data, and looking for spatial and temporal patterns.
+      </p>
+      <p>
+        This map compares locations of non-motorist roadway casualties in daytime versus nighttime in Florida’s metropolitan areas, <a class="modal-link" target="_blank" href="https://smartgrowthamerica.org/dangerous-by-design/">at the top of the list</a> of most dangerous roadways for pedestrians. Pan and zoom to view the dataset across the rest of the U.S. We created it by extracting data for 2009 to 2017 from the National Highway Traffic Safety Administration's <a class="modal-link" target="_blank" href="https://www.nhtsa.gov/research-data/fatality-analysis-reporting-system-fars">FARS Reporting System</a>. These records were transformed and aggregated in <a class="modal-link" target="_blank" href="https://www.r-project.org/">R</a>, loaded into XYZ Hub, and visualized with Tangram and Leaflet.
+      </p>
+      <p>
+        Source files and data can be accessed on <a class="modal-link" target="_blank" href="https://github.com/stamen/here-xyz-gallery">GitHub</a>.
+      </p>
+    </div>
+      <div class='modal-container'>
+        <p align='center'>
+          <img src="../images/stamen.png"
+              srcset="../images/stamen@2x.png 2x,
+                      ../images/stamen@3x.png 3x"
+              class="stamen">
+
+        </p>
+        <p align='center'>
+          This map was designed and built by <a href="https://stamen.com">Stamen Design</a> with publicly available data.
+        </p>
+    </div>
+  </div>
+  <div class='open-modal' id='open-modal' style="left: 20px; top: calc(100vh - 57px); z-index: 1000; position: absolute;">
+    About this map
+  </div>
+<div id='map'></div>
+
+<div id="legend" class="legend night">
+    <div class="legend-top"><div class="legend-title">Deadly Roadways</div></div>
+    <div class="labels">
+        <div class="row">
+            <div class="legend-subtitle">Time of Day</div>
+        </div>
+        <div class="row">
+            <svg height="24" width="24">
+             <circle cx="12" cy="12" r="10" fill="#69178AB3" />
+            </svg>
+            <div class="label">Day</div>
+        </div>
+        <div class="row">
+            <svg height="24" width="24">
+             <circle cx="12" cy="12" r="10" fill="#82EDBAB3" />
+            </svg>
+            <div class="label">Night</div>
+        </div>
+        <div class="row">
+            <svg height="24" width="24">
+             <circle cx="12" cy="12" r="10" fill="#4A76A0B3" />
+            </svg>
+            <div class="label">Dawn, Dusk, Unknown</div>
+        </div>
+    </div>
+    <div class="controls">
+        <div id="day" class="button" onclick="onButtonClick('day')">Day</div>
+        <div id="night" class="button pressed" onclick="onButtonClick('night')">Night</div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.3.3/dist/leaflet.js"></script>
+<script src="https://unpkg.com/tangram/dist/tangram.min.js"></script>
+<!-- [Dylan]: Removed local library and added CDN to comply with HERE Github policies -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-hash/0.2.1/leaflet-hash.js"></script>
+
+<script>
+    var tileAttr = '<a href="https://mapzen.com/tangram" target="_blank">Tangram</a> | &copy; OSM contributors | <a href="https://mapzen.com/" target="_blank">Mapzen</a>';
+
+    var day = Tangram.leafletLayer({
+                    scene: 'day.yaml',
+                    attribution: tileAttr
+                });
+    var night = Tangram.leafletLayer({
+                    scene: 'night.yaml',
+                    attribution: tileAttr
+                });
+
+    var maxBounds = [
+        [5.499550, -167.276413],
+        [83.162102, -52.233040]
+    ];
+
+    var map = L.map('map', {
+        center: [28.5383, -81.3792], // Orlando,FL
+        zoom: 7,
+        minZoom: 4,
+        'maxBounds': maxBounds,
+        layers: [day, night]
+    });
+
+    new L.Hash(map);
+
+    var popup = L.popup();
+
+    var onButtonClick = function(mode) {
+        if (mode == 'day') {
+            day.bringToFront();
+            document.getElementById('legend').classList.remove('night');
+            document.getElementById('night').classList.remove('pressed');
+            document.getElementById('day').classList.add('pressed');
+        } else { // night
+            night.bringToFront();
+            document.getElementById('legend').classList.add('night');
+            document.getElementById('night').classList.add('pressed');
+            document.getElementById('day').classList.remove('pressed');
+        }
+    }
+
+    var onClick = function(selection){
+        if (selection.feature) {
+            var latlng = selection.leaflet_event.latlng;
+            var year = selection.feature.properties['Year'];
+            var mon = selection.feature.properties['Month'];
+            var dom = selection.feature.properties['Day'];
+            var time = selection.feature.properties['Time'];
+            var outcome = selection.feature.properties['Outcome'];
+            var type = selection.feature.properties['Type'];
+            var street = selection.feature.properties['Street'];
+            var xstreet = selection.feature.properties['Cross-street'];
+            var incident = "A " + type.toLowerCase() + " was " + outcome.toLowerCase();
+            var location = (xstreet.length > 2) ? ` near ${street} and ${xstreet}` : ` near ${street}`;
+            var chrono = ` on ${mon}‑${dom}‑${year} at ` + time.replace(/^0(?:0:0?)?/, '') + '.';
+            console.log(time)
+            var text = incident + location + chrono;
+            popup.setLatLng(latlng)
+                 .setContent(text)
+                 .openOn(map);
+        } else {
+            map.closePopup(popup);
+        }
+      }
+
+    day.on('init', function() {
+        try {
+            day.scene.config.layers._collisions._day.draw.points.blend_order = -1
+            day.scene.config.layers._collisions._night.draw.points.blend_order = -3
+            day.scene.updateConfig();
+            //day.scene.rebuild();
+        }
+        catch (e) {
+            console.log(e);
+        }
+    });
+
+    day.setSelectionEvents({click: onClick});
+    //night.setSelectionEvents({click: onClick});
+
+    // Logic for modal overlay
+    var close = document.getElementById("modal-close");
+    var modal = document.getElementById("modal");
+    var open = document.getElementById("open-modal");
+
+    close.addEventListener('click',function(){
+      modal.style.display = "none";
+    })
+
+    open.addEventListener('click',function(){
+      modal.style.display = "block";
+    })
+
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+</script>
+</body>
+</html>

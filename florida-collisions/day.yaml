@@ -1,0 +1,44 @@
+import:
+    - ./common.yaml
+
+global:
+    # GRAYS
+    ultradark_gray_color:       [0.400,0.400,0.400]
+    darkest_gray_color:         [0.400,0.400,0.400]
+    darker_gray_color:          [0.400,0.400,0.400]
+    dark_gray_color:            [0.648,0.648,0.648] # coastlines
+    mid_gray_color:             [0.648,0.648,0.648] # state borders, water
+    gray_color:                 [0.749,0.749,0.749] # greenspace
+    light_gray_color:           [0.800,0.800,0.800]
+    lighter_gray_color:         [0.880,0.880,0.880]
+
+    text_stroke:                [0.800,0.800,0.800,0.65]
+    zinc_text_stroke:           [0.800,0.800,0.800,0.65]
+
+    playas_color:               global.lighter_gray_color
+    no_texture_water_color:     global.mid_gray_color
+
+scene:
+
+    background:
+        color: global.light_gray_color
+
+layers:
+
+    roads:
+        # enabled: false
+        x:
+            y:
+                z:
+                    draw:
+                        lines:
+                            color: [0.898,0.898,0.898]
+                            outline:
+                                color: [0.698,0.698,0.698]
+    water:
+        x:
+            y:
+                z:
+                    draw:
+                        polygons:
+                            color: [[3, global.dark_gray_color], [10, global.mid_gray_color]]

@@ -1,0 +1,192 @@
+import:
+#    - https://www.nextzen.org/carto/refill-style/refill-style.zip
+#    - https://www.nextzen.org/carto/refill-style/themes/color-gray-gold.zip
+    # - https://www.nextzen.org/carto/refill-style/themes/color-inverted.zip    
+    # - https://s3.amazonaws.com/xyz-demo/data/demo.yaml
+#    - https://www.nextzen.org/carto/refill-style/11/themes/label-4.zip
+    # - https://www.nextzen.org/carto/refill-style/themes/terrain-shading.zip
+    # - https://www.nextzen.org/carto/refill-style/11/themes/terrain-shading-dark.zip
+
+global:
+    sdk_building_extrude: false
+    crop_color: |
+        function(feature){
+            switch(feature['properties.Crop2014']) {
+              case 'Urban':                                       color = [0,0,0,0.5]; break;
+              case 'Managed Wetland':                             color = [0,1,0,0.5]; break;
+              case 'Idle':                                        color = '#CCCCCC'; break;
+              case 'Young Perennials':                            color = '#AADDAA'; break;
+              case 'Mixed Pasture':                               color = '#30819C'; break;
+              case 'Alfalfa and Alfalfa Mixtures':                color = '#539CB4'; break;
+              case 'Miscellaneous Grasses':                       color = '#3679B9'; break;
+              case 'Miscellaneous Grain and Hay':                 color = '#29AFAF'; break;
+              case 'Almonds':                                     color = '#4b2f1b'; break;
+              case 'Walnuts':                                     color = '#594333'; break;
+              case 'Pistachios':                                  color = '#543A1E'; break;
+              case 'Citrus':                                      color = '#C77000'; break;
+              case 'Peaches/Nectarines':                          color = '#F2961F'; break;
+              case 'Plums, Prunes and Apricots':                  color = '#DD790C'; break;
+              case 'Pomegranete':                                 color = '#8B0036'; break;
+              case 'Cherries':                                    color = '#B32B00'; break;
+              case 'Apples':                                      color = '#DD1B0C'; break;
+              case 'Olives':                                      color = '#8A7800'; break;
+              case 'Dates':                                       color = '#837100'; break;
+              case 'Avocados':                                    color = '#476019'; break;
+              case 'Kiwis':                                       color = '#4C6222'; break;
+              case 'Pears':                                       color = '#C8AD0A'; break;
+              case 'Miscellaneous Subtropical Fruits':            color = '#E97B00'; break;
+              case 'Miscellaneous Deciduous':                     color = '#908200'; break;
+              case 'Strawberries':                                color = '#009E00'; break;
+              case 'Cole Crops':                                  color = '#008000'; break;
+              case 'Tomatoes':                                    color = '#00C200'; break;
+              case 'Peppers':                                     color = '#76DC00'; break;
+              case 'Lettuce/Leafy Greens':                        color = '#43D923'; break;
+              case 'Melons, Squash and Cucumbers':                color = '#BFEA00'; break;
+              case 'Flowers, Nursery and Christmas Tree Farms':   color = '#007138'; break;
+              case 'Bush Berries':                                color = '#054F7F'; break;
+              case 'Grapes':                                      color = '#611DA6'; break;
+              case 'Greenhouse':                                  color = '#A8C100'; break;
+              case 'Miscellaneous Truck Crops':                   color = '#56DD24'; break;
+              case 'Wheat':                                       color = '#F0F082'; break;
+              case 'Corn, Sorghum and Sudan':                     color = '#FFFF7A'; break;
+              case 'Rice':                                        color = '#D4F691'; break;
+              case 'Wild Rice':                                   color = '#DEE8B2'; break;
+              case 'Miscellaneous Field Crops':                   color = '#FFF8A9'; break;
+              case 'Cotton':                                      color = '#CF2287'; break;
+              case 'Sunflowers':                                  color = '#FFF749'; break;
+              case 'Safflowers':                                  color = '#FFE949'; break;
+              case 'Beans (Dry)':                                 color = '#D4C346'; break;
+              case 'Onions and Garlic':                           color = '#FAEF62'; break;
+              case 'Potatoes and Sweet Potatoes':                 color = '#CEC767'; break;
+              case 'Carrots':                                     color = '#FFCB5C'; break;
+              default:                                            color = 'rgba(0,0,0,0.0)';
+            }
+          return color
+          }
+
+
+sources:
+    _stamen-terrain: # see https://github.com/tangrams/tangram-tutorial/blob/master/docs/tutorial-files/raster.yaml
+        type: Raster
+        url: http://tile.stamen.com/terrain-background/{z}/{x}/{y}.jpg
+
+    _stamen-terrain-labels:
+        type: Raster
+        url: http://tile.stamen.com/terrain-labels/{z}/{x}/{y}.jpg
+
+    _here-satellite:
+        type: Raster
+        url: https://1.aerial.maps.api.here.com/maptile/2.1/basetile/newest/satellite.day/{z}/{x}/{y}/256/png8?app_id=SdXLpjt16tenTjuWesRR&app_code=bGopaQPeVl9e9udXwJWmFA
+
+    mapzen:
+        type: MVT
+        url: https://xyz.api.here.com/tiles/osmbase/256/all/{z}/{x}/{y}.mvt
+
+    _xyz_crops_polygon_tags:
+        url: https://xyz.api.here.com/hub/spaces/aw6LD9wa/tile/web/{z}_{x}_{y}.mvt
+        type: MVT
+        min_zoom: 10
+        max_zoom: 20
+        url_params:
+            access_token: AeFnybJJXb9zhnaSOXA-PPQ
+            # clip: true
+            # margin: 0
+            tags: crop__mapping_2014
+            # limit: 50000 #
+
+    _xyz_crops_centroid_tags:
+        url: https://xyz.api.here.com/hub/spaces/aw6LD9wa/tile/web/{z}_{x}_{y}.mvt
+        type: MVT
+        min_zoom: 2
+        max_zoom: 20  # we need centroids at deep zooms for the labels
+        url_params:
+            access_token: AeFnybJJXb9zhnaSOXA-PPQ
+            # clip: true
+            # margin: 0
+            tags: crop_centroids
+            # limit: 50000 #
+
+
+styles:
+    _lines:
+        base: lines
+        blend: overlay
+        blend_order: 1
+    _text:
+        base: text
+        blend: overlay
+        blend_order: 11
+
+layers:
+    _xyz_polygons:
+        filter: function() { return $zoom >= 10 && feature['properties.Crop2014'] !== 'Urban'}
+
+        # enabled: false
+        data: {source: _xyz_crops_polygon_tags, layer: 'aw6LD9wa'}
+        draw:
+            polygons:
+                interactive: true
+                order: 1000
+                collide: false
+                color: '#00FFFF'
+                color: |
+                    function() {
+                        return global.crop_color(feature)
+                    }
+    _xyz_points:
+        filter: function() { return $zoom < 10 && feature['properties.crop2014'] !== 'Urban'}
+
+        # enabled: false
+        data: {source: _xyz_crops_centroid_tags, layer: 'aw6LD9wa'}
+        draw:
+            points:
+                interactive: true
+                order: 1000
+                collide: false
+                size: [[6, 1px], [8, 1.5px], [10, 2px]]
+                color: '#00FFFF'
+                color: |
+                    function() {
+                        return global.crop_color(feature)
+                    }
+    _xyz_labels:
+        #filter: {$geometry: polygon}
+
+        # enabled: false
+        data: {source: _xyz_crops_centroid_tags, layer: 'aw6LD9wa'}
+        filter: {$zoom: {min: 14}}
+        draw:
+            _text:
+                collide: true
+                repeat_distance: 100px
+                align: center
+                text_source: |
+                    function(){
+                        if (feature['properties.crop2014'] !== 'Urban') return feature['properties.crop2014']
+                    }
+
+                font:
+                    fill: lightgrey
+                    size: 11px
+                    stroke:
+                        color: black
+                        width: 3px
+
+    _terrainLayer:
+        data:
+            source: _here-satellite
+            #source: _stamen-terrain
+        draw:
+            _terainStyle:
+                color: [0.5, 0.5, 0.5] # Adding a color to tint the raster layer
+                style: raster
+                order: 0 # draw on bottom
+
+    _terrainLayerLabels:
+        enabled: false
+        data:
+            source: _stamen-terrain-labels
+        draw:
+            _terainStyle:
+                style: raster
+                order: 2000 # draw on top

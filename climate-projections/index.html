@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en-us">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Sans:300,400,400i,700|Fira+Mono">
+        <link rel="stylesheet" href="../styles/main.css">
+        <title>Shifting Climates</title>
+        <style>
+            body {
+              margin: 0;
+              font-family: 'FiraSans', sans-serif;
+            }
+            path {
+              fill: #ddd;
+              stroke: #aaa;
+              stroke-width: 0.15;
+            }
+            button {
+              width: 147px;
+              height: 28px;
+              font-size: 12px;
+              font-weight: 500;
+              display: block;
+              border-radius: 6px;
+              border: solid 1px #000000;
+              cursor: pointer;
+            }
+            .graticule {
+              fill: none;
+              stroke: #999;
+              stroke-width: .5px;
+              stroke-opacity: .2;
+            }
+            .active {
+              background: #000000;
+              color: white;
+            }
+            #popup {
+              display: none;
+              font-size: 12px;
+              padding: 10px;
+              margin-bottom: 10px;
+              background: white;
+            }
+            #popup span {
+              font-size: 16px;
+              font-weight: bold;
+              display: block;
+              margin-top: 15px;
+              margin-bottom: 5px;
+            }
+
+            #popup-close {
+              width: 11.5px;
+              height: 11.5px;
+              position: absolute;
+              right: 10px;
+              cursor: pointer;
+            }
+            #legend-grid {
+              display: flex;
+              height: 127px;
+              flex-wrap: wrap;
+            }
+            .grid-square {
+              width: 28px;
+              height: 28px;
+              display: inline-block;
+              margin: 0 5px 5px 0;
+              background: red;
+              cursor: pointer;
+              border: solid 1px #acacac;
+              font-weight: 300;
+              font-size: 12px;
+              text-align: center;
+              line-height: 28px;
+              color: white;
+            }
+            .group {
+              display: flex;
+              flex-direction: column;
+              flex-wrap: wrap;
+            }
+        </style>
+        <body>
+
+          <div id='modal' class='modal koppen-modal'>
+            <div class='modal-container'>
+              <img id="modal-close" class='modal-close' src="../images/close.svg" alt="close">
+              <div class='modal-images'>
+                <img class='modal-image-fit' src="../images/koppen_modal.png" srcset="../images/koppen_modal@2x.png 2x">
+                <img class='modal-image-fit' src="../images/koppen_modal2.png" srcset="../images/koppen_modal2@2x.png 2x">
+              </div>
+              <div class="modal-title">Climate projections using Köppen-Geiger classification</div>
+              <p>
+                How will global warming shift climates across the globe? That is the question we sought to answer with this map, based on <a  class="modal-link" target="_blank" href="https://datacatalog.worldbank.org/dataset/world-maps-k%C3%B6ppen-geiger-climate-classification">data published
+                by the World Bank</a> that contrasts 20th century weather observations (1976 to 2000) with  <a  class="modal-link" target="_blank" href="https://en.wikipedia.org/wiki/Special_Report_on_Emissions_Scenarios">21st century model predictions</a> (2076 to 2100) based on the <a  class="modal-link" target="_blank" href="https://en.wikipedia.org/wiki/K%C3%B6ppen_climate_classification">Köppen-Geiger Climate Classification System</a>.
+              </p>
+              <p>
+                The Köppen-Geiger classification System groups climates based on common characteristics, like precipitation patterns, permafrost, and distance from the equator. These categories are commonly presented as a <a  class="modal-link" target="_blank" href="http://wiki.gis.com/wiki/index.php/Chorochromatic_map">chorochromatic map</a> that assigns a unique color to each classification. Click on an area in this map and toggle the buttons to see how the range shifts between current and future scenarios. For example, the dry, hot desert region (Bwh) expands to cover the Middle East and Central Asia, while the Tundras (ET) and Ice Caps (EF) of mountain ranges and far northern latitudes all but disappear.
+              </p>
+              <p>
+                The <a  class="modal-link" target="_blank" href="http://koeppen-geiger.vu-wien.ac.at/present.htm">original research</a> supplied us with the colors, and the XYZ Hub allows us to host and tag the classification zones of current and future climates, making visualizing the radical climate shifts in d3.js a snap.
+              </p>
+              <p>
+                Source files and data can be accessed on <a href="https://github.com/stamen/here-xyz-gallery">GitHub</a>.
+              </p>
+            </div>
+            <div class='modal-container'>
+              <p align='center'>
+                <img src="../images/stamen.png"
+                    srcset="../images/stamen@2x.png 2x,
+                            ../images/stamen@3x.png 3x"
+                    class="stamen">
+
+              </p>
+              <p align='center'>
+                This map was designed and built by <a href="https://stamen.com">Stamen Design</a> with publicly available data.
+              </p>
+            </div>
+          </div>
+          <div class='open-modal' id='open-modal' style="right: 20px; top: calc(100vh - 57px); z-index: 1000; position: absolute;">
+            About this map
+          </div>
+
+            <script src="//d3js.org/d3.v4.min.js"></script>
+            <script src="https://d3js.org/d3-array.v1.min.js"></script>
+            <script src="https://d3js.org/d3-geo.v1.min.js"></script>
+            <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
+            <form name="scenarios" style="position: absolute; top: 200px; left: 10px;">
+              <button
+                type="button"
+                name="climate"
+                value="currentclimate"
+                class="active"
+                style="margin-bottom: 5px;">
+                  Current
+              </button>
+              <button type="button" name="climate" value="futureclimate">Future</button>
+            </form>
+            <div id="viz" style="width:100vw; height: 100vh;"></div>
+            <div id="grid-legend" style="position: absolute; bottom: 10px; left: 10px; width: 315px;">
+              <div id="popup"></div>
+              <div id='legend-grid'></div>
+            </div>
+            <script>
+                var spaceID = "ZMeoAvo0";
+                var accessToken = "Af375WwfMwEmN5W844jLoYk";
+
+                var width = 900,
+                    height = 500,
+                    centered;
+
+                var semi_opaque = 0.15;
+
+                var svg = d3.select("#viz").append("svg")
+                    .attr("preserveAspectRatio", "xMinYMin meet")
+                    .attr("viewBox", "0 0 960 500")
+                    .append('g').attr('class', 'map');
+
+                var projection = d3.geoHufnagel()
+                    .rotate([-10, 0]);
+
+                var graticule = d3.geoGraticule();
+
+                var path = d3.geoPath()
+                  .projection(projection);
+
+                var show_climate = "." + "currentclimate";
+                var hide_climate = "." + "futureclimate";
+                var zone = "";
+                var rad = document.scenarios.climate;
+
+                rad.forEach(function(e) {
+                    e.addEventListener("click", function() {
+                      d3.select('.active').attr("class", "")
+                      d3.select(e).attr("class", "active")
+                      hide_climate = show_climate;
+                      show_climate = "." + e.value;
+                      filterMap(show_climate, hide_climate, 0);
+                      if (zone) { filterMap(zone + show_climate, show_climate, semi_opaque ) }
+                    });
+                });
+
+                svg.selectAll("path.graticule")
+                    .data(graticule.lines())
+                    .enter().append("path")
+                        .attr("class", "graticule")
+                        .attr("d", path);
+
+                var url = 'https://xyz.api.here.com/hub/spaces/' + spaceID + '/search?access_token=' + accessToken;
+                d3.json(url, function(error,data) {
+                    if (error) throw error;
+
+                    svg.selectAll("g")
+                        .data(data.features)
+                        .enter().append("path")
+                        .style("fill", function(d) { return "#" + d.properties.koppen_gridcodes_color } )
+                        .style("stroke", function(d) { return "#" + d.properties.koppen_gridcodes_color } )
+                        .attr("d", path)
+                        .attr( "class", function(d) { return d.properties["@ns:com:here:xyz"].tags.join(" ") } )
+                        .on('click', function(d) {
+
+                            var selectedSq = d3.select(`#${d.properties.KOPPEN}`);
+                            selectedSquare(selectedSq.node())
+
+                            zone = "." + d.properties.KOPPEN.toLowerCase();
+                            filterMap(zone + show_climate, show_climate, semi_opaque);
+                            d3.selectAll(".graticule").style("stroke-opacity",0);
+
+                            legend.forEach(l => {
+                              if(l.koppen.toLowerCase() === d.properties.KOPPEN.toLowerCase()) {
+                                d3.select("#popup")
+                                  .style('display', 'block')
+                                  .style('border', `1px solid #${d.properties.koppen_gridcodes_color}`)
+                                  .html(`<img id="popup-close" src="../images/close.png" srcset="../images/close@2x.png 2x" alt="close"> ${l.content}`)
+                                  .on('click', function() {
+                                    d3.selectAll('.grid-square').style('opacity', 1)
+                                    d3.select(this).style('display', 'none')
+                                    filterMap(show_climate, hide_climate, 0);
+                                    zone = "";
+                                    d3.selectAll(".graticule").style("stroke-opacity",0.2);
+                                })
+                              }
+                            })
+                        })
+
+                    var groupedLegend = d3.nest()
+                      .key(function(d) {
+                        if(d.koppen.toLowerCase().charAt(0) !== 'd' && d.koppen.toLowerCase().charAt(0) !== 'c') {
+                          return d.koppen.charAt(0)
+                        } else {
+                          return d.koppen.substring(0, 2)
+                        }
+                      })
+                      .entries(legend);
+
+                    d3.select('#legend-grid').selectAll("g")
+                      .data(groupedLegend)
+                      .enter()
+                      .append('g')
+                        .attr("id", d => d.key)
+                        .attr('class', 'group')
+                        .selectAll('div')
+                          .data(d => d.values)
+                          .enter()
+                          .append('div')
+                            .attr('class', 'grid-square')
+                            .attr('id', d => d.koppen)
+                            .style('background', d => d.color)
+                            .text(d => d.koppen)
+                            .on('click', function(e) {
+                              var selectedSq = this;
+                              selectedSquare(selectedSq);
+
+                              zone = "."+e.koppen.toLowerCase()
+                              filterMap(zone + show_climate, show_climate, semi_opaque);
+                              d3.selectAll(".graticule").style("stroke-opacity",0);
+
+                              d3.select("#popup")
+                                .style('display', 'block')
+                                .style('border', `1px solid ${e.color}`)
+                                .html(`<img id="popup-close" src="../images/close.png" srcset="../images/close@2x.png 2x" alt="close"> ${e.content}`)
+                                .on('click', function() {
+                                  d3.select(this).style('display', 'none')
+                                  d3.selectAll('.grid-square').classed('selected', false)
+                                    .style('opacity', 1)
+                                  filterMap(show_climate, hide_climate, 0);
+                                  zone = "";
+                                  d3.selectAll(".graticule").style("stroke-opacity",0.2);
+                              })
+                            })
+                    filterMap(show_climate, hide_climate, 0);
+                });
+
+                function filterMap(show, hide, o_value) {
+                  var disable_click = (o_value > 0) ? "" : "none";
+                  if ( disable_click ) {
+                    d3.selectAll(hide)
+                            .style("opacity", o_value)
+                            .style("pointer-events",disable_click)
+                            .style("stroke-width",0.5);
+                  } else {
+                    d3.selectAll(hide)
+                            .style("opacity", o_value)
+                            .style("stroke-width",0.5);
+                  }
+                  d3.selectAll(show)
+                          .style("opacity", 1)
+                          .style("pointer-events","auto")
+                          .style("stroke-width",0.15);
+                }
+
+                function selectedSquare(e) {
+                  d3.selectAll('.grid-square')
+                    .style('opacity',function() {
+                      return (this === e) ? 1.0 : 0.15;
+                    })
+                    .classed('selected', function() {
+                      return (this === e) ? true : false
+                    });
+                }
+
+                legend = [
+                  {'koppen': 'Af', 'color': "#960000", 'content': '<span>Equatorial Rainforest (Af)</span>Occurs within 15 degrees of the Equator, characterized by high temperatures year-round and average precipitation at least 60 mm (2.4 in) in every month.'},
+                  {'koppen': 'Am', 'color': "#FF0000", 'content': '<span>Equatorial Monsoon (Am) </span>Occurs within 15 degrees of the Equator, characterized by high temperatures year-round, heavy precipitation in summer months, and a short dry season near winter solstice.'},
+                  {'koppen': 'Aw', 'color': "#FFCDCD", 'content': '<span>Equatorial Savanna (Aw)</span>Characterized by a pronounced dry season in the winter. Future scenario projects this climate type will expand in South America, Africa and Australia.'},
+                  {'koppen': 'As', 'color': "#FF9999", 'content': '<span>Equatorial Savanna (As)</span>Characterized by a pronounced dry season in the summer. Future scenario projects this climate type will expand in central India, overtaking milder Csa conditions.'},
+                  {'koppen': 'Bwh', 'color': "#FFCD00", 'content': '<span>Hot Desert (BWh)</span>Occurs at lower-middle latitudes north and south of the Equator, characterized by hot, sunny, dry conditions year-round. This climate type is projected to expand in Central Europe and the Middle East to overtake milder BSk areas.'},
+                  {'koppen': 'Bwk', 'color': "#FFFF64", 'content': '<span>Cold Desert (BWk)</span>Characterized by hot dry summers and cold dry winters.'},
+                  {'koppen': 'BSh', 'color': "#CD8D13", 'content': '<span>Hot Semi-arid (BSh)</span>Characterized by hot summers and warm to cool winters with minimal precipitation.'},
+                  {'koppen': 'BSk', 'color': "#CDAA54", 'content': '<span>Cold Semi-arid (BSk)</span>Typically occurs at high altitudes and in the deep interior of continents, and are characterized by warm to hot dry summers and cold winters.'},
+                  {'koppen': 'Cfa', 'color': "#003200", 'content': "<span>Humid Temperate (Cfa)</span>Occurs between 25 and 40 degrees north and south latitude, typically on the southeast side of continents. Characterized by hot, humid summers and mild winters. Projected to expand substantially in North America, South America and Europe."},
+                  {'koppen': 'Cfb', 'color': "#005000", 'content': '<span>Temperate Oceanic (Cfb)</span>Mild summers and mild winters, typically occurs on west coasts and higher-middle latitudes of continents.'},
+                  {'koppen': 'Cfc', 'color': "#007800", 'content': '<span>Subpolar Oceanic (Cfc)</span>Occurs on the west side of continents, between 35 and 60 degrees north and south latitude, with cold winters and plentiful and reliable rainfall year-round.'},
+                  {'koppen': 'Cwa', 'color': "#B46400", 'content': "<span>Humid Subtropical, Monsoon (Cwa)</span>Currently typical of Southern and Eastern Asia, hot, wet monsoon-influenced summers and warm dry winters."},
+                  {'koppen': 'Cwb', 'color': "#966400", 'content': "<span>Subtropical Highland (Cwb)</span>Typically occurs at high elevations in the low to middle latitudes, dry winters and wetter summers."},
+                  {'koppen': 'Cwc', 'color': "#5A3C00", 'content': "<span>Cold Subtropical Highland (Cwc)</span>Occurs at high latitude close to the poles, oceanic influence brings more rain in summer than winter."},
+                  {'koppen': 'Csa', 'color': "#00FF00", 'content': "<span>Mediterranean, Hot Summer (Csa)</span>Occurs between 30 and 45 degrees north and south latitude on the west coast of continents, characterized by dry, hot summers and wet winters."},
+                  {'koppen': 'Csb', 'color': "#96FF00", 'content': "<span>Mediterranean, Warm Summer (Csb)</span>Occurs between 30 and 45 degrees north and south latitude on the west coast of continents, characterized by dry summers and wet winters."},
+                  {'koppen': 'Csc', 'color': "#C8FF00", 'content': "<span>Mediterranean, Cold Summer (Csc)</span>This climate sub-type is very rare: it mainly occurs in small patches at high-altitude locations along the west coasts of North and South America. It is characterized by cool summers and mild, wet winters."},
+                  {'koppen': 'Dfa', 'color': "#320032", 'content': "<span>Humid Continental, Hot Summer (Dfa)</span>Occurs within the large continents of North America and Asia, cool to cold winters and hot summers with ample rain year-round. This climate is currently associated with cities such as Toronto, Canada and Sapporo, Japan. In the future climate scenario, it expands to take over a large proportion of areas now experiencing a milder Dfb climate type."},
+                  {'koppen': 'Dfb', 'color': "#640064", 'content': "<span>Humid Continental, Warm Summer (Dfb)</span>Occurs near 60 degrees north latitude or at high elevation within the large continents of North America and Asia, in places such as Southern Ontario or Aspen, Colorado. Cold winters and warm summers with ample rain year-round."},
+                  {'koppen': 'Dfc', 'color': "#C800C8", 'content': "<span>Subarctic (Dfc)</span>Occurs 50° to 70° north latitude in North America, Asia and Europe. Long, cold winters and short, mild summers with consistent precipitation year-round. Future climate scenarios project a progression of this climate type to higher, more restricted latitudes."},
+                  {'koppen': 'Dfd', 'color': "#C71485", 'content': "<span>Extremely Cold Subarctic (Dfd)</span>Extremely cold winters and mild summers, typical of Siberia. Future climate scenarios project the area covered by this climate type will shrink."},
+                  {'koppen': 'Dwa', 'color': "#C8B4FF", 'content': "<span>Humid Continental, Monsoon (Dwa)</span>Hot, humid and wet summers and dry winters, strongly associated with the Korean peninsula. Future climate scenarios predict Korea will get hotter, and this climate type will shift into China."},
+                  {'koppen': 'Dwb', 'color': "#9A7FB3", 'content': "<span>Warm Humid Continental, Monsoon (Dwb)</span>Warm and wet summers, dry winters. Currently typical in much of central China, diminished in the future projection."},
+                  {'koppen': 'Dwc', 'color': "#8859B3", 'content': "<span>Subarctic, Monsoon (Dwc)</span>Long, cold drier winters and short mild wetter summers. Currently occurs in Eastern Siberia, with a diminishing range in the future projected scenario."},
+                  {'koppen': 'Dwd', 'color': "#6F24B3", 'content': "<span>Extremely Cold Subarctic, Monsoon (Dwd)</span>Extremely cold, dry winters and mild summers with more rain, currently characteristic of Northern Siberia, though future projections suggest this would change."},
+                  {'koppen': 'Dsa', 'color': "#FF6DFF", 'content': "<span>Humid Continental, Dry Summer (Dsa)</span>Hot summers with more rain in winter. Typically only occurs within the Northern Hemisphere in the interior of continents at mid latitudes."},
+                  {'koppen': 'Dsb', 'color': "#FFB4FF", 'content': "<span>Humid Continental, Dry Summer (Dsb)</span>Warm summers with more rain in winter. Typically only occurs within the Northern Hemisphere in the interior of continents at mid latitudes."},
+                  {'koppen': 'Dsc', 'color': "#E6C8FF", 'content': "<span>Subarctic, Dry Summer (Dsc)</span>Cool dry summers and cold winters. Occurs in small patches inland in Alaska and Northwestern Canada, and in even smaller patches at high altitudes near the Mediterranean."},
+                  {'koppen': 'Dsd', 'color': "#C8C8C8", 'content': "<span>Extremely Cold Subarctic, Dry Summer (Dsd)</span>Extremely cold winters and mild, dry summers, currently occurs in parts of Siberia, but is not projected to last."},
+                  {'koppen': 'ET', 'color': "#64FFFF", 'content': "<span>Tundra (ET)</span>Mean annual sub-zero temperatures creating permafrost and moderately low rainfall. Occurs only at very high northern latitudes (60° to 75°), with a much narrower range in the future projection."},
+                  {'koppen': 'EF', 'color': "#6496FF", 'content': "<span>Ice Cap (EF)</span>Eternal winter, with all 12 months of the year with average temperatures below 0°C (32°F)."}
+                ]
+
+                // Logic for modal overlay
+                var close = document.getElementById("modal-close");
+                var modal = document.getElementById("modal");
+                var open = document.getElementById("open-modal");
+
+                close.addEventListener('click',function(){
+                  modal.style.display = "none";
+                })
+
+                open.addEventListener('click',function(){
+                  modal.style.display = "block";
+                })
+
+                window.onclick = function(event) {
+                  if (event.target == modal) {
+                    modal.style.display = "none";
+                  }
+                }
+            </script>
+        </body>
+    </head>
+</html>

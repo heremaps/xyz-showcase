@@ -1,0 +1,599 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Rate of Migration</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Sans:300,400,400i,700|Fira+Mono">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.3/dist/leaflet.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <style>
+        body {
+            margin: 0px;
+            border: 0px;
+            padding: 0px;
+            font-family: Helvetica, Arial, sans-serif;
+        }
+        .container {
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            position: absolute;
+        }
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+        #legend {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 300px;
+            height: 151px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border-radius: 2px;
+            box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.45);
+            background-color: #ffffff;
+            z-index: 999;
+        }
+        .legend-top {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            width: 300px;
+        }
+        #legend-title {
+            font-family: 'Fira Sans', sans-serif;
+            font-size: 16px;
+            padding-left: 10px;
+        }
+        #controls {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+            align-items: center;
+            user-select: none;
+        }
+        .controls-1 {
+            padding-bottom: 10px;
+        }
+        #play {
+            width: 65px;
+            height: 18px;
+            border-radius: 2px;
+            border: solid 1px #000000;
+            text-align: center;
+            vertical-align: middle;
+            line-height: 18px;
+            cursor: pointer;
+            font-size: x-small;
+        }
+        .button {
+            width: 16px;
+            height: 16px;
+            object-fit: contain;
+            cursor: pointer;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+        #year {
+            width: 78px;
+            padding-left: 5px;
+            padding-right: 5px;
+            text-align: center;
+            font-family: 'Fira Sans', sans-serif;
+            font-size: 16px;
+        }
+        .horz-line {
+            width: 280px;
+            border-bottom:1px solid #ddd;
+        }
+        #global-scale {
+            display: block;
+        }
+        #immigration-scale {
+            display: none;
+        }
+        #emigration-scale {
+            display: none;
+        }
+        .subtitles {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            padding-top: 10px;
+        }
+        .subtitle {
+            width: 67px;
+            height: 17px;
+            font-family: 'Fira Sans', sans-serif;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .vert-line {
+            width: 1px;
+            height: 26px;
+            border-left: solid 1px #191919;
+        }
+        .vert-line-right {
+            width: 1px;
+            height: 26px;
+            border-right: solid 1px #191919;
+        }
+        .scale {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding-top: 5px;
+        }
+        .color-interval {
+            width: 20px;
+            height: 21px;
+        }
+        .color-interval-wide {
+            width: 29px;
+            height: 21px;
+        }
+        .color-interval-1 {
+          background-color: #005a32;
+        }
+        .color-interval-2 {
+          background-color: #238b45;
+        }
+        .color-interval-3 {
+          background-color: #41ab5d;
+        }
+        .color-interval-4 {
+          background-color: #74c476;
+        }
+        .color-interval-5 {
+          background-color: #a1d99b;
+        }
+        .color-interval-6 {
+          background-color: #c7e9c0;
+        }
+        .color-interval-7 {
+          background-color: #fff;
+        }
+        .color-interval-8 {
+          background-color: #eff3ff;
+        }
+        .color-interval-9 {
+          background-color: #c6dbef;
+        }
+        .color-interval-10 {
+          background-color: #9ecae1;
+        }
+        .color-interval-11 {
+          background-color: #6baed6;
+        }
+        .color-interval-12 {
+          background-color: #4292c6;
+        }
+        .color-interval-13 {
+          background-color: #2171b5;
+        }
+        .green-interval-1 {
+          background-color: #00441b;
+        }
+        .green-interval-2 {
+          background-color: #006d2c;
+        }
+        .green-interval-3 {
+          background-color: #238b45;
+        }
+        .green-interval-4 {
+          background-color: #41ab5d;
+        }
+        .green-interval-5 {
+          background-color: #74c476;
+        }
+        .green-interval-6 {
+          background-color: #a1d99b;
+        }
+        .green-interval-7 {
+          background-color: #c7e9c0;
+        }
+        .green-interval-8 {
+          background-color: #e5f5e0;
+        }
+        .green-interval-9 {
+          background-color: #f7fcf5;
+        }
+        .blue-interval-1 {
+          background-color: #08306b;
+        }
+        .blue-interval-2 {
+          background-color: #08519c;
+        }
+        .blue-interval-3 {
+          background-color: #2171b5;
+        }
+        .blue-interval-4 {
+          background-color: #4292c6;
+        }
+        .blue-interval-5 {
+          background-color: #6baed6;
+        }
+        .blue-interval-6 {
+          background-color: #9ecae1;
+        }
+        .blue-interval-7 {
+          background-color: #c6dbef;
+        }
+        .blue-interval-8 {
+          background-color: #deebf7;
+        }
+        .blue-interval-9 {
+          background-color: #f7fbff;
+        }
+        .scale-labels {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            padding-top: 5px;
+        }
+        .scale-label {
+            width: 23px;
+            height: 12px;
+            font-family: 'Fira Sans', sans-serif;
+            font-size: 10px;
+            font-weight: 300;
+        }
+        .toggle {
+            width: 22px;
+            height: 12px;
+            object-fit: contain;
+            cursor: pointer;
+        }
+    </style>
+  </head>
+
+  <body>
+    <div id='modal' class='modal un-modal'>
+      <div class='modal-container'>
+        <img id="modal-close" class='modal-close' src="../images/close.svg" alt="close">
+        <div class='modal-images'>
+          <img class='modal-image-fit' src="../images/un_modal.png" srcset="../images/un_modal@2x.png 2x">
+        </div>
+        <div class="modal-title">Worldwide migration patterns</div>
+        <p>
+          Using data provided by the UN, we mapped immigration and emigration across
+          the world from the 1990s through 2020. Navigate through time periods on the maps
+          and click specific countries to see these population patterns in action through time
+          by toggling between immigration and emigration views.
+        </p>
+        <p>
+          The data for this visualization was uploaded to an XYZ Space using the CLI tools and
+          displayed using Leaflet and Tangram. It uses features such as tagging data in the XYZ
+          Hub and integration with Tangram using the HERE XYZ Hub API.
+        </p>
+        <p>
+        The data was sourced from the UN Population Division and Natural Earth:
+        <ul>
+          <li><a href="https://population.un.org/wpp/Download/SpecialAggregates/Ecological/" target="_blank" >Global migration rates</a></li>
+          <li><a href="https://www.un.org/en/development/desa/population/migration/data/estimates2/estimates17.asp" target="_blank" >Migration rates by origin and destination</a></li>
+          <li><a href="https://www.naturalearthdata.com/downloads/" target="_blank">Natural Earth</a></li>
+        </ul>
+        </p>
+        <p>
+          Source files and data can be accessed on <a href="https://github.com/stamen/here-xyz-gallery">GitHub</a>.
+        </p>
+      </div>
+      <div class='modal-container'>
+        <p align='center'>
+          <img src="../images/stamen.png"
+              srcset="../images/stamen@2x.png 2x,
+                      ../images/stamen@3x.png 3x"
+              class="stamen">
+
+        </p>
+        <p align='center'>
+          This map was designed and built by <a href="https://stamen.com">Stamen Design</a> with publicly available data.
+        </p>
+      </div>
+    </div>
+    <div class='open-modal' id='open-modal'>
+      About this map
+    </div>
+    <div id="legend">
+        <div class="legend-top">
+            <div id="legend-title">Rate of Migration</div>
+            <div id="controls">
+                <div id="year">2015-2020</div>
+            </div>
+        </div>
+        <div class="legend-top-1">
+            <div id="controls" class="controls-1">
+                <img class="button" src="year-left.svg" onclick="onBackClick()">
+                <div id="play" onclick="onPlayClick()">Play</div>
+                <img class="button" src="year-right.svg" onclick="onForwardClick()">
+            </div>
+        </div>
+        <div class="horz-line"></div>
+        <div id="global-scale">
+            <div class="subtitles">
+                <div class="subtitle">Immigration</div>
+                <div class="subtitle">Emigration</div>
+            </div>
+            <div class="scale">
+                <div class="color-interval color-interval-1"></div>
+                <div class="color-interval color-interval-2"></div>
+                <div class="color-interval color-interval-3"></div>
+                <div class="color-interval color-interval-4"></div>
+                <div class="color-interval color-interval-5"></div>
+                <div class="color-interval color-interval-6"></div>
+                <div class="color-interval color-interval-7"></div>
+                <div class="color-interval color-interval-8"></div>
+                <div class="color-interval color-interval-9"></div>
+                <div class="color-interval color-interval-10"></div>
+                <div class="color-interval color-interval-11"></div>
+                <div class="color-interval color-interval-12"></div>
+                <div class="color-interval color-interval-13"></div>
+            </div>
+            <div class="scale-labels">
+                <div class="scale-label">More</div>
+                <div class="scale-label">Equal</div>
+                <div class="scale-label">More</div>
+            </div>
+        </div>
+        <div id="immigration-scale">
+            <div class="subtitles">
+                <div class="subtitle">Immigration</div>
+                <img src="toggle-immigration.svg" class="toggle" onclick="onImmigrationToggleClick()">
+            </div>
+            <div class="scale">
+                <div class="color-interval-wide green-interval-1"></div>
+                <div class="color-interval-wide green-interval-2"></div>
+                <div class="color-interval-wide green-interval-3"></div>
+                <div class="color-interval-wide green-interval-4"></div>
+                <div class="color-interval-wide green-interval-5"></div>
+                <div class="color-interval-wide green-interval-6"></div>
+                <div class="color-interval-wide green-interval-7"></div>
+                <div class="color-interval-wide green-interval-8"></div>
+                <div class="color-interval-wide green-interval-9"></div>
+            </div>
+            <div class="scale-labels">
+                <div class="scale-label">More</div>
+                <div class="scale-label">Less</div>
+            </div>
+        </div>
+        <div id="emigration-scale">
+            <div class="subtitles">
+                <div class="subtitle">Emigration</div>
+                <img src="toggle-emigration.svg" class="toggle" onclick="onEmigrationToggleClick()">
+            </div>
+            <div class="scale">
+                <div class="color-interval-wide blue-interval-1"></div>
+                <div class="color-interval-wide blue-interval-2"></div>
+                <div class="color-interval-wide blue-interval-3"></div>
+                <div class="color-interval-wide blue-interval-4"></div>
+                <div class="color-interval-wide blue-interval-5"></div>
+                <div class="color-interval-wide blue-interval-6"></div>
+                <div class="color-interval-wide blue-interval-7"></div>
+                <div class="color-interval-wide blue-interval-8"></div>
+                <div class="color-interval-wide blue-interval-9"></div>
+            </div>
+            <div class="scale-labels">
+                <div class="scale-label">More</div>
+                <div class="scale-label">Less</div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <div class="container">
+        <div id="map"></div>
+    </div>
+    <!-- leaflet -->
+    <script src="https://unpkg.com/leaflet@1.3.3/dist/leaflet.js"></script>
+
+    <!-- [Dylan]: Removed local library and added CDN to comply with HERE Github policies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-hash/0.2.1/leaflet-hash.js"></script>
+    <!-- Main tangram library -->
+    <script src="https://unpkg.com/tangram/dist/tangram.min.js"></script>
+    <script>
+        var BY_ORIGIN_URL = "per_country_by_origin_by_year.json";
+        var BY_DEST_URL = "per_country_by_dest_by_year.json";
+
+        fetch(BY_ORIGIN_URL)
+            .then(response => response.json())
+            .then(data => updateByOriginFromGeojson(data))
+            .catch(error => console.error(error));
+        fetch(BY_DEST_URL)
+            .then(response => response.json())
+            .then(data => updateByDestFromGeojson(data))
+            .catch(error => console.error(error));
+
+        var years = ['1990-1995', '1995-2000', '2000-2005', '2005-2010', '2010-2015', '2015-2020'];
+        var year_to_per_country_year = {
+                   '1990-1995':'1990',
+                   '1995-2000':'1995',
+                   '2000-2005':'2000',
+                   '2005-2010':'2005',
+                   '2010-2015':'2010',
+                   '2015-2020':'2017',
+
+        }
+        var year_index = years.indexOf('2015-2020');
+        var year_str = years[year_index];
+
+        var per_country_years = ['1990', '1995', '2000', '2005', '2010', '2015'];
+        var per_country_year_to_year = {
+            '1990':'1990-1995',
+            '1995':'1995-2000',
+            '2000':'2000-2005',
+            '2005':'2005-2010',
+            '2010':'2010-2015',
+            '2015':'2015-2020',
+        }
+
+        document.getElementById('year').textContent = year_str;
+
+        var popup = L.popup();
+        var map = L.map('map', {boxZoom: false, zoomControl: false, minZoom: 3});
+        new L.Control.Zoom({ position: 'bottomleft' }).addTo(map);
+        var layer = Tangram.leafletLayer({
+            scene: 'scene.yaml',
+            attribution: '<a href="https://mapzen.com/tangram" target="_blank">Tangram</a> | &copy; OSM contributors | <a href="https://mapzen.com/" target="_blank">Mapzen</a>'
+        });
+        layer.addTo(map);
+        map.setView([52.372548, 4.893920], 4);
+        new L.Hash(map);
+
+        var update_year = function(increment) {
+            year_index += increment;
+            if (year_index < 0) {
+                year_index = years.length+year_index;
+            } else {
+                year_index %= years.length;
+            }
+            year_str = years[year_index];
+            layer.scene.config.global.year = year_str;
+            if (layer.scene.config.global.selected_country) {
+                var n3 = layer.scene.config.global.selected_country;
+                layer.scene.config.global.by_orig = by_orig[year_to_per_country_year[year_str]][n3];
+                layer.scene.config.global.by_dest = by_dest[year_to_per_country_year[year_str]][n3];
+            }
+            console.log('Year is ' + year_str);
+            document.getElementById('year').textContent = year_str;
+            map.closePopup(popup);
+            layer.scene.rebuild();
+        }
+        var onForwardClick = function() {
+            update_year(1);
+        }
+        var onBackClick = function() {
+            update_year(-1);
+        }
+        var timer;
+        var onPlayClick = function() {
+            if (timer) {
+                window.clearInterval(timer);
+                timer = undefined;
+                document.getElementById("play").innerHTML = "Play";
+            } else {
+                timer = window.setInterval(function() { update_year(1) }, 1000);
+                document.getElementById("play").innerHTML = "Pause";
+            }
+        }
+        var onImmigrationToggleClick = function(){
+            setSelectedCountryMigrationDirection('out');
+        }
+        var onEmigrationToggleClick = function(){
+            setSelectedCountryMigrationDirection('in');
+        }
+        var setSelectedCountryMigrationDirection = function(dir) {
+            layer.scene.config.global.selected_country_mode = dir;
+            updateLegends()
+            layer.scene.rebuild();
+        }
+        var updateLegends = function() {
+            if (layer.scene.config.global.selected_country) {
+                document.getElementById('global-scale').style.display = 'none';
+                var type;
+                if (layer.scene.config.global.selected_country_mode == 'in') {
+                    document.getElementById('immigration-scale').style.display = 'block';
+                    document.getElementById('emigration-scale').style.display = 'none';
+                    //type = 'Immigration to ';
+                } else {
+                    document.getElementById('emigration-scale').style.display = 'block';
+                    document.getElementById('immigration-scale').style.display = 'none';
+                    //type = 'Emigration from ';
+                }
+                document.getElementById('legend-title').innerHTML = country_name;
+            } else {
+                document.getElementById('global-scale').style.display = 'block';
+                document.getElementById('immigration-scale').style.display = 'none';
+                document.getElementById('emigration-scale').style.display = 'none';
+                document.getElementById('legend-title').innerHTML = 'Global Rate of Migration';
+            }
+
+        }
+        var by_orig = undefined;
+        var by_dest = undefined;
+        var updateByOriginFromGeojson = function(json) {
+            if (!json) return;
+            by_orig = json
+        }
+        var updateByDestFromGeojson = function(json) {
+            if (!json) return;
+            by_dest = json
+        }
+        var country_name;
+        var onMapClick = function(selection) {
+            if (selection.feature) {
+                if (!by_dest && !by_orig) {
+                    console.log('Data not loaded yet');
+                    return;
+                }
+                // Update per country year
+                var n3 = selection.feature.properties.ISO_N3;
+                n3 = parseInt(n3, 10)+''; // remove leading zeros
+                layer.scene.config.global.selected_country = n3;
+                layer.scene.config.global.by_orig = by_orig[year_to_per_country_year[year_str]][n3];
+                layer.scene.config.global.by_dest = by_dest[year_to_per_country_year[year_str]][n3];
+                if (!layer.scene.config.global.selected_country_mode) {
+                    layer.scene.config.global.selected_country_mode = 'in';
+                }
+                country_name = selection.feature.properties.ADMIN;
+            } else {
+                layer.scene.config.global.selected_country = '';
+                country_name = '';
+                layer.scene.config.global.by_orig = {};
+                layer.scene.config.global.by_dest = {};
+            }
+            layer.scene.rebuild();
+            updateLegends();
+        }
+
+        var onHover = function(selection) {
+            if (selection.feature && !layer.scene.config.global.selected_country) {
+                var year = years[year_index];
+                var latlng = selection.feature.properties.centroid;
+                var label = selection.feature.properties.ADMIN;
+                var val = selection.feature.properties[year];
+                var text = ' the immigration rate was zero.'
+                if (val > 0) {
+                    text = ' the net immigration rate per 1000 people was ' + val + '.';
+                } else if (val < 0) {
+                    text = ' the net emigration rate per 1000 people was ' + -val + '.';
+                }
+                popup.setLatLng(latlng)
+                    .setContent(label + '<br>In ' + year + text)
+                    .openOn(map);
+            } else {
+                map.closePopup(popup);
+            }
+        }
+
+        layer.setSelectionEvents({click: onMapClick, hover: onHover});
+
+        // Logic for modal overlay
+        var close = document.getElementById("modal-close");
+        var modal = document.getElementById("modal");
+        var open = document.getElementById("open-modal");
+
+        close.addEventListener('click',function(){
+          modal.style.display = "none";
+        })
+
+        open.addEventListener('click',function(){
+          modal.style.display = "block";
+        })
+
+        window.onclick = function(event) {
+          if (event.target == modal) {
+            modal.style.display = "none";
+          }
+        }
+    </script>
+
+  </body>
+</html>

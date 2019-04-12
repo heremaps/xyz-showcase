@@ -1,0 +1,537 @@
+<!doctype html>
+<!--
+  Much of this is borrowed from http://subject.space/projects-static/california-crops/ by Logan Williams
+-->
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.js"></script>
+    <title>California Crops</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.3/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Sans:300,400,400i,700|Fira+Mono">
+    <link rel="stylesheet" href="../styles/main.css">
+
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-size: 10px;
+      }
+
+      #map {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+      }
+
+      #title {
+        position: absolute;
+        top: 2.5em;
+        left: 2em;
+        z-index: 9001;
+        padding-left: 1em;
+        font-size: 12px;
+        font-weight: bold;
+        line-height: 14px;
+      }
+
+      #legend {
+        position: absolute;
+        top: 2em;
+        left: 2em;
+
+        z-index: 9000;
+
+        background-color: rgba(255,255,255,0.8);
+
+        padding: 0.5em;
+        padding-top: 4em;
+      }
+
+      #monthcontrolparent {
+        position: fixed;
+        bottom: 2em;
+        width: 100%;
+        z-index: 9000;
+        background-color: transparent;
+        pointer-events: none;
+      }
+
+      #monthcontrol {
+        position: relative;
+        height: 60px;
+        width: 600px;
+        margin: 0 auto;
+        border-radius: 3px
+
+        color: #2ECFC2;
+        background-color: #262D37;
+        background-opacity: 0.8;
+
+        padding-top: 0.5em;
+        /*padding-bottom: 2em;*/
+      }
+
+
+      .box {
+        width: 15px;
+        height: 15px;
+        margin-right: 10px;
+      }
+
+      .item {
+        display: flex;
+        align-content: center;
+        overflow: hidden;
+      }
+      .hiddenlabel div {
+        color: transparent;
+      }
+
+      .name {
+        width: 200px;
+        padding-left: 2em;
+      }
+
+      .header {
+        padding-left: 1em;
+        margin-top: 0.5em;
+        margin-bottom: 0.5em;
+        font-size: 12px;
+        font-weight: bold;
+      }
+
+      .flip {
+        color: white;
+      }
+
+      /* See https://bl.ocks.org/mbostock/6232620 */
+      .axis--grid .domain {
+        fill: #ddd;
+        stroke: none;
+      }
+
+      .axis--x .domain,
+      .axis--grid .tick line {
+        stroke: #fff;
+      }
+      .axis--x text {
+        fill: #2ECFC2;
+      }
+
+      .axis--grid .tick--minor line {
+        stroke-opacity: .5;
+      }
+
+      /* Leaflet popups */
+      .leaflet-popup-tip,
+      .leaflet-popup-content-wrapper {
+          background: #262D37;
+          color: #2ECFC2;
+      }
+      .leaflet-popup-close-button {
+          display: none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id='modal' class='modal crops-modal'>
+      <div class='modal-container'>
+        <img id="modal-close" class='modal-close' src="../images/close.svg" alt="close">
+        <div class='modal-images'>
+          <img class='modal-image-fit' src="../images/crops_modal.png" srcset="../images/crops_modal@2x.png 2x">
+          <img class='modal-image-fit' src="../images/crops_modal2.png" srcset="../images/crops_modal2@2x.png 2x">
+        </div>
+        <div class="modal-title">Mapping the bread basket of California</div>
+        <p>
+          California’s Central Valley is an agricultural powerhouse, with over 230
+          crops producing 8% of America’s agricultural output. This map illustrates
+          the incredible diversity of the region’s agriculture through the seasons,
+          using a <a href="https://data.cnra.ca.gov/dataset/crop-mapping-2014">large public data set</a> and XYZ Hub API features such as serving MVT
+          vector tiles, styling with tags, and dynamically filtering tags within the viewport.
+        </p>
+        <p>
+          Source files and data can be accessed on <a href="https://github.com/stamen/here-xyz-gallery">GitHub</a>.
+        </p>
+      </div>
+      <div class='modal-container'>
+        <p align='center'>
+          <img src="../images/stamen.png"
+              srcset="../images/stamen@2x.png 2x,
+                      ../images/stamen@3x.png 3x"
+              class="stamen">
+
+        </p>
+        <p align='center'>
+          This map was designed and built by <a href="https://stamen.com">Stamen Design</a> with publicly available data.
+        </p>
+      </div>
+    </div>
+    <div class='open-modal' id='open-modal'>
+      About this map
+    </div>
+    <div id="map"></div>
+    <div id='title'>California Crops</div>
+    <div id='legend'></div>
+    <div id='monthcontrolparent'> <div id='monthcontrol'></div> </div>
+
+    <!-- leaflet -->
+    <script src="https://unpkg.com/leaflet@1.3.3/dist/leaflet.js"></script>
+    <!-- [Dylan]: Removed local library and added CDN to comply with HERE Github policies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-hash/0.2.1/leaflet-hash.js"></script>
+
+    <!-- Main tangram library -->
+    <script id="tangram-lib" src="https://unpkg.com/tangram/dist/tangram.min.js"></script>
+
+    <!-- [Dylan]: Removed local library and added CDN to comply with HERE Github policies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.Spin/1.1.0/leaflet.spin.min.js" charset="utf-8"></script>
+
+
+    <script>
+        var map = L.map('map', { minZoom: 10, zoomControl:false });
+        L.control.scale({position: 'bottomright'}).addTo(map);
+        L.control.zoom({position: 'bottomright'}).addTo(map);
+        map.setView([37.7962, -121.2263], 12);
+        var hash = new L.Hash(map);
+
+        map.spin(true, {zIndex: 9999});
+
+        var popup = L.popup();
+
+        const monthNames = ["January", "February", "March", "April", "May", "June",
+          "July", "August", "September", "October", "November", "December"
+        ];
+        function getMonthName(monthNum) {
+          return monthNames[monthNum-1];
+        };
+        var minMonth = 1;
+        var maxMonth = 12;
+
+        // Create our month picker
+        // See https://bl.ocks.org/mbostock/6232620
+
+        var monthcontrol = d3.select("#monthcontrol");
+        var divwidth = monthcontrol.node().getBoundingClientRect().width;
+        var divheight = monthcontrol.node().getBoundingClientRect().height;
+        var margin = {top: 15, right: 10, bottom: 35, left: 10},
+            width = divwidth - margin.left - margin.right,
+            height = divheight - margin.top - margin.bottom;
+
+        var fullDomain = [new Date(2013, 12, 1), new Date(2014, 11, 31) - 1];
+
+        // date range is hacky
+        var x = d3.scaleTime()
+            .domain(fullDomain)
+            .rangeRound([0, width]);
+
+        var svg = d3.select("#monthcontrol").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        svg.append("g")
+            .attr("transform", "translate(0," + -height/2 + ")")
+            .append("text")
+            .style("fill","#2ECFC2")
+            .text("Drag your mouse below to filter by harvest month range");
+
+        svg.append("g")
+            .attr("transform", "translate(" + (width - 3*margin.right) + "," + -height/2 + ")")
+            .append("text")
+            .style("fill","#2ECFC2")
+            .on("click", function() {
+              brushSelection.call(brush.move,[0,1]);
+              updateFilter(1,1);
+            })
+            .text("[clear]");
+
+        svg.append("g")
+            .attr("transform", "translate(0," + (height + margin.bottom - 10) + ")")
+            .append("text")
+            .style("fill","#12544e")
+            .text("(harvest months are approximate and may not be accurate for any particular parcel)");
+
+        svg.append("g")
+            .attr("class", "axis axis--grid")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x)
+                .ticks(d3.timeMonth, 12)
+                .tickSize(-height)
+                .tickFormat(function() { return null; }))
+          .selectAll(".tick")
+            .classed("tick--minor", false);
+            //.classed("tick--minor", function(d) { return d.getMonth(); });
+
+        svg.append("g")
+            .attr("class", "axis axis--x")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x)
+                .ticks(d3.timeMonth)
+                .tickFormat(d3.timeFormat("%b"))
+                .tickPadding(0))
+            .attr("text-anchor", null)
+          .selectAll("text")
+            .attr("x", 6);
+
+        var brush = d3.brushX()
+                .extent([[0, 0], [width, height]])
+                .on("brush", brushed)
+
+        var brushSelection = svg.append("g")
+            .attr("class", "brush")
+            .call(brush);
+
+        function brushed() {
+          if (d3.event.sourceEvent.type === "brush") return;
+          var d0 = d3.event.selection.map(x.invert),
+              d1 = d0.map(d3.timeMonth.round);
+
+          // If empty when rounded, use floor instead.
+          if (d1[0] >= d1[1]) {
+            d1[0] = d3.timeMonth.floor(d0[0]);
+            d1[1] = d3.timeMonth.offset(d1[0]);
+          }
+
+          d3.select(this).call(d3.event.target.move, d1.map(x));
+          var newMinMonth = d1[0].getMonth()+1;
+          var newMaxMonth = d1[1].getMonth() + (d1[1].getMonth() == 0 ? 12 : 0);
+          if (newMinMonth !== minMonth || newMaxMonth !== maxMonth) {
+            // Only update if the values have actually changed,
+            // to ignore small adjustments in the brush
+            var result = updateFilter(newMinMonth,newMaxMonth);
+            //console.log("updateFilter", newMinMonth, newMaxMonth, result);
+            updateStats(); // TODO: why is this not working?
+          }
+        }
+
+
+
+        var layer = Tangram.leafletLayer({
+            scene: 'scene.yaml',
+            attribution: '<a href="https://mapzen.com/tangram" target="_blank">Tangram</a> | &copy; OSM contributors | <a href="https://mapzen.com/" target="_blank">Mapzen</a>'
+        });
+
+        layer.addTo(map);
+
+        var scene = layer.scene;
+
+        // Most months are from http://www.pickyourown.org/CAharvestcalendar.htm
+
+        let colors = {
+            'Nonagricultural': {startMonth: 1, endMonth: 12, c: 'rgba(0,0,0,0)', header: true},
+            'Urban': {startMonth: 1, endMonth: 12, c: 'rgba(0,0,0,0.0)'},
+            'Managed Wetland': {startMonth: 1, endMonth: 12, c: 'rgba(0,100,0,0.1)'},
+
+            'Nonproductive agricultural': {startMonth: 1, endMonth: 12, c: 'rgba(0,0,0,0)', header: true},
+            'Idle': {startMonth: 1, endMonth: 12, c: '#CCCCCC'},
+            'Young Perennials': {startMonth: 1, endMonth: 12, c: '#AADDAA'}, // Need data
+
+            'Feed crops': {startMonth: 1, endMonth: 12, c: 'rgba(0,0,0,0)', header: true}, // Need data
+            'Mixed Pasture': {startMonth: 1, endMonth: 12, c: '#30819C', flip: true}, // Need data
+            'Alfalfa and Alfalfa Mixtures': {startMonth: 1, endMonth: 12, c: '#539CB4', flip: true}, // Need data
+            'Miscellaneous Grasses': {startMonth: 1, endMonth: 12, c: '#3679B9', flip: true}, // Need data
+            'Miscellaneous Grain and Hay': {startMonth: 1, endMonth: 12, c: '#29AFAF', flip: true}, // Need data
+
+            'Nut trees': {startMonth: 1, endMonth: 12, c: 'rgba(0,0,0,0)', header: true}, // Need data
+            'Almonds': {startMonth: 8, endMonth: 12, c: '#4b2f1b', flip: true},
+            'Walnuts': {startMonth: 9, endMonth: 12, c: '#594333', flip: true},
+            'Pistachios': {startMonth: 8, endMonth: 9, c: '#543A1E', flip: true}, // https://www.gardeningknowhow.com/edible/nut-trees/pistachios/how-to-harvest-pistachios.htm
+            'Fruit trees': {startMonth: 1, endMonth: 12, c: 'rgba(0,0,0,0)', header: true}, // Need data
+            'Citrus': {startMonth: 1, endMonth: 7, c: '#C77000'}, // Needs to wrap around New Year
+            'Peaches/Nectarines': {startMonth: 5, endMonth: 9, c: '#F2961F'},
+            'Plums, Prunes and Apricots': {startMonth: 5, endMonth: 9, c: '#DD790C'},
+            'Pomegranete': {startMonth: 9, endMonth: 10, c: '#8B0036', flip: true}, // https://www.gardeningknowhow.com/edible/fruits/pomegranate/harvesting-pomegranate-fruit.htm
+            'Cherries': {startMonth: 5, endMonth: 6, c: '#B32B00'},
+            'Apples': {startMonth: 7, endMonth: 9, c: '#DD1B0C'},
+            'Olives': {startMonth: 8, endMonth: 11, c: '#8A7800', flip: true}, // https://www.gardeningknowhow.com/edible/fruits/olive/harvesting-olive-trees.htm
+            'Dates': {startMonth: 8, endMonth: 11, c: '#837100', flip: true}, // http://www.browndategarden.com/index_month.htm
+            'Avocados': {startMonth: 5, endMonth: 5, c: '#476019', flip: true},
+            'Kiwis': {startMonth: 10, endMonth: 11, c: '#4C6222', flip: true}, // http://www.kiwifruit.org/about/availability.aspx
+            'Pears': {startMonth: 8, endMonth: 9, c: '#C8AD0A'},
+            'Miscellaneous Subtropical Fruits': {startMonth: 1, endMonth: 12, c: '#E97B00'}, // Need data
+            'Miscellaneous Deciduous': {startMonth: 1, endMonth: 12, c: '#908200'}, // Need data
+
+            'Truck crops': {startMonth: 1, endMonth: 12, c: 'rgba(0,0,0,0)', header: true}, // Need data
+            'Strawberries': {startMonth: 1, endMonth: 8, c: '#009E00', flip: true},
+            'Cole Crops': {startMonth: 1, endMonth: 12, c: '#008000', flip: true}, // year-round http://www.cdfa.ca.gov/Statistics/PDFs/2017-18AgReport.pdf
+            'Tomatoes': {startMonth: 7, endMonth: 11, c: '#00C200'},
+            'Peppers': {startMonth: 1, endMonth: 12, c: '#76DC00'},
+            'Lettuce/Leafy Greens': {startMonth: 1, endMonth: 12, c: '#43D923'},
+            'Melons, Squash and Cucumbers': {startMonth: 6, endMonth: 12, c: '#BFEA00'},
+            'Flowers, Nursery and Christmas Tree Farms': {startMonth: 1, endMonth: 12, c: '#007138', flip: true}, // Need data
+            'Bush Berries': {startMonth: 6, endMonth: 8, c: '#054F7F', flip: true}, // https://www.blueberrycouncil.org/growing-blueberries/where-blueberries-grow/
+            'Grapes': {startMonth: 7, endMonth: 10, c: '#611DA6', flip: true},
+            'Greenhouse': {startMonth: 1, endMonth: 12, c: '#A8C100'}, // Need data
+            'Miscellaneous Truck Crops': {startMonth: 1, endMonth: 12, c: '#56DD24'}, // Need data
+
+            'Grains': {startMonth: 1, endMonth: 12, c: 'rgba(0,0,0,0)', header: true}, // Need data
+            'Wheat': {startMonth: 1, endMonth: 12, c: '#F0F082'}, // Need data
+            'Corn, Sorghum and Sudan': {startMonth: 6, endMonth: 9, c: '#FFFF7A'},
+            'Rice': {startMonth: 1, endMonth: 12, c: '#D4F691'}, // Need data
+            'Wild Rice': {startMonth: 1, endMonth: 12, c: '#DEE8B2'}, // Need data
+            'Miscellaneous Field Crops': {startMonth: 1, endMonth: 12, c: '#FFF8A9'}, // Need data
+
+            'Other automated crops': {startMonth: 1, endMonth: 12, c: 'rgba(0,0,0,0)', header: true}, // Need data
+            'Cotton': {startMonth: 1, endMonth: 12, c: '#CF2287', flip: true}, // Need data
+            'Sunflowers': {startMonth: 6, endMonth: 9, c: '#FFF749'}, // https://homeguides.sfgate.com/time-year-sunflowers-bloom-67915.html
+            'Safflowers': {startMonth: 7, endMonth: 7, c: '#FFE949'}, // https://homeguides.sfgate.com/grow-safflower-22981.html
+            'Beans (Dry)': {startMonth: 5, endMonth: 10, c: '#D4C346'},
+            'Onions and Garlic': {startMonth: 4, endMonth: 6, c: '#FAEF62'},
+            'Potatoes and Sweet Potatoes': {startMonth: 6, endMonth: 7, c: '#CEC767'},
+            'Carrots': {startMonth: 1, endMonth: 12, c: '#FFCB5C'},
+          };
+
+
+        let title = d3.select("#title");
+
+        let item = d3.select("#legend")
+          .selectAll("div")
+            .data(Object.keys(colors))
+          .enter()
+            .append("div")
+              .attr("class", "item")
+              .style("background-color", d => colors[d].c)
+              .style("height", d => (colors[d].header ? "25px" : "0px"));
+
+
+        item.append("div")
+              .attr("class", d => ("name" + (colors[d].header ? " header" : "") + (colors[d].flip ? " flip" : "")))
+              .append("span")
+              .html(d => d);
+
+        function updateFilter(min = minMonth, max = maxMonth) {
+          min = parseInt(min);
+          max = parseInt(max);
+          if (min >= 1 && min <= 12) minMonth = min;
+          if (max >= 1 && max <= 12) maxMonth = max;
+          if (max < min) max == min;
+
+          // get list of crop types that are active for this time range:
+
+          //var list_of_crops = ['Cherries','Grapes'];
+          var list_of_crops = Object.keys(colors).filter(key => {
+            return (key !== 'Urban' && key !== 'Nonagricultural' && key !== 'Idle' && (colors[key].startMonth <= maxMonth && colors[key].endMonth >= minMonth));
+          });
+
+          scene.config.layers._xyz_polygons.filter = "function() { return $zoom >= 10 && [\"" + list_of_crops.join("\",\"") + "\"].includes(feature['properties.Crop2014'])}";
+          scene.config.layers._xyz_points.filter = "function() { return $zoom < 10 && [\"" + list_of_crops.join("\",\"") + "\"].includes(feature['properties.crop2014'])}";
+          scene.config.layers._xyz_labels.filter = "function() { return $zoom >= 14 && [\"" + list_of_crops.join("\",\"") + "\"].includes(feature['properties.crop2014'])}";
+          // Note that the property name is capitalized for the polygons, but lowercase for the points. :(
+
+          scene.updateConfig();
+
+          return list_of_crops;
+        }
+
+        let updateStats = async () => {
+
+          map.spin(false);
+          // adapt from http://subject.space/projects-static/california-crops/index.html
+          // ...to https://observablehq.com/@bcamper/tangram-query-features
+          // ...and later we should adapt to query XYZ server-side
+
+          let features = await scene.queryFeatures({});
+
+          let total_area = 0;
+          if (features.length == 0) return;
+          let areas = features.reduce((acc, cur) => {
+            let area = cur.properties['properties.Acres'];
+            let crop = cur.properties['properties.Crop2014'];
+            if (area && colors[crop] && colors[crop].startMonth <= maxMonth && colors[crop].endMonth >= minMonth) {
+              total_area += area;
+              acc[crop] = acc[crop] ? (acc[crop] + area) : area;
+            }
+            return acc;
+          });
+
+          let scale = d3.scaleLinear().domain([0, total_area]).range([0, window.innerHeight > 600 ? (window.innerHeight - 330) : (600 - 330)])
+
+          item.transition().style("height", d => colors[d].header ? "25px" : ((d === "Urban" || d === "Managed Wetland") ? "12px" : ((scale(areas[d]) || 0) + "px")));
+          item.classed("hiddenlabel", d => {
+            return (d !== "Urban" && d !== "Managed Wetland" && (scale(areas[d]) <= 12));
+          });
+
+          item.select("span")
+            .html(d => {
+              if (d !== "Urban" && d !== "Managed Wetland" && (scale(areas[d]) >= 25)) {
+                return d + "<br> " + Math.round(areas[d]).toLocaleString() + " acres";
+              } else {
+                return d;
+              }
+            });
+
+          title.html("California Crops<br />" + Math.round(total_area).toLocaleString() + " acres visible");
+        }
+
+        //updateFilter();
+
+        scene.subscribe({view_complete: updateStats});
+        map.on('moveend', updateStats);
+
+        function onMapHover(selection) {
+          if (selection.feature) {
+            var latlng = selection.leaflet_event.latlng;
+            var crop = selection.feature.properties['properties.Crop2014'];
+            var acres = selection.feature.properties['properties.Acres'];
+
+            var label = crop; // Display this at minimum
+
+            if (colors[crop] && colors[crop].startMonth && colors[crop].endMonth && getMonthName(colors[crop].startMonth) && getMonthName(colors[crop].endMonth)) {
+              label += "<br>" + getMonthName(colors[crop].startMonth) + " to " + getMonthName(colors[crop].endMonth);
+            }
+
+            if (acres && Math.round(acres)) {
+              label += "<br>" + Math.round(acres).toLocaleString() + " acres";
+            }
+
+            showPopup(latlng, label);
+          } else {
+            closePopup();
+          }
+        }
+
+        function closePopup() {
+          map.closePopup();
+        }
+
+        function showPopup(latlng, label) {
+          popup
+            .setLatLng(latlng)
+            .setContent('<p>' + label + '</p>')
+            .openOn(map);
+        }
+
+        layer.setSelectionEvents({
+          click: onMapHover,
+          hover: onMapHover
+        });
+
+        // Logic for modal overlay
+        var close = document.getElementById("modal-close");
+        var modal = document.getElementById("modal");
+        var open = document.getElementById("open-modal");
+
+        close.addEventListener('click',function(){
+          modal.style.display = "none";
+        })
+
+        open.addEventListener('click',function(){
+          modal.style.display = "block";
+        })
+
+        window.onclick = function(event) {
+          if (event.target == modal) {
+            modal.style.display = "none";
+          }
+        }
+
+    </script>
+
+  </body>
+</html>

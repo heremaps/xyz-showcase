@@ -1,0 +1,258 @@
+import:
+    - https://www.nextzen.org/carto/refill-style/refill-style.zip
+global:
+    access_token: Qz2TvilK6PhGZSu9K-yGkA
+    sdk_api_key: DpCrhQqsR2igQPEINRTfcw
+    mode: zoning
+sources:
+    # buildings:
+    #     url: https://xyz.api.here.com/hub/spaces/oDV9Oruy/tile/web/{z}_{x}_{y}
+    #     url_params:
+    #         access_token: AEuNHxlHRlZzsTielhu6ZqA
+    #         clip: true
+    #         tags: building
+    #         limit: 99999
+    #     type: GeoJSON
+    # lots:
+    #     url: https://xyz.api.here.com/hub/spaces/oDV9Oruy/tile/web/{z}_{x}_{y}
+    #     url_params:
+    #         access_token: AEuNHxlHRlZzsTielhu6ZqA
+    #         clip: true
+    #         tags: lot
+    #     type: GeoJSON
+    buildings_mvt:
+        url: https://xyz.api.here.com/hub/spaces/oDV9Oruy/tile/web/{z}_{x}_{y}.mvt
+        url_params:
+            access_token: AEuNHxlHRlZzsTielhu6ZqA
+            clip: true
+            tags: building
+            limit: 99999
+        type: MVT
+    lots_mvt:
+        url: https://xyz.api.here.com/hub/spaces/oDV9Oruy/tile/web/{z}_{x}_{y}.mvt
+        url_params:
+            access_token: AEuNHxlHRlZzsTielhu6ZqA
+            clip: true
+            tags: lot
+            limit: 99999
+        type: MVT
+
+scene:
+    background:
+        color: 'BlanchedAlmond'
+        #color: |
+        #    function() {
+        #        return (context.global.mode == 'lots') ? 'BlanchedAlmond' : 'white'
+        #    }
+layers:
+    # override some Refill layers:
+    buildings:
+        enabled: false
+    water:
+        enabled: false
+    roads:
+        enabled: false
+    boundaries:
+        enabled: false
+    landuse:
+        enabled: false
+    pois:
+        highway-exit:
+            enabled: false
+    platforms:
+        enabled: false
+    # _lots:
+    #     enabled: false
+    #     data: {source: lots}
+    #     filter: {$zoom: {min: 12}}
+    #     draw:
+    #         polygons:
+    #             interactive: true
+    #             order: global.sdk_order_under_water_0
+    #             color: [1, 0, 0]
+    #             color: |
+    #                 function() {
+    #                   area = feature.LotArea
+    #                   // copying numbers from la.stamen.com... needs adjustment
+    #                   if (area >= 18749) color = '#252525';
+    #                   else if (area >= 9615) color = '#525252';
+    #                   else if (area >= 7559) color = '#737373';
+    #                   else if (area >= 6661) color = '#969696';
+    #                   else if (area >= 5924) color = '#BDBDBD';
+    #                   else if (area >= 5043)  color = '#D9D9D9';
+    #                   else color = '#F7F7F7';
+    #                   return color;
+    #                 }
+
+    # _buildings:
+    #     enabled: false
+    #     data: {source: buildings}
+    #     filter: {$zoom: {min: 10}}
+    #     draw:
+    #         polygons:
+    #             interactive: true
+    #             order: global.sdk_order_under_water_0
+    #             color: [0, 1, 0]
+    #             color: |
+    #                 function() {
+    #                   area = feature.shape_area
+    #                   // copying numbers from la.stamen.com... needs adjustment
+    #                   if (area >= 3074) color = '#F7F7F7';
+    #                   else if (area >= 2379) color = '#D9D9D9';
+    #                   else if (area >= 1904) color = '#BDBDBD';
+    #                   else if (area >= 1424) color = '#969696';
+    #                   else if (area >= 830)  color = '#737373';
+    #                   else if (area >= 437)  color = '#525252';
+    #                   else color = '#252525';
+    #                   return color;
+                    # }
+
+    _lots_mvt:
+        data: {source: lots_mvt, layer: oDV9Oruy}
+        filter: {$zoom: {min: 12}}
+        draw:
+            polygons:
+                interactive: true
+                order: 1000
+                color: |
+                    function() {
+                      if (context.global.mode == 'lots') { // Black and white mode
+                        area = feature['properties.LotArea']
+                        // area = feature.LotArea
+                        // copying numbers from la.stamen.com... needs adjustment
+                        if (area >= 18749) color = '#252525';
+                        else if (area >= 9615) color = '#525252';
+                        else if (area >= 7559) color = '#737373';
+                        else if (area >= 6661) color = '#969696';
+                        else if (area >= 5924) color = '#BDBDBD';
+                        else if (area >= 5043)  color = '#D9D9D9';
+                        else color = '#F7F7F7';
+                        return color;
+                      } else { // Zoning mode
+                        var is_la = feature["bbox.1"] < 37;
+                        if (!is_la) {
+                          var use = parseInt(feature['properties.LandUse']);
+                          switch (use) {
+                            case 1: //  One & Two Family Buildings
+                                return '#fee08b';
+                            case 2: // Multi-Family Walk-Up Buildings
+                                return '#fc8d59';
+                            case 3: // Multi-Family Elevator Buildings
+                                return '#e75850';;
+                            case 4: // Mixed Residential & Commercial Buildings
+                                return '#91bfdb';
+                            case 5: // Commercial & Office Buildings
+                                return '#3288bd';
+                            case 6: // Industrial & Manufacturing
+                            case 7: // Transportation & Utility
+                                return '#969696';;
+                            case 8: // Public Facilities & Institutions
+                                return '#c49331';
+                            case 9: // Open Space & Outdoor Recreation
+                                return '#9dd572';
+                            case 10: // Parking Facilities
+                                return '#bdbdbd';
+                            case 11: // Vacant Land
+                            default:
+                                return '#fff';
+                          }
+                        } else {
+                          var use = feature['properties.LandUse'];
+                          if (!use) { // Not set
+                            return '#9dd572'; // Open Space & Outdoor Recreation
+                            //return '#000'; // Unset
+                          }
+                          if (use.includes('V')) { // Vacant
+                            return '#fff'; // Vacant Land
+                          }
+                          var use_1 = use.substring(0,1);
+                          var use_2 = use.substring(0,2);
+                          switch (use_1) {
+                            case '0': // Residential
+                              switch (use_2) {
+                                case '03': // THREE UNITS (ANY COMBINATION)
+                                case '04': // FOUR UNITS (ANY COMBINATION)
+                                case '08': // ROOMING/BOARDING HOUSE
+                                    if (use.length >= 3 && use.substring(3,4) == '5') {
+                                      return '#e75850'; // Multi-Family Elevator Buildings
+                                    }
+                                    return '#fc8d59'; // Multi-Family Walk-Up Buildings
+                                case '05': // FIVE OR MORE APARTMENTS OR UNITS.
+                                  return '#e75850'; // Multi-Family Elevator Buildings
+                                case '01': // Single
+                                case '02': // DOUBLE, DUPLEX OR TWO UNITS
+                                case '07': // MANUFACTURED HOMES
+                                case '09': // MANUFACTURED HOME PARK
+                                default:
+                                  //console.log(use);
+                                  return '#fee08b'; //  One & Two Family Buildings
+                                }
+                            case '1': // Commercial
+                              if (use.length >= 3 && (use.substring(0,3) == '121' || use.substring(0,3) == '172')) { // Store or office & residential combination
+                                return '#91bfdb'; // Mixed Residential & Commercial Buildings
+                              }
+                            case '2': // Commercial
+                              if (use.substring(0,2) == '27') { // Parking
+                                return '#bdbdbd';
+                              }
+                            case '6':
+                              switch (use_2) {
+                                case '66': // Golf
+                                case '67': // Race track
+                                case '68': // Camp
+                                  return '#9dd572'; // Open Space & Outdoor Recreation
+                              }
+                              return '#3288bd'; // Commercial & Office Buildings
+                            case '8': // Government owned
+                              if (parseInt(use) < 8840) {
+                                return '#c49331'; // Public Facilities & Institutions
+                              }
+                              switch (use) {
+                                case '8840': // Recreation
+                                case '8841': // Park
+                                case '8845': // Beach
+                                case '8848': // ball field
+                                  return '#9dd572'; // Open Space & Outdoor Recreation
+                              }
+                            case '3': // Industrial
+                              return '#969696'; // Industrial, Manufacturing, Transportation & Utility
+                            case '4': // Irrigated Farm
+                            case '5': // Dry farm
+                              return '#9dd572'; // Open Space & Outdoor Recreation
+                            case '7': // Institutional
+                              return '#c49331'; // Public Facilities & Institutions
+
+                            default:
+                              console.log(use);
+                              return '#fff'; // Vacant
+                          }
+                        }
+                      }
+                    }
+
+    _buildings_mvt:
+        data: {source: buildings_mvt, layer: oDV9Oruy}
+        filter: {$zoom: {min: 10}}
+        draw:
+            polygons:
+                interactive: true
+                order: 1000
+                color: |
+                    function() {
+                      area = feature['properties.shape_area']
+                      // area = feature.shape_area
+                      // copying numbers from la.stamen.com... needs adjustment
+                      if (area >= 3074) color = '#F7F7F7';
+                      else if (area >= 2379) color = '#D9D9D9';
+                      else if (area >= 1904) color = '#BDBDBD';
+                      else if (area >= 1424) color = '#969696';
+                      else if (area >= 830)  color = '#737373';
+                      else if (area >= 437)  color = '#525252';
+                      else color = '#252525';
+                      return color;
+                    }
+styles:
+    _polygons_inlay:
+        base: polygons
+        blend: inlay
+        blend_order: 1

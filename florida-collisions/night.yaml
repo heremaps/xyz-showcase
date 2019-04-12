@@ -1,0 +1,87 @@
+import:
+    - ./common.yaml
+
+global:
+    darkest_gray_color:         [0.098,0.098,0.098]
+    darker_gray_color:          [0.128,0.128,0.128] # state borders, water
+    dark_gray_color:            [0.168,0.168,0.168] # coastlines
+    mid_gray_color:             [0.222,0.222,0.222] # state borders, water
+    gray_color:                 [0.259,0.259,0.259]
+    light_gray_color:           [0.333,0.333,0.333] 
+    lighter_gray_color:         [0.450,0.450,0.450]
+    lightest_gray_color:        [0.648,0.648,0.648]
+
+    text_fill_places_lowzoom:   [0.800,0.800,0.800]
+    text_fill_places_highzoom:  [0.980,0.980,0.980]
+    text_fill_water:            [0.600,0.600,0.600]
+    text_stroke:                [0.333,0.333,0.333,0.8]
+    zinc_text_stroke:           [0.333,0.333,0.333,0.8]
+
+    playas_color:               global.light_gray_color
+    no_texture_water_color:     global.darkest_gray_color
+
+scene:
+    background:
+        color: global.gray_color
+
+layers:
+    landuse:
+        x:
+            y:
+                z:
+                    draw:
+                        polygons:
+                            color: global.mid_gray_color
+
+    water:
+        x:
+            y:
+                z:
+                    draw:
+                        polygons:
+                            color: global.dark_gray_color
+                        lines:
+                            color: global.mid_gray_color
+                    labels:
+                        draw:
+                            text-blend-order:
+                                font:
+                                    fill: global.text_fill_water
+                                    stroke: { width: 2px }
+    buildings:
+            x:
+                y:
+                    z:
+                        draw:
+                            polygons:
+                                color: global.mid_gray_color
+                            lines:
+                                color: global.dark_gray_color
+    boundaries:
+        x:
+            labels:
+                filter:
+                    not:
+                      - kind: [county,locality]
+                      - maritime_boundary: true
+                draw:
+                    text-blend-order:
+                        font:
+                            fill: global.lightest_gray_color
+                            stroke: { width: 2px }
+
+    places:
+        x:
+            y:
+                z:
+                    labels:
+                        draw:
+                            mapzen_icon_library:
+                              text:
+                                  font:
+                                    fill: global.text_fill_places_lowzoom
+                                    stroke: { width: 3px }
+                            text-blend-order:
+                                font:
+                                    fill: global.text_fill_places_highzoom
+                                    stroke: { width: 3px }

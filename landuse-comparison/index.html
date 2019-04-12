@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.js"></script>
+    <title>Lots and Buildings</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.3/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Sans:300,400,400i,700|Fira+Mono">
+    <link rel="stylesheet" href="../styles/main.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <style>
+        body {
+            margin: 0px;
+            border: 0px;
+            padding: 0px;
+        }
+        .container {
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            position: absolute;
+        }
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+        #header {
+            position: absolute;
+            top: -8px;
+            left: 0px;
+            padding-left: 50px;
+            right: 0;
+            padding: 10px;
+            z-index: 1000;
+            font-size: 2em;
+            background-color: rgba(255,255,255,0.75);
+        }
+        .subtitle {
+            font-size: 0.75em;
+        }
+        #buttons {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-evenly;
+            padding-bottom: 10px;
+            padding-top: 5px;
+        }
+        .button {
+            border: 0.1em solid #fff;
+            padding: 5px;
+            cursor: pointer;
+        }
+        .button.pressed {
+            background: #0062f8;
+        }
+        #chart {
+            display: none;
+            /*display: block;*/
+        }
+        #controls {
+        }
+        .checkbox {
+            padding: 2px;
+        }
+        #legend {
+            display: block;
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            z-index: 999;
+            width: 340px;
+            height: 420px;
+            background-color: #000;
+            color: #fff;
+            padding: 10px;
+        }
+        #zoning_legend {
+            /*display: none;*/
+            /*padding-top: 10px;*/
+        }
+        .legend_entry {
+            display: flex;
+            align-items: center;
+            padding-top: 13px;
+            padding-left: 3px;
+        }
+        .box {
+            width: 20px;
+            height: 20px;
+        }
+        .modal-container {
+            /* override */
+            margin-bottom: 0px;
+        }
+        .modal-thumbnail-container {
+            font-size: 16px;
+            margin: 0 auto;
+            position: relative;
+            margin-bottom: 150px;
+        }
+        .modal-thumbnail-image {
+            width: 100%;
+        }
+        .modal-menu-thumbnails {
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2em;
+        }
+        .modal-thumbnail {
+            width: 20%;
+            position: relative;
+            display: inline-block;
+            vertical-align: top;
+            padding: 10px
+        }
+        .modal-thumbnail p {
+            height: 60px;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+            font-size: 14px;
+            font-weight: normal;
+            font-style: normal;
+            font-stretch: normal;
+            line-height: normal;
+            letter-spacing: normal;
+            color: #ffffff;
+        }
+        .modal-thumbnail a:link {
+            text-decoration: none;
+        }
+    </style>
+  </head>
+
+  <body>
+    <!-- <div id='modal' class='modal land-use-modal' style='display:none;'> -->
+    <div id='modal' class='modal land-use-modal'>
+      <div class='modal-container'>
+        <img id="modal-close" class='modal-close' src="../images/close.svg" alt="close">
+        <div class="modal-title">New York vs. Los Angeles, parcel by parcel</div>
+        <p>
+          You might have been to the top of the Empire State Building, but this is a view
+          you’ve never seen before: New York and L.A.’s neighborhoods, writ large. This map
+          uses XYZ tools to tell the story of how New York City and Los Angeles were built,
+          block by block and year by year. See how city planning patterns and trends shaped
+          these two cities in sharply different ways.
+        </p>
+        <p>
+          Download links: New York <a href="https://data.cityofnewyork.us/widgets/nqwf-w8eh">buildings</a> and <a href="https://www1.nyc.gov/site/planning/data-maps/open-data/dwn-pluto-mappluto.page">parcels</a>. Los Angeles <a href="https://egis3.lacounty.gov/dataportal/2016/11/03/countywide-building-outlines-2014-update-public-domain-release/">buildings</a> and <a href="https://egis3.lacounty.gov/dataportal/2015/03/10/assessor-parcel/">parcels</a>.
+        </p>
+        <p>
+          Source files and data can be accessed on <a href="https://github.com/stamen/here-xyz-gallery">GitHub</a>.
+        </p>
+      </div>
+      <div class='modal-thumbnail-container'>
+        <div class="modal-menu-thumbnails">
+          <div class="modal-thumbnail">
+            <a href="./?modal=false#16/40.7154/-73.9794">
+            <img class='modal-thumbnail-image' src="../images/land_use_thumbnail_east_river.png" srcset="../images/land_use_thumbnail_east_river@2x.png 2x">
+            <p>
+              Many large housing developments (in red) line the East River in Manhattan.
+            </p>
+            </a>
+          </div>
+          <div class="modal-thumbnail">
+            <a href="./?modal=false&mode=lots#16/40.7601/-73.9934">
+            <img class='modal-thumbnail-image' src="../images/land_use_thumbnail_hells_kitchen.png" srcset="../images/land_use_thumbnail_hells_kitchen@2x.png 2x">
+            <p>
+              In the Hell’s Kitchen neighborhood, building and lot sizes are smaller
+              than in surrounding neighborhoods.
+            </p>
+            </a>
+          </div>
+          <div class="modal-thumbnail">
+            <a href="./?modal=false#16/34.0266/-118.3006">
+            <img class='modal-thumbnail-image' src="../images/land_use_thumbnail_west_la.png" srcset="../images/land_use_thumbnail_west_la@2x.png 2x">
+            <p>
+              Just west of Downtown Los Angeles, a grid of commercial corridors
+              traces the long-gone streetcar network of pre-war LA.
+            </p>
+            </a>
+          </div>
+          <div class="modal-thumbnail">
+            <a href="./?modal=false&mode=lots#16/34.0737/-118.4093">
+            <img class='modal-thumbnail-image' src="../images/land_use_thumbnail_beverly_hills.png" srcset="../images/land_use_thumbnail_beverly_hills@2x.png 2x">
+            <p>
+              In Beverly Hills, residential lots and house sizes get bigger
+              as elevation increases into the hills
+            </p>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class='modal-container'>
+        <p align='center'>
+          <img src="../images/stamen.png"
+              srcset="../images/stamen@2x.png 2x,
+                      ../images/stamen@3x.png 3x"
+              class="stamen">
+
+        </p>
+        <p align='center'>
+          This map was designed and built by <a href="https://stamen.com">Stamen Design</a> with publicly available data.
+        </p>
+      </div>
+    </div>
+    <div class='open-modal' id='open-modal' style="left: 20px; z-index: 1000; position: relative;">
+      About this map
+    </div>
+    <div class="container">
+        <div id="map"></div>
+    </div>
+    <div id="legend">
+        <div id="buttons">
+            <div id="ny" class="button pressed" onclick="setCity('ny')">New York</div>
+            <div id="la" class="button" onclick="setCity('la')">Los Angeles</div>
+        </div>
+        <div id="controls">
+            <div class="checkbox"><input type="checkbox" id="lots_cb" disabled onClick="setMode('lots')"/><label for="lots">Show lot and building size</label></div>
+            <div class="checkbox"><input type="checkbox" id="zoning_cb" checked disabled onClick="setMode('zoning')"/><label for="lots">Show zoning</label></div>
+        </div>
+        <div id="zoning_legend">
+            <div class="legend_entry"><svg width="18" height="18"><rect fill="#fee08b" width="18" height="18" y="0"></rect></svg>&nbsp; One &amp; Two Family Buildings</div>
+            <div class="legend_entry"><svg width="18" height="18"><rect fill="#fc8d59" width="18" height="18" y="0"></rect></svg>&nbsp; Multi-Family Walk-Up Buildings</div>
+            <div class="legend_entry"><svg width="18" height="18"><rect fill="#e75850" width="18" height="18" y="0"></rect></svg>&nbsp; Multi-Family Elevator Buildings</div>
+            <div class="legend_entry"><svg width="18" height="18"><rect fill="#91bfdb" width="18" height="18" y="0"></rect></svg>&nbsp; Mixed Residential &amp; Commercial Buildings</div>
+            <div class="legend_entry"><svg width="18" height="18"><rect fill="#3288bd" width="18" height="18" y="0"></rect></svg>&nbsp; Commercial &amp; Office Buildings</div>
+            <div class="legend_entry"><svg width="18" height="18"><rect fill="#9dd572" width="18" height="18" y="0"></rect></svg>&nbsp; Open Space &amp; Outdoor Recreation</div>
+            <div class="legend_entry"><svg width="18" height="18"><rect fill="#c49331" width="18" height="18" y="0"></rect></svg>&nbsp; Public Facilities &amp; Institutions</div>
+            <div class="legend_entry"><svg width="18" height="18"><rect fill="#969696" width="18" height="18" y="0"></rect></svg>&nbsp; Industrial, Transportation &amp; Utility</div>
+            <div class="legend_entry"><svg width="18" height="18"><rect fill="#bdbdbd" width="18" height="18" y="0"></rect></svg>&nbsp; Parking Facilities</div>
+            <div class="legend_entry"><svg width="18" height="18"><rect fill="#ffffff" width="18" height="18" y="0"></rect></svg>&nbsp; Vacant</div>
+        </div>
+        <div id="chart"></div>
+    </div>
+
+    <!-- leaflet -->
+    <script src="https://unpkg.com/leaflet@1.3.3/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-hash/0.2.1/leaflet-hash.js"></script>
+    <!-- Main tangram library -->
+    <script src="https://unpkg.com/tangram/dist/tangram.min.js"></script>
+    <!-- Chart library -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+     <!-- [Dylan]: Removed local library and added CDN to comply with HERE Github policies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.Spin/1.1.0/leaflet.spin.min.js" charset="utf-8"></script>
+    <script>
+        var setMode = function(param) {
+            var mode;
+            if (param == "lots") {
+                document.getElementById('zoning_cb').checked = false;
+                document.getElementById('lots_cb').checked = true;
+                //document.body.style.backgroundColor = "BlanchedAlmond";
+                //document.body.style['background-color'] = "BlanchedAlmond";
+                //console.log(document.body.style);
+                mode = 'lots';
+            } else {
+                document.getElementById('zoning_cb').checked = true;
+                document.getElementById('lots_cb').checked = false;
+                //document.body.style.backgroundColor = "white";
+                mode = 'zoning';
+            }
+            updateVisibleElements();
+            var url = new URL(window.location.href);
+            var url_str = url.origin + url.pathname + '?mode=' + mode + url.hash;
+            window.history.replaceState('', '', url_str);
+        }
+        var updateVisibleElements = function() {
+            var is_lots_mode = document.getElementById('lots_cb').checked;
+            if (layer && layer.scene) {
+                layer.scene.config.global.mode =  is_lots_mode ? 'lots' : 'zoning'
+                layer.scene.config.layers._buildings_mvt.visible = is_lots_mode;
+                // none of these work:
+                //layer.scene.config.scene.background = 'red';
+                //layer.scene.config.background = 'red';
+                layer.scene.config.background = is_lots_mode ? '#FFEBCD' : 'white';
+                layer.scene.background = is_lots_mode ? '#FFEBCD' : 'white';
+                layer.scene.updateConfig();
+            }
+
+            setChartEnabled(is_lots_mode);
+            setZoningLegendEnabled(!is_lots_mode);
+            updateChart();
+        }
+
+        var updateChart = function () {
+            if (map) {
+              if (map.getCenter().lng < -100) {
+                pressed = document.getElementById('ny');
+                unpressed = document.getElementById('la');
+                bbox = LA_BBOX;
+              } else {
+                pressed = document.getElementById('la');
+                unpressed = document.getElementById('ny');
+                bbox = NY_BBOX;
+              }
+              pressed.classList.remove('pressed');
+              unpressed.classList.add('pressed');
+              geocoder.options.geocodingQueryParams.viewbox = bbox;
+            }
+
+            if (!layer || !layer.scene || !document.getElementById('lots_cb').checked) {
+                // Don't update if chart is not visible or Tangram has not loaded
+                return;
+            }
+            console.log('Requesting features in viewport');
+            layer.scene.queryFeatures({filter: { $layer: 'oDV9Oruy', $source: 'lots_mvt'}})
+                .then(updateChartFromFeatures);
+        }
+
+        var updateChartFromFeatures = function(features) {
+            console.log('Received ' + features.length + ' features');
+            if (features.length == 0) {
+                return;
+            }
+            trace1.x = [];
+            trace1.y = [];
+            features.forEach((feature) => {
+                // TODO check the feature is actually inside the viewport.
+                trace1.x.push(Math.round(feature.properties['properties.LotArea']));
+                trace1.y.push(Math.round(feature.properties['properties.BldgArea']));
+            });
+            Plotly.update('chart', data, layout);
+            // this legend is a hack
+            var width = 5;
+            var height = 38;
+            var colors = ['#252525', '#525252', '#737373', '#969696', '#BDBDBD', '#D9D9D9', '#F7F7F7'];
+            var plotly_svg = d3.select("svg.main-svg");
+              plotly_svg.selectAll(".colorlegend1")
+                  .data(colors.reverse())
+                .enter()
+                  .append("rect")
+                  .classed("colorlegend1",true)
+                  .attr("height",height)
+                  .attr("width",width)
+                  .attr("x","18")
+                  .attr("y",(d,i) => { return 30+height*i;})
+                  .attr("fill", d => d);
+              plotly_svg.selectAll(".colorlegend2")
+                  .data(colors)
+                .enter()
+                  .append("rect")
+                  .classed("colorlegend1",true)
+                  .attr("height",width)
+                  .attr("width",height)
+                  .attr("y","300")
+                  .attr("x",(d,i) => { return 45+height*i;})
+                  .attr("fill", d => d);
+        }
+        var enableCheckboxes = function() {
+            document.getElementById('lots_cb').disabled = false;
+            document.getElementById('zoning_cb').disabled = false;
+        }
+
+        var setChartEnabled = function(enable) {
+            document.getElementById('chart').style.display = enable ? 'block' : 'none';
+        }
+        var setZoningLegendEnabled = function(enable) {
+            document.getElementById('zoning_legend').style.display = enable ? 'block' : 'none';
+        }
+
+        var onGeocodeResult = function(e) {
+            map.setView(e.geocode.center, 16 /* zoom level */);
+        }
+
+        var setCity = function(city) {
+            var bbox;
+            var latlng;
+            var pressed;
+            var unpressed;
+            if (city == 'la') {
+                latlng = L.latLng(34.0432464,-118.267463);
+                pressed = document.getElementById('ny');
+                unpressed = document.getElementById('la');
+                bbox = LA_BBOX;
+            } else { // ny
+                latlng = L.latLng(40.7591571,-73.9867415);
+                pressed = document.getElementById('la');
+                unpressed = document.getElementById('ny');
+                bbox = NY_BBOX;
+            }
+            map.setView(latlng, 15);
+            pressed.classList.remove('pressed');
+            unpressed.classList.add('pressed');
+            geocoder.options.geocodingQueryParams.viewbox = bbox;
+        }
+
+        var modal_param = new URL(window.location.href).searchParams.get("modal");
+        if (modal_param == 'false') {
+            var modal = document.getElementById("modal");
+            modal.style.display = "none";
+        } else {
+            var modal = document.getElementById("modal");
+            modal.style.display = "block";
+        }
+
+        var mode_param = new URL(window.location.href).searchParams.get("mode");
+        if (mode_param == 'lots') {
+            setMode('lots')
+        } else if (mode_param == 'zoning') {
+            setMode('zoning')
+        }
+
+        var popup = L.popup();
+        var map = L.map('map', { minZoom: 14, boxZoom: false, zoomControl: false, attributionControl: false});
+        L.control.attribution({position: 'bottomleft'}).addTo(map);
+        new L.Control.Zoom({ position: 'bottomleft' }).addTo(map);
+        var layer = Tangram.leafletLayer({
+            scene: 'scene.yaml',
+            attribution: '<a href="https://mapzen.com/tangram" target="_blank">Tangram</a> | &copy; OSM contributors | <a href="https://mapzen.com/" target="_blank">Mapzen</a>'
+        });
+        layer.addTo(map);
+        map.setView([40.723627, -73.992264], 16);
+
+        new L.Hash(map);
+
+        map.spin(true, {zIndex: 9999});
+        let viewComplete = async () => {
+          console.log("view complete");
+          map.spin(false);
+        }
+        layer.scene.subscribe({view_complete: viewComplete});
+
+        //var geocoder = new L.Control.Geocoder.HERE({app_id: 'z77g9dXrUCtJ73UV5yHw', app_code: 'R2Xils8Faab0j3Tvrf4n3A'});
+        const NY_BBOX = '-74.2589,40.4774,-73.7004,40.9176';
+        const LA_BBOX = '-118.9448,32.8007,-117.6462,34.8233';
+        var geocoder = new L.Control.Geocoder.Nominatim({geocodingQueryParams: {bounded: 1, viewbox: NY_BBOX}})
+        L.Control.geocoder({collapsed: false, defaultMarkGeocode: false, geocoder: geocoder})
+            .on('markgeocode', onGeocodeResult)
+            .addTo(map);
+
+        map.on("moveend", () => updateChart());
+        layer.on('init', () => {
+            enableCheckboxes();
+            updateVisibleElements();
+        });
+
+        var trace1 = {
+            x: [],
+            y: [],
+            mode: 'markers',
+            type: 'scatter',
+            name: 'Lot size versus building size',
+            marker: {
+                color: 'rgba(68,68,68,0.4)'
+            },
+        };
+        var data = [trace1];
+        var layout = {
+            showlegend: false,
+            legend: {
+                "orientation": "h",
+                font: {
+                    color: '#fff'
+                },
+            },
+            xaxis: {
+                type: 'log',
+                rangemode: 'tozero',
+                autorange: true,
+                title: {
+                    text: 'Lot area',
+                    font: {
+                        color: '#eee'
+                  }
+                },
+                tickfont: {
+                    color: '#bbb'
+                },
+              },
+              yaxis: {
+                type: 'log',
+                rangemode: 'tozero',
+                autorange: true,
+                title: {
+                    text: 'Building area',
+                    font: {
+                        color: '#eee'
+                  }
+                },
+                tickfont: {
+                  color: '#bbb'
+                },
+            },
+            autosize: false,
+            width: 330,
+            height: 330,
+            margin: {
+                l: 50,
+                r: 10,
+                b: 45,
+                t: 15,
+                pad: -40,
+            },
+            paper_bgcolor: '#000',
+            plot_bgcolor: '#fff',
+        };
+        var config = {displayModeBar: false};
+        Plotly.newPlot('chart', data, layout, config);
+
+        // Logic for modal overlay
+        var close = document.getElementById("modal-close");
+        var thumbnails = d3.selectAll(".modal-thumbnail");
+        var modal = document.getElementById("modal");
+        var open = document.getElementById("open-modal");
+
+        close.addEventListener('click',function(){
+          console.log('clicked')
+          modal.style.display = "none";
+        })
+
+        thumbnails.on('click',function(){
+          modal.style.display = "none";
+        })
+
+        open.addEventListener('click',function(){
+          modal.style.display = "block";
+        })
+
+        window.onclick = function(event) {
+          if (event.target == modal) {
+            modal.style.display = "none";
+          }
+        }
+    </script>
+
+  </body>
+</html>
