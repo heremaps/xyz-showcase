@@ -4,6 +4,8 @@ This repository contains examples of maps with HERE XYZ: a location data storage
 
 To learn more about HERE XYZ, take a look at the [official website](https://explore.xyz.here.com) or [documentation](https://here.xyz).
 
+If you would like to contribute your project, please make sure it complies with the [contributing guidelines](https://github.com/heremaps/xyz-showcase/blob/master/CONTRIBUTING.md).
+
 ## Maps
 
 ### Chicago Bike Routes
