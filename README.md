@@ -26,7 +26,7 @@ __[Source Code](https://github.com/heremaps/xyz-showcase/tree/master/dc-transit-
 
 Explore the proposed public transit system of Washington D.C. in 2030.
 
-### Smart Streetlights of San Diego
+### San Diego Smart Streetlights
 
 __[Source Code](https://github.com/heremaps/xyz-showcase/tree/master/san-diego-streetlights) - [Live Map](https://heremaps.github.io/xyz-showcase/san-diego-streetlights)__
 
