@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+  <head>
+    <title>San Diego</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="index.css" />
+    <link type="text/css" rel="stylesheet" href="//fonts.googleapis.com/css?family=Open+Sans:400,600,800,700|Merriweather:400,700" media="all" />
+
+   <meta name="twitter:card" content="summary_large_image" />
+   <meta name="twitter:site" content="@here" />
+   <meta name="twitter:title" content="Smart Streetlights of San Diego" />
+   <meta name="twitter:description" content="Explore Streetlight Sensor Data" />
+   <meta name="twitter:image" content="https://heremaps.github.io/xyz-showcase/san-diego-streetlights/map.png" />
+
+   <meta property="og:url" content="https://heremaps.github.io/xyz-showcase/san-diego-streetlights" />
+   <meta property="og:type" content="website" />
+   <meta property="og:title" content="Smart Streetlights of San Diego" />
+   <meta property="og:description" content="Explore Streetlight Sensor Data" />
+   <meta property="og:image" content="https://heremaps.github.io/xyz-showcase/san-diego-streetlights/map.png" />
+
+  </head>
+  <body>
+    <div id="map"></div>
+    <div id="overlay">
+        <div id="overlay-title">Smart Streetlights of San Diego</div>
+        <div id="overlay-description">San Diego deployed the world's largest
+            smart city platform.  Select a streetlight on the map to get more
+            information from its sensors or <a
+             href="https://www.sandiego.gov/sustainability/energy-and-water-efficiency/programs-projects/smart-city" target="_new">read more about the project.</a>.</div>
+        <br/>
+        <div id="overlay-details"></div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/tangram/dist/tangram.min.js"></script>
+    <script src="index.js"></script>
+  </body>
+</html>
