@@ -1,0 +1,119 @@
+cameras:
+    camera1:
+        type: perspective
+        axis: [-1,1]
+        vanishing_point: [1500,-1500]
+
+lights:
+    light1:
+        type: point
+        direction: [-0.15, 0.75, 0.75]
+        diffuse: [1.000, 1.000, 1.000, 1.00]
+        ambient: [0.451, 0.451, 0.451, 1.00]
+
+styles:
+    _streetlight:
+        base: points
+        animated: true
+        blend: overlay
+        blend_order: 1
+        color: [0.953, 0.957, 0.573, 0.98]
+        draw:
+            size: 6px
+        material:
+            diffuse: [0.953, 0.957, 0.573, 0.98]
+            shininess: 5.0
+            specular: white
+
+
+sources:
+    xyz_osm:
+        type: MVT
+        url: https://xyz.api.here.com/tiles/osmbase/256/all/{z}/{x}/{y}.mvt
+        max_zoom: 17
+        url_params:
+            access_token: AB9di0Bpr3GBxODEMbb5PWU
+
+    xyz_lamps:
+        type: GeoJSON
+        url: https://xyz.api.here.com/hub/spaces/gZHiOVdo/tile/web/{z}_{x}_{y}
+        max_zoom: 17
+        url_params:
+            access_token: AB9di0Bpr3GBxODEMbb5PWU
+
+layers:
+    earth:
+        data: { source: xyz_osm }
+        draw:
+            polygons:
+                order: function() { return feature.sort_rank; }
+                color: [0.145, 0.145, 0.145, 1.00]
+
+    landuse:
+        data: { source: xyz_osm }
+        draw:
+            polygons:
+                order: function() { return feature.sort_rank; }
+                color: [0.741, 0.741, 0.741, 1.00]
+
+    water:
+        data: { source: xyz_osm }
+        draw:
+            polygons:
+                order: function() { return feature.sort_rank; }
+                color: [0.941, 0.941, 0.941, 1.00]
+
+    roads:
+        data: { source: xyz_osm }
+        filter:
+            not: { kind: [path, rail, ferry] }
+        draw:
+            lines:
+                order: function() { return feature.sort_rank; }
+                color: [0.576, 0.580, 0.439, 0.50]
+                width: 8
+                cap: round
+        highway:
+            filter:
+                kind: highway
+            draw:
+                lines:
+                    order: function() { return feature.sort_rank; }
+                    color: [0.576, 0.580, 0.439, 0.50]
+                    width: 12
+                    outline:
+                        color: [0.682, 0.686, 0.514, 0.59]
+                        width: 1.5
+        minor_road:
+            filter:
+                kind: minor_road
+            draw:
+                lines:
+                    order: function() { return feature.sort_rank; }
+                    color: [0.576, 0.580, 0.439, 0.50]
+                    width: 4
+
+    buildings:
+        data: { source: xyz_osm }
+        draw:
+            polygons:
+                order: function() { return feature.sort_rank || 0; }
+                blend: overlay
+                color: |
+                    function () {
+                        var h = feature.height || 20;
+                        h = Math.min((h + 50)/ 255, .8); // max brightness: .8
+                        h = Math.max(h, .4); // min brightness: .4
+                        return [h, h, h];
+                    }
+
+
+    streetlights:
+        data: { source: xyz_lamps}
+        draw:
+            _streetlight:
+                order: function() { return feature.sort_rank; }
+                color: [0.949, 0.953, 0.557, 1.00]
+                interactive: true
+
+

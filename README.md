@@ -26,6 +26,14 @@ __[Source Code](https://github.com/heremaps/xyz-showcase/tree/master/dc-transit-
 
 Explore the proposed public transit system of Washington D.C. in 2030.
 
+### San Diego Smart Streetlights
+
+__[Source Code](https://github.com/heremaps/xyz-showcase/tree/master/san-diego-streetlights) - [Live Map](https://heremaps.github.io/xyz-showcase/san-diego-streetlights)__
+
+San Diego deployed the world's largest smart city platform.  This map lets you
+explore the streetlights that have sensors equipped to process Parking,
+Pedestrian, and Environment data.
+
 ### Mapping Car Break-ins in San Francisco
 
 __[Source Code](https://github.com/heremaps/xyz-showcase/tree/master/sf-car-breakins) - [Live Map](https://heremaps.github.io/xyz-showcase/sf-car-breakins)__
