@@ -71,3 +71,25 @@ Compare locations of non-motorist roadway casualties in daytime versus nighttime
 __[Source Code](https://github.com/heremaps/xyz-showcase/tree/master/landuse-comparison) - [Live Map](https://heremaps.github.io/xyz-showcase/landuse-comparison)__
 
 The story of how New York City and Los Angeles were built, block by block and year by year.
+
+### Madrid Urban Air Quality
+
+__[Source Code](https://github.com/heremaps/xyz-showcase/tree/master/madrid-air-quality) - [Live Map](https://heremaps.github.io/xyz-showcase/madrid-air-quality)__
+
+Map of air quality in Madrid.
+
+### Amsterdam Solar Energy
+
+__[Source Code](https://github.com/heremaps/xyz-showcase/tree/master/amsterdam-solar) - [Live Map](https://heremaps.github.io/xyz-showcase/amsterdam-solar)__
+
+Solar panels and trees in Amsterdam.
+
+### Flight Tracker
+
+__Leaflet: [Source Code](https://github.com/heremaps/xyz-showcase/tree/master/flights-leaflet) - [Live Map](https://heremaps.github.io/xyz-showcase/flights-leaflet)__
+
+__Tangram: [Source Code](https://github.com/heremaps/xyz-showcase/tree/master/flights-tangram) - [Live Map](https://heremaps.github.io/xyz-showcase/flights-tangram)__
+
+__Three.js: [Source Code](https://github.com/heremaps/xyz-showcase/tree/master/flights-threejs) - [Live Map](https://heremaps.github.io/xyz-showcase/flights-threejs)__
+
+Flight data visualized in three different renderers.

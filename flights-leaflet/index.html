@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Flight data viewer</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.3/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@here" />
+    <meta name="twitter:title" content="Flight Tracker - Leaflet" />
+    <meta name="twitter:description" content="Tracking flights with Leaflet" />
+    <meta name="twitter:image" content="https://heremaps.github.io/xyz-showcase/flights-leaflet/opengraph.png" />
+    <meta property="og:url" content="https://heremaps.github.io/xyz-showcase/flights-leaflet/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Flight Tracker - Leaflet" />
+    <meta property="og:description" content="Tracking flights with Leaflet" />
+    <meta property="og:image" content="https://heremaps.github.io/xyz-showcase/flights-leaflet/opengraph.png" />
+
+
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0px;
+            border: 0px;
+            padding: 0px;
+        }
+
+        .container {
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            position: absolute;
+        }
+
+        .header {
+            position: absolute;
+            top: -8px;
+            left: 50px;
+            padding-left: 50px;
+            right: 0;
+            padding: 10px;
+            z-index: 1000;
+        }
+
+        h2 {
+            margin: 10px 0;
+            text-shadow: 0px 0px 5px white;
+        }
+
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+
+        .icon {
+            width: 50px;
+            height: 50px;
+            transform: translate(-25px, -25px);
+        }
+
+        .leaflet-div-icon {
+            background: none;
+            border: none;
+        }
+
+        #buttons {
+            /*margin-left: 50px;*/
+            /*display: inline-block;*/
+        }
+
+        #buttons div {
+            display: inline-block;
+            margin-right: 1em;
+            margin-bottom: 1em;
+            background-color: rgba(255, 255, 255, 0.5);
+            border: 1px solid black;
+            border-radius: 4px;
+            padding: 4px;
+        }
+
+        #buttons div:hover {
+            background-color: dodgerblue;
+            color: white;
+            cursor: pointer;
+        }
+
+
+
+    </style>
+  </head>
+
+  <body>
+    <div class="header">
+        <h2>Flight viewer</h2>
+        <div id="buttons">
+        </div>
+    </div>
+    <div class="container">
+        <div id="map"></div>
+    </div>
+
+    <!-- leaflet -->
+    <script src="https://unpkg.com/leaflet@1.3.3/dist/leaflet.js"></script>
+
+    <!-- Demo setup -->
+    <script>
+
+        var theMap = L.map('map', {maxZoom: 14});
+        L.tileLayer('http://tile.stamen.com/terrain/{z}/{x}/{y}.png').addTo(theMap);
+        theMap.attributionControl.addAttribution('Flight data via <a href="http://adsbexchange.com/">ADS-B Exchange</a>');
+        theMap.attributionControl.addAttribution('Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Map data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>');
+
+        var airplaneIcon = new L.DivIcon({html: '<img class="icon" src="airplane.png">'});
+
+        var airports = [
+            {
+                name: 'San Francisco',
+                code: 'ksfo',
+                location: [37.61899948120117, -122.375]
+            },
+            {
+                name: 'New York City',
+                code: 'kjfk',
+                location: [40.63980103, -73.77890015]
+            },
+            {
+                name: 'São Paulo',
+                code: 'sbgr',
+                location: [-23.431807, -46.467723]
+            },
+            {
+                name: 'London',
+                code: 'egll',
+                location: [51.471225, -0.461443]
+            },
+            {
+                name: 'Johannesburg',
+                code: 'faor',
+                location: [-26.136335, 28.245847]
+            },
+            {
+                name: 'Dubai',
+                code: 'omdb',
+                location: [25.254908, 55.364271]
+            },
+            {
+                name: 'Beijing',
+                code: 'zbaa',
+                location: [40.07882, 116.584931]
+            },
+            {
+                name: 'Haneda',
+                code: 'rjtt',
+                location: [35.545841, 139.79194],
+            },
+            {
+                name: 'Narita',
+                code: 'rjaa',
+                location: [35.773018, 140.380218]
+            },
+            {
+                name: 'Sydney',
+                code: 'yssy',
+                location: [-33.950228, 151.178772]
+            }
+        ];
+
+
+        // center of San Francisco
+
+        theMap.setView([37.7749, -122.4194], 6);
+
+        function addAirportButtons() {
+            airports.forEach(function(airport) {
+                let button = document.createElement("div");
+                button.appendChild(document.createTextNode(airport.name));
+                button.onclick = function() { fetchData(airport) };
+                document.getElementById("buttons").appendChild(button);
+            });
+        }
+
+        var planes = [];
+
+        function renderPlanes(data) {
+            planes.forEach(function (c) { c.remove(); });
+            planes = [];
+
+            data.forEach(function (feature) {
+                var c = L.marker(
+                    [feature.geometry.coordinates[1], feature.geometry.coordinates[0]],
+                    {
+                        icon: airplaneIcon
+                    });
+                c.addTo(theMap);
+                c.bindTooltip('<h3>' + feature.properties.Call + '</h3><ul><li>' + feature.properties.Op + '</li><li>From: ' + feature.properties.From + '</li><li>To: ' + feature.properties.To + '</li></ul>');
+                c.getElement().childNodes[0].style.transform = c.getElement().childNodes[0].style.transform + " rotate(" + feature.properties.Trak + "deg)";
+                planes.push(c);
+            });
+        }
+
+
+
+        function fetchData(airport) {
+            var url = 'https://xyz.api.here.com/hub/spaces/CcZXUo0i/search?access_token=AQAd6lqjXCQJrGMMkvbUItM&tags=' + airport.code;
+
+            fetch(url).then(resp => resp.json()).then(data => {
+                renderPlanes(data.features);
+            });
+
+            theMap.panTo(airport.location);
+            theMap.setZoom(6);
+        }
+
+        addAirportButtons();
+
+        fetchData(airports[0]);
+
+
+    </script>
+
+  </body>
+</html>

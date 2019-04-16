@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Flight data viewer</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.3/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link rel="stylesheet" href="leaflet-areaselect.css" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+ <meta name="twitter:site" content="@here" />
+ <meta name="twitter:title" content="Flight Tracker - Tangram" />
+ <meta name="twitter:description" content="Tracking flights with Tangram" />
+ <meta name="twitter:image" content="https://heremaps.github.io/xyz-showcase/flights-tangram/opengraph.png" />
+ <meta property="og:url" content="https://heremaps.github.io/xyz-showcase/flights-tangram/" />
+ <meta property="og:type" content="website" />
+ <meta property="og:title" content="Flight Tracker - Tangram" />
+ <meta property="og:description" content="Tracking flights with Tangram" />
+ <meta property="og:image" content="https://heremaps.github.io/xyz-showcase/flights-tangram/opengraph.png" />
+
+
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0px;
+            border: 0px;
+            padding: 0px;
+        }
+
+        .container {
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            position: absolute;
+        }
+
+        .header {
+            position: absolute;
+            top: -8px;
+            left: 50px;
+            padding-left: 50px;
+            right: 0;
+            padding: 10px;
+            z-index: 1000;
+        }
+
+        h2 {
+            margin: 10px 0;
+            text-shadow: 0px 0px 5px white;
+        }
+
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+
+        .icon {
+            width: 50px;
+            height: 50px;
+            transform: translate(-25px, -25px);
+        }
+
+        .leaflet-div-icon {
+            background: none;
+            border: none;
+        }
+
+        #buttons {
+            /*margin-left: 50px;*/
+            /*display: inline-block;*/
+        }
+
+        #buttons div {
+            display: inline-block;
+            margin-right: 1em;
+            margin-bottom: 1em;
+            background-color: rgba(255, 255, 255, 0.5);
+            border: 1px solid black;
+            border-radius: 4px;
+            padding: 4px;
+        }
+
+        #buttons div:hover {
+            background-color: dodgerblue;
+            color: white;
+            cursor: pointer;
+        }
+
+        #buttons div#countplanes {
+            background-color: #228800;
+            color: white;
+        }
+
+        #buttons div#countplanes:hover {
+            background-color: #44AA00;
+            box-shadow: 4px 4px 4px black;
+        }
+
+
+
+    </style>
+  </head>
+
+  <body>
+    <div class="header">
+        <h2>Flight viewer</h2>
+        <div id="buttons">
+        </div>
+    </div>
+    <div class="container">
+        <div id="map"></div>
+    </div>
+
+    <!-- leaflet -->
+    <script src="https://unpkg.com/leaflet@1.3.3/dist/leaflet.js"></script>
+
+    <!-- Main tangram library -->
+    <script src="https://unpkg.com/tangram/dist/tangram.min.js"></script>
+
+    <script src="leaflet-areaselect.js"></script>
+
+    <!-- Demo setup -->
+    <script>
+
+        var theMap = L.map('map', {maxZoom: 14});
+
+        var areaSelect = L.areaSelect({width:200, height:300});
+
+        var mode = 'areaSelectHidden';
+
+        var layer = Tangram.leafletLayer({
+            scene: 'scene.yaml',
+            attribution: '<a href="https://mapzen.com/tangram" target="_blank">Tangram</a> | Map data &copy; <a href="http://openstreetmap.org">OSM contributors</a> | Flight data via <a href="http://adsbexchange.com/">ADS-B Exchange</a>',
+        });
+
+        layer.addTo(theMap);
+
+        var airports = [
+            {
+                name: 'New York City',
+                code: 'kjfk',
+                location: [40.63980103, -73.77890015]
+            },
+            {
+                name: 'San Francisco',
+                code: 'ksfo',
+                location: [37.61899948120117, -122.375]
+            },
+            {
+                name: 'São Paulo',
+                code: 'sbgr',
+                location: [-23.431807, -46.467723]
+            },
+            {
+                name: 'London',
+                code: 'egll',
+                location: [51.471225, -0.461443]
+            },
+            {
+                name: 'Johannesburg',
+                code: 'faor',
+                location: [-26.136335, 28.245847]
+            },
+            {
+                name: 'Dubai',
+                code: 'omdb',
+                location: [25.254908, 55.364271]
+            },
+            {
+                name: 'Beijing',
+                code: 'zbaa',
+                location: [40.07882, 116.584931]
+            },
+            {
+                name: 'Haneda',
+                code: 'rjtt',
+                location: [35.545841, 139.79194],
+            },
+            {
+                name: 'Narita',
+                code: 'rjaa',
+                location: [35.773018, 140.380218]
+            },
+            {
+                name: 'Sydney',
+                code: 'yssy',
+                location: [-33.950228, 151.178772]
+            },
+            {
+                name: 'All Flights',
+                code: 'allflights'
+            }
+        ];
+
+
+        // center of san francisco
+
+        theMap.setView([37.7749, -122.4194], 6);
+
+        function addAirportButtons() {
+            airports.forEach(function(airport) {
+                let button = document.createElement("div");
+                button.appendChild(document.createTextNode(airport.name));
+                button.onclick = function() { updateSource(airport) };
+                document.getElementById("buttons").appendChild(button);
+            });
+            let button = document.createElement("div", { id: 'countplanes'});
+            button.appendChild(document.createTextNode("count planes"));
+            button.onclick = function() { countPlanes() };
+            document.getElementById("buttons").appendChild(button);
+
+        }
+
+        function updateSource(airport) {
+            layer.scene.setDataSource("airplanes", { type: "GeoJSON",
+                url: "https://xyz.api.here.com/hub/spaces/CcZXUo0i/tile/web/{z}_{x}_{y}",
+                url_params: {
+                    "access_token": "AQAd6lqjXCQJrGMMkvbUItM",
+                    "tags": airport.code,
+                    "clip": true
+                }});
+
+            if (airport.location) {
+              theMap.panTo(airport.location);
+              theMap.setZoom(6);
+            }
+        }
+
+        addAirportButtons();
+
+        // bounding box
+
+        function formatNumber(x) {
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        function countPlanes() {
+
+            if (mode === 'areaSelect') {
+                areaSelect.remove();
+                mode = 'areaSelectHidden';
+            } else {
+                mode = 'areaSelect';
+                areaSelect.addTo(theMap);
+                areaSelect.on("change", function() {
+                  var bounds = this.getBounds();
+                  var url = 'https://xyz.api.here.com/hub/spaces/CcZXUo0i/bbox?access_token=AQAd6lqjXCQJrGMMkvbUItM&west=' + bounds.getWest() + '&south=' + bounds.getSouth() + '&east=' + bounds.getEast() + '&north=' + bounds.getNorth();
+
+                  fetch(url).then((response) => response.json()).then(function(data) {
+                      var len = data.features.length;
+                      console.log(formatNumber(len) + ' planes selected');
+                      L.popup().setLatLng(theMap.getCenter()).setContent(formatNumber(len) + ' planes within bounding box').openOn(theMap);
+                  });
+                });
+            }
+        }
+
+    </script>
+
+  </body>
+</html>
