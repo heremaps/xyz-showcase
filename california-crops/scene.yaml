@@ -76,7 +76,7 @@ sources:
 
     _here-satellite:
         type: Raster
-        url: https://1.aerial.maps.api.here.com/maptile/2.1/basetile/newest/satellite.day/{z}/{x}/{y}/256/png8?app_id=SdXLpjt16tenTjuWesRR&app_code=bGopaQPeVl9e9udXwJWmFA
+        url: https://1.aerial.maps.api.here.com/maptile/2.1/basetile/newest/satellite.day/{z}/{x}/{y}/256/png8?app_id=KwLXbg6LOTkhaYvdwXTT&app_code=2GPgUXdpheikFj24EYQVTw
 
     mapzen:
         type: MVT
