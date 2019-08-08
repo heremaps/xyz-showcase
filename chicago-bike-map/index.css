@@ -1,6 +1,7 @@
 :root {
    --sidebar-width: 300px;
    --sidebar-padding: 15px;
+   --sidebar-margin: 15px;
    --primary-color: #A4CEFF;
    --grey: #C7C7C7;
 }
@@ -36,11 +37,14 @@ a:hover {
    color: white;
    top: 0;
    left: 0;
-   margin: 15px;
+   margin: var(--sidebar-padding);
    padding: var(--sidebar-padding);
    z-index: 10000;
    position: absolute;
    border-radius: 3px;
+   max-height: calc(100vh - var(--sidebar-margin) * 4);
+   overflow-y: auto;
+   box-sizing: border-box;
 }
 
 #loading {
@@ -79,7 +83,7 @@ label {
    transition: 1s all;
    position: relative;
    height: 330px;
-   width: calc(var(--sidebar-width));
+   width: calc(var(--sidebar-width) - var(--sidebar-padding) * 2);
 
 }
 
@@ -87,7 +91,7 @@ label {
    margin-bottom: 10px;
    position: absolute;
    transition: .8s all ease-out;
-   width: calc(var(--sidebar-width));
+   width: 100%;
 }
 
 .bar {
