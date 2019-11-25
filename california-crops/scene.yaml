@@ -80,10 +80,10 @@ sources:
 
     mapzen:
         type: MVT
-        url: https://xyz.api.here.com/tiles/osmbase/256/all/{z}/{x}/{y}.mvt
+        url: https://xyz.api.here.com/tiles/osmbase/256/all/{z}/{x}/{y}.mvtf
 
     _xyz_crops_polygon_tags:
-        url: https://xyz.api.here.com/hub/spaces/aw6LD9wa/tile/web/{z}_{x}_{y}.mvt
+        url: https://xyz.api.here.com/hub/spaces/aw6LD9wa/tile/web/{z}_{x}_{y}.mvtf
         type: MVT
         min_zoom: 10
         max_zoom: 20
@@ -95,7 +95,7 @@ sources:
             # limit: 50000 #
 
     _xyz_crops_centroid_tags:
-        url: https://xyz.api.here.com/hub/spaces/aw6LD9wa/tile/web/{z}_{x}_{y}.mvt
+        url: https://xyz.api.here.com/hub/spaces/aw6LD9wa/tile/web/{z}_{x}_{y}.mvtf
         type: MVT
         min_zoom: 2
         max_zoom: 20  # we need centroids at deep zooms for the labels
