@@ -21,7 +21,7 @@ sources:
     #         tags: lot
     #     type: GeoJSON
     buildings_mvt:
-        url: https://xyz.api.here.com/hub/spaces/oDV9Oruy/tile/web/{z}_{x}_{y}.mvt
+        url: https://xyz.api.here.com/hub/spaces/oDV9Oruy/tile/web/{z}_{x}_{y}.mvtf
         url_params:
             access_token: AEuNHxlHRlZzsTielhu6ZqA
             clip: true
@@ -29,7 +29,7 @@ sources:
             limit: 99999
         type: MVT
     lots_mvt:
-        url: https://xyz.api.here.com/hub/spaces/oDV9Oruy/tile/web/{z}_{x}_{y}.mvt
+        url: https://xyz.api.here.com/hub/spaces/oDV9Oruy/tile/web/{z}_{x}_{y}.mvtf
         url_params:
             access_token: AEuNHxlHRlZzsTielhu6ZqA
             clip: true
