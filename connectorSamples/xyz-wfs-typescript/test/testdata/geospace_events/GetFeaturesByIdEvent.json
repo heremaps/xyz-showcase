@@ -1,0 +1,11 @@
+{
+	"type": "GetFeaturesByIdEvent",
+	"ids": [
+		"1"
+	],
+	"params": {
+		"url": "http://inspire.dundeecity.gov.uk/geoserver/wfs",
+		"typeName": "opendata:v_street_lights",
+		"outputFormatJSON": true
+	}
+}

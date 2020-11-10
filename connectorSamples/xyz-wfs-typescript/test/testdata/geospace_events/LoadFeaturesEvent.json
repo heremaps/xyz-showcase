@@ -1,0 +1,10 @@
+{
+  "type": "LoadFeaturesEvent",
+  "idsMap": {
+    "Q3495887": "sdf43t43gdfwef",
+    "Xfre5866": null
+  },
+  "params": {
+    "type": "example"
+  }
+}

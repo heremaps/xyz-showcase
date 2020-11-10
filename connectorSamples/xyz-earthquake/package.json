@@ -1,0 +1,30 @@
+{
+  "name": "xyz-earthquake",
+  "description": "Connector for USGS earthquake API",
+  "version": "0.0.1",
+  "maintainers": [
+    {
+      "name": "Philipp Duzak",
+      "email": "philipp.duzak@here.com"
+    }
+  ],
+  "dependencies": {
+    "winston": "^3.3.3",
+    "aws-sdk": "latest",
+    "zlib": "^1.0.5",
+    "async": "^3.2.0",
+    "util": "^0.12.3",
+    "https": "^1.0.0"
+  },
+  "scripts": {
+    "dist-install": "npm install --production --loglevel=error",
+    "clean": "rm -rf node_modules package-lock.json",
+    "before-test": "npm run clean && npm install && npm install --prefix ../../xyz-storage --only=dev",
+    "test": "npm run before-test && export DEBUG=\\\\\\\"true\\\\\\\" && node src/test/test.js",
+    "package": "npm run clean && npm run dist-install && npm run zip",
+    "zip": "zip -r ../deployment.zip src"
+  },
+  "license": "Apache-2.0",
+  "private": true,
+  "devDependencies": {}
+}

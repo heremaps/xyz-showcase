@@ -1,0 +1,48 @@
+[
+{
+		"typeName": "uferlinie:hro.uferlinie.uferlinie",
+		"url": "https://geo.sv.rostock.de/geodienste/uferlinie/wfs?",
+		"outputFormatJSON": false,
+		"WGS84": true
+	}
+,  {
+	"url": "https://geowebservices.stanford.edu:443/geoserver/wfs",
+	"typeName": "druid:ky723jt6050",
+	"outputFormatJSON": true,
+	"WGS84": true
+}
+,
+	{
+	"url": "https://maps.dwd.de/geoserver/dwd/wfs",
+	"typeName": "dwd:GAFOR_DE_neu",
+	"outputFormatJSON": true,
+	"WGS84": true
+}
+,
+	{
+	"url": "http://inspire.dundeecity.gov.uk/geoserver/wfs",
+	"typeName": "opendata:v_street_lights",
+	"outputFormatJSON": true,
+	"WGS84": true
+}
+,
+	{
+	"url": "http://gis-stg.epa.ie/geoserver/EPA/wfs",
+	"typeName": "EPA:MINES_WaterPoint",
+	"outputFormatJSON": true,
+	"WGS84": true
+}
+,
+	{
+	"typeName": "vg250_gem",
+	"url": "https://sgx.geodatenzentrum.de/wfs_vg250",
+	"outputFormatJSON": false,
+	"WGS84": true
+},
+	{
+	"typeName": "uferlinie:hro.uferlinie.uferlinie",
+	"url": "https://geo.sv.rostock.de/geodienste/uferlinie/wfs?",
+	"outputFormatJSON": false,
+	"WGS84": true
+}
+]

@@ -1,0 +1,15 @@
+{
+  "type": "GetFeaturesByGeometryEvent",
+  "lat": -4,
+  "lon": -17,
+  "radius": 1000,
+  "space": "foo",
+  "streamId": "test",
+  "limit": 200,
+  "params": {
+    "outputFormatJSON": true,
+    "typeName": "PACIOOS:as_comp_all_road",
+    "url": "http://geo.pacioos.hawaii.edu/geoserver/wfs?",
+    "version": "2.0.0"
+  }
+}

@@ -1,0 +1,11 @@
+/src/**/*.js
+/src/**/*.js.map
+/test/**/*.js
+/test/**/*.js.map
+tmp/
+node_modules/
+/npm-debug.log
+/.idea
+/deployment
+/deployment.zip
+!/src/storage/*

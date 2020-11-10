@@ -1,0 +1,25 @@
+[
+  {
+    "description": "Geom",
+    "event": {
+      "type": "GetFeaturesByTileEvent",
+      "space": "foo",
+      "params": {},
+      "bbox": [
+        5.052734375,
+        50.06419173665909,
+        9.140625,
+        50.12057809796007
+      ],
+      "clip": true,
+      "limit": 100,
+      "quadkey": "120203302133",
+      "x": 2151,
+      "y": 1387,
+      "level": 12,
+      "margin": 0
+    }, "expectedResult": {
+    "type": "FeatureCollection"
+  }
+  }
+]

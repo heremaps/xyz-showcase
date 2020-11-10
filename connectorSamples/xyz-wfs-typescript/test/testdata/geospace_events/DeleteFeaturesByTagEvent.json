@@ -1,0 +1,7 @@
+{
+  "type": "DeleteFeaturesByTagEvent",
+  "tags": ["delete_me"],
+  "params": {
+    "type": "example"
+  }
+}

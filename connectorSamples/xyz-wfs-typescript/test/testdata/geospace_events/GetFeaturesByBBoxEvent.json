@@ -1,0 +1,19 @@
+{
+  "type": "GetFeaturesByBBoxEvent",
+  "tags": [],
+  "bbox": [10.97, 52.0, 12.58, 54.07],
+  "clip": false,
+  "margin": 20,
+  "limit": 1,
+  "params" : {
+    "typeName": "fis:s_wfs_baumbestand_an",
+    "url": "https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_wfs_baumbestand_an/?",
+    "outputFormatJSON": true,
+    "version": "2.0.0",
+    "WGS84": false,
+    "srsName": "EPSG:25833"
+  },
+  "space": "foo",
+  "streamId": "test",
+  "simplificationLevel": 0
+}

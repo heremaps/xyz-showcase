@@ -1,0 +1,15 @@
+{
+  "streamId": "5sQZ7lTyWFEq000000nj",
+  "deleteFeatures": {
+    "1": null,
+    "2": "just a test"
+  },
+  "type": "ModifyFeaturesEvent",
+  "params": {
+    "type": "example"
+  },
+  "insertFeatures": [],
+  "updateFeatures": [],
+  "space": "example",
+  "transaction": true
+}

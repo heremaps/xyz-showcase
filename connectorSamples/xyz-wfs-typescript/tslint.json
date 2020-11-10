@@ -1,0 +1,18 @@
+{
+  "rules": {
+    "class-name": true,
+    "indent": [
+      true,
+      "spaces"
+    ],
+    "one-line": [
+      true,
+      "check-open-brace"
+    ],
+    "no-var-keyword": true,
+    "no-internal-module": true,
+    "no-null-keyword": false,
+    "prefer-const": true,
+    "jsdoc-format": true
+  }
+}

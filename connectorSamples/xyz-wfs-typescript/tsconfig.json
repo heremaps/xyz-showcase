@@ -1,0 +1,24 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "lib": [ "es2017" ],
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "esModuleInterop": true,
+        "resolveJsonModule": true,
+        "allowJs": false,
+        "experimentalDecorators": true,
+        "sourceMap": true,
+        "baseUrl": ".",
+        "paths": {
+            "*": [
+                "node_modules/*",
+                "test/node_modules/*",
+                "src/types/*"
+            ]
+        }
+    },
+    "include": [
+        "**/*.ts"
+    ]
+}

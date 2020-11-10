@@ -1,0 +1,11 @@
+{
+  "type": "IterateFeaturesEvent",
+  "tags": [],
+  "params": {
+    "typeName": "vg250_gem",
+    "url": "https://sgx.geodatenzentrum.de/wfs_vg250",
+    "outputFormatJSON": false,
+    "WGS84": true
+  },
+  "limit": 1000
+}

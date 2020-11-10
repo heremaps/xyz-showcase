@@ -1,0 +1,44 @@
+{
+  "name": "xyz-wfs-typescript",
+  "description": "Connector for Web Feature Services",
+  "version": "0.0.1",
+  "maintainers": [
+    {
+      "name": "Philipp Duzak",
+      "email": "philipp.duzak@here.com"
+    }
+  ],
+  "dependencies": {
+    "@types/node": "^8.10.59",
+    "@types/xml2js": "^0.4.5",
+    "winston": "3.2.0",
+    "xml2js": "^0.4.23",
+    "proj4": "^2.6.2"
+  },
+  "scripts": {
+    "prd-install": "rm -rf node_modules && npm install --production --loglevel=error",
+    "clean": "del src\\*.js.map /s && del src\\*.js /s",
+    "build": "npm run build-ts",
+    "package": "npm run prd-install && npm run zip_node_modules && npm install --loglevel=error && npm run build && npm run zip_src_js",
+    "test": "mocha -f ALL test/routerTest",
+    "build-ts": "tsc",
+    "zip_node_modules": "rm -f deployment.zip && zip -r deployment.zip node_modules",
+    "zip_src_js": "zip -r deployment.zip src -i *.js"
+  },
+  "devDependencies": {
+    "@types/chai": "4.2.5",
+    "@types/chai-as-promised": "7.1.2",
+    "@types/geojson": "^7946.0.7",
+    "@types/mocha": "5.2.7",
+    "@types/xml": "^1.0.4",
+    "@types/proj4": "^2.5.0",
+    "aws-sdk": "^2.600.0",
+    "chai": "4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "mocha": "^6.2.2",
+    "ts-node": "^8.5.4",
+    "typescript": "^3.7.4",
+    "geojson": "^0.5.0"
+  },
+  "license": "Apache-2.0"
+}

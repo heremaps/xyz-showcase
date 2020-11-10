@@ -1,0 +1,6 @@
+{
+	"type": "HealthCheckEvent",
+	"params": {
+		"type": "example"
+	}
+}

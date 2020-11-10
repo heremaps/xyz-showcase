@@ -1,6 +1,6 @@
-# XYZ Maps Showcase
+# XYZ Showcase
 
-This repository contains examples of maps with HERE XYZ: a location data storage and management solution.
+This repository contains examples of maps with HERE XYZ: a location data storage and management solution, as well as sample connector for Data Hub.
 
 To learn more about HERE XYZ, take a look at the [official website](https://explore.xyz.here.com) or [documentation](https://here.xyz).
 
@@ -93,3 +93,13 @@ __Tangram: [Source Code](https://github.com/heremaps/xyz-showcase/tree/master/fl
 __Three.js: [Source Code](https://github.com/heremaps/xyz-showcase/tree/master/flights-threejs) - [Live Map](https://heremaps.github.io/xyz-showcase/flights-threejs)__
 
 Flight data visualized in three different renderers.
+
+
+### Sample Connectors
+Examples on how a custom connector could look like
+
+__Airquality (Python): [Source Code](https://github.com/heremaps/xyz-showcase/tree/master/connectorSamples/xyz-airquality)__
+
+__Earthquake (Nodejs): [Source Code](https://github.com/heremaps/xyz-showcase/tree/master/connectorSamples/xyz-earthquake)__
+
+__WFS (Nodejs/Typescript): [Source Code](https://github.com/heremaps/xyz-showcase/tree/master/connectorSamples/xyz-wfs-typescript)__

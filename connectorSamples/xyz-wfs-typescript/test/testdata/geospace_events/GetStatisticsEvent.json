@@ -1,0 +1,13 @@
+{
+  "type": "GetStatisticsEvent",
+  "space": "example",
+  "params" : {
+    "typeName": "fis:s_wfs_baumbestand_an",
+    "url": "https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_wfs_baumbestand_an/?",
+    "outputFormatJSON": true,
+    "version": "2.0.0",
+    "WGS84": false,
+    "srsName": "EPSG:25833"
+  },
+  "streamId": "test"
+}

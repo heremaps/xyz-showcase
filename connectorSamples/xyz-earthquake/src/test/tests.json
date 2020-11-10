@@ -1,0 +1,50 @@
+[
+  {
+    "off": true,
+    "description": "Get Features By BBox",
+    "event": {
+      "space": "foo",
+      "bbox": [-67.5, -67.5, -45.087890625, -45.087890625],
+      "type": "GetFeaturesByBBoxEvent",
+      "limit": 1000,
+      "expectedResult": {
+        "type": "FeatureCollection"
+      }
+    }
+  },
+  { "off": false,
+    "description": "Search For Features",
+    "event": {
+    "type": "IterateFeaturesEvent",
+    "space": "foo",
+    "params": {},
+    "tags": null,
+    "limit": 100,
+    "handle": null,
+    "propertiesQuery": [[
+      {
+        "key":"magnitude",
+        "operation": "LESS_THAN",
+        "values": [6]
+      }
+    ]]
+    },
+    "expectedResult": {
+      "type": "FeatureCollection"
+    }
+  },  {
+  "off": true,
+    "description": "Stats",
+    "event": {
+    "type" : "GetFeaturesByGeometryEvent",
+    "space": "foo",
+    "lat": -20.3,
+    "lon": 169.6,
+    "radius": 20000,
+    "limit": 2000
+  },
+    "expectedResult": {
+      "type": "FeatureCollection"
+    }
+  }
+]

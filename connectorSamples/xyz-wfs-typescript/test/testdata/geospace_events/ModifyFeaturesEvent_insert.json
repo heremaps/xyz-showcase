@@ -1,0 +1,42 @@
+{
+  "type": "ModifyFeaturesEvent",
+  "space": "example",
+  "params": {
+    "type": "example"
+  },
+  "insertFeatures": [
+    {
+      "id": "96553e9b-f295-4d09-9d23-53577ff2b64a",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [14.3222,-2.32506]
+      },
+      "type": "Feature",
+      "properties": {
+        "name": "My Car",
+        "@ns:com:here:xyz": {
+          "tags": [
+            "yellow"
+          ]
+        }
+      }
+    },
+    {
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.3222,
+          -2.32506
+        ]
+      },
+      "type": "Feature",
+      "properties": {
+        "name": "My other Car"
+      }
+    }
+  ],
+  "updateFeatures": [],
+  "deleteFeatures": {},
+  "prefixId": null,
+  "transaction": false
+}

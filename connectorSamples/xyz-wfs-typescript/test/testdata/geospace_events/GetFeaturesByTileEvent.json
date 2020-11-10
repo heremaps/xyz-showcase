@@ -1,0 +1,15 @@
+{
+  "type": "GetFeaturesByTileEvent",
+  "space": "example",
+  "tags": [],
+  "quadKey": "120120001012",
+  "bbox": [12.0, 30.0, 30.0, 50.0],
+  "clip": false,
+  "limit": 10,
+  "params": {
+    "url": "http://geoserver.inspire.fomi.hu/geoserver/EL/wfs",
+    "typeName": "EL:EL.ContourLine",
+    "outputFormatJSON": false,
+    "WGS84": true
+  }
+}
