@@ -162,8 +162,8 @@
           California’s Central Valley is an agricultural powerhouse, with over 230
           crops producing 8% of America’s agricultural output. This map illustrates
           the incredible diversity of the region’s agriculture through the seasons,
-          using a <a href="https://data.cnra.ca.gov/dataset/crop-mapping-2014">large public data set</a> and XYZ Hub API features such as serving MVT
-          vector tiles, styling with tags, and dynamically filtering tags within the viewport.
+          using a <a href="https://data.cnra.ca.gov/dataset/crop-mapping-2014">large public data set</a> and XYZ Hub API features such as styling 
+          with tags, search with properties and dynamically filtering tags within the viewport.
         </p>
         <p>
           Source files and data can be accessed on <a href="https://github.com/heremaps/xyz-showcase">GitHub</a>.
@@ -416,6 +416,21 @@
               .append("span")
               .html(d => d);
 
+        function filterCrops() {
+            if (mode == 'trees') { // Prevent this from accidentally running in the other mode
+              map.spin(true);
+              var spaceID = 'ZXKLXJZ4';
+              var accessToken = 'AQAd6lqjXCQJrGMMkvbUItM';
+              var url = 'https://xyz.api.here.com/hub/spaces/' + spaceID + '/bbox?access_token=' + accessToken + '&west=' + bounds.getWest() + '&south=' + bounds.getSouth() + '&east=' + bounds.getEast() + '&north=' + bounds.getNorth();
+
+              fetch(url).then((response) => response.json()).then(function(data) {
+                  var len = data.features.length;
+                  map.spin(false);
+                  L.popup().setLatLng(map.getCenter()).setContent(formatNumber(len) + ' trees selected').openOn(map);
+              });
+            }
+        };
+
         function updateFilter(min = minMonth, max = maxMonth) {
           min = parseInt(min);
           max = parseInt(max);
@@ -430,9 +445,13 @@
             return (key !== 'Urban' && key !== 'Nonagricultural' && key !== 'Idle' && (colors[key].startMonth <= maxMonth && colors[key].endMonth >= minMonth));
           });
 
-          scene.config.layers._xyz_polygons.filter = "function() { return $zoom >= 10 && [\"" + list_of_crops.join("\",\"") + "\"].includes(feature['properties.Crop2014'])}";
-          scene.config.layers._xyz_points.filter = "function() { return $zoom < 10 && [\"" + list_of_crops.join("\",\"") + "\"].includes(feature['properties.crop2014'])}";
-          scene.config.layers._xyz_labels.filter = "function() { return $zoom >= 14 && [\"" + list_of_crops.join("\",\"") + "\"].includes(feature['properties.crop2014'])}";
+          list_of_crops.forEach((crop, idx, crops) => {
+            crops[idx] = encodeURIComponent(crop);
+          });
+          // In order to search a string with comma (,), we need to encode it
+
+          scene.config.sources._xyz_crops_polygon_tags.url_params["p.Crop2014"] = list_of_crops.join(",");
+          scene.config.sources._xyz_crops_centroid_tags.url_params["p.crop2014"] = list_of_crops.join(",");
           // Note that the property name is capitalized for the polygons, but lowercase for the points. :(
 
           scene.updateConfig();
@@ -452,8 +471,8 @@
           let total_area = 0;
           if (features.length == 0) return;
           let areas = features.reduce((acc, cur) => {
-            let area = cur.properties['properties.Acres'];
-            let crop = cur.properties['properties.Crop2014'];
+            let area = cur.properties['Acres'];
+            let crop = cur.properties['Crop2014'];
             if (area && colors[crop] && colors[crop].startMonth <= maxMonth && colors[crop].endMonth >= minMonth) {
               total_area += area;
               acc[crop] = acc[crop] ? (acc[crop] + area) : area;
@@ -488,8 +507,8 @@
         function onMapHover(selection) {
           if (selection.feature) {
             var latlng = selection.leaflet_event.latlng;
-            var crop = selection.feature.properties['properties.Crop2014'];
-            var acres = selection.feature.properties['properties.Acres'];
+            var crop = selection.feature.properties['Crop2014'];
+            var acres = selection.feature.properties['Acres'];
 
             var label = crop; // Display this at minimum
 

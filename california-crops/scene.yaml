@@ -11,7 +11,7 @@ global:
     sdk_building_extrude: false
     crop_color: |
         function(feature){
-            switch(feature['properties.Crop2014']) {
+            switch(feature['Crop2014']) {
               case 'Urban':                                       color = [0,0,0,0.5]; break;
               case 'Managed Wetland':                             color = [0,1,0,0.5]; break;
               case 'Idle':                                        color = '#CCCCCC'; break;
@@ -66,25 +66,13 @@ global:
 
 
 sources:
-    _stamen-terrain: # see https://github.com/tangrams/tangram-tutorial/blob/master/docs/tutorial-files/raster.yaml
-        type: Raster
-        url: http://tile.stamen.com/terrain-background/{z}/{x}/{y}.jpg
-
-    _stamen-terrain-labels:
-        type: Raster
-        url: http://tile.stamen.com/terrain-labels/{z}/{x}/{y}.jpg
-
     _here-satellite:
         type: Raster
         url: https://1.aerial.maps.api.here.com/maptile/2.1/basetile/newest/satellite.day/{z}/{x}/{y}/256/png8?app_id=KwLXbg6LOTkhaYvdwXTT&app_code=2GPgUXdpheikFj24EYQVTw
 
-    mapzen:
-        type: MVT
-        url: https://xyz.api.here.com/tiles/osmbase/256/all/{z}/{x}/{y}.mvtf
-
     _xyz_crops_polygon_tags:
-        url: https://xyz.api.here.com/hub/spaces/aw6LD9wa/tile/web/{z}_{x}_{y}.mvtf
-        type: MVT
+        url: https://xyz.api.here.com/hub/spaces/aw6LD9wa/tile/web/{z}_{x}_{y}
+        type: GeoJSON
         min_zoom: 10
         max_zoom: 20
         url_params:
@@ -92,11 +80,14 @@ sources:
             # clip: true
             # margin: 0
             tags: crop__mapping_2014
+            selection: p.Crop2014,p.Acres
+            mode: viz
+
             # limit: 50000 #
 
     _xyz_crops_centroid_tags:
-        url: https://xyz.api.here.com/hub/spaces/aw6LD9wa/tile/web/{z}_{x}_{y}.mvtf
-        type: MVT
+        url: https://xyz.api.here.com/hub/spaces/aw6LD9wa/tile/web/{z}_{x}_{y}
+        type: GeoJSON
         min_zoom: 2
         max_zoom: 20  # we need centroids at deep zooms for the labels
         url_params:
@@ -104,8 +95,9 @@ sources:
             # clip: true
             # margin: 0
             tags: crop_centroids
+            selection: p.crop2014
+            mode: viz
             # limit: 50000 #
-
 
 styles:
     _lines:
@@ -119,10 +111,10 @@ styles:
 
 layers:
     _xyz_polygons:
-        filter: function() { return $zoom >= 10 && feature['properties.Crop2014'] !== 'Urban'}
+        filter: function() { return $zoom >= 10 && feature['Crop2014'] !== 'Urban'}
 
         # enabled: false
-        data: {source: _xyz_crops_polygon_tags, layer: 'aw6LD9wa'}
+        data: {source: _xyz_crops_polygon_tags}
         draw:
             polygons:
                 interactive: true
@@ -134,10 +126,10 @@ layers:
                         return global.crop_color(feature)
                     }
     _xyz_points:
-        filter: function() { return $zoom < 10 && feature['properties.crop2014'] !== 'Urban'}
+        filter: function() { return $zoom < 10 && feature['crop2014'] !== 'Urban'}
 
         # enabled: false
-        data: {source: _xyz_crops_centroid_tags, layer: 'aw6LD9wa'}
+        data: {source: _xyz_crops_centroid_tags}
         draw:
             points:
                 interactive: true
@@ -153,7 +145,7 @@ layers:
         #filter: {$geometry: polygon}
 
         # enabled: false
-        data: {source: _xyz_crops_centroid_tags, layer: 'aw6LD9wa'}
+        data: {source: _xyz_crops_centroid_tags}
         filter: {$zoom: {min: 14}}
         draw:
             _text:
@@ -162,7 +154,7 @@ layers:
                 align: center
                 text_source: |
                     function(){
-                        if (feature['properties.crop2014'] !== 'Urban') return feature['properties.crop2014']
+                        if (feature['crop2014'] !== 'Urban') return feature['crop2014']
                     }
 
                 font:
@@ -175,18 +167,8 @@ layers:
     _terrainLayer:
         data:
             source: _here-satellite
-            #source: _stamen-terrain
         draw:
             _terainStyle:
                 color: [0.5, 0.5, 0.5] # Adding a color to tint the raster layer
                 style: raster
                 order: 0 # draw on bottom
-
-    _terrainLayerLabels:
-        enabled: false
-        data:
-            source: _stamen-terrain-labels
-        draw:
-            _terainStyle:
-                style: raster
-                order: 2000 # draw on top
