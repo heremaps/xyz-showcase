@@ -8,17 +8,6 @@ sources:
         max_zoom: 16
         url_params:
             access_token: AZL4Ab9z2cBFt9d2PQ2hh0k
-    _routes:
-        type: GeoJSON
-        url: https://xyz.api.here.com/hub/spaces/Pqh7dfFY/tile/web/{z}_{x}_{y}
-        url_params:
-            access_token: AZL4Ab9z2cBFt9d2PQ2hh0k
-    _neighborhoods:
-        type: GeoJSON
-        url: https://xyz.api.here.com/hub/spaces/5kwzZmtK/tile/web/{z}_{x}_{y}
-        url_params:
-            access_token: AZL4Ab9z2cBFt9d2PQ2hh0k
-            clip: true
 
 global:
     language: en
@@ -36,39 +25,6 @@ styles:
         dash: [1, 2]
 
 layers:
-    routes:
-        data: { source: _routes}
-        draw:
-            lines:
-                order: 10000000
-                color: |
-                    function() {
-                        if (feature.bikeroute === 'OFF-STREET TRAIL') {
-                           return '#2B7DB4';
-                        } else if (feature.bikeroute === 'ACCESS PATH') {
-                           return '#1A9850'
-                        } else if (feature.bikeroute === 'PROTECTED BIKE LANE') {
-                           return '#91CF60';
-                        } else if (feature.bikeroute === 'BUFFERED BIKE LANE') {
-                           return '#D9EF8B';
-                        } else if (feature.bikeroute === 'BIKE LANE') {
-                           return '#FFD150'
-                        } else if (feature.bikeroute === 'NEIGHBORHOOD GREENWAY') {
-                           return '#FC8D59';
-                        } else if (feature.bikeroute === 'SHARED-LANE') {
-                           return '#D72F27'
-                        }
-                    }
-                width: [[0, 1px], [10, 1.5px], [20,4px]]
-                collide: false
-    neighborhoods2:
-        data: { source: _neighborhoods}
-        draw:
-            short-dashed-lines:
-                order: 9999
-                color: '#7B7B7B'
-                width: 2px
-                collide: false
     places:
         data: { source: xyz_osm }
         city-points:

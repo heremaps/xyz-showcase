@@ -203,7 +203,7 @@
                         .attr("class", "graticule")
                         .attr("d", path);
 
-                var url = 'https://xyz.api.here.com/hub/spaces/' + spaceID + '/search?access_token=' + accessToken;
+                var url = 'https://xyz.api.here.com/hub/spaces/' + spaceID + '/search?access_token=' + accessToken + '&mode=viz&twekas.defaultselection=true';
                 d3.json(url, function(error,data) {
                     if (error) throw error;
 
