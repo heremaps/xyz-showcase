@@ -71,30 +71,28 @@ sources:
         url: https://1.aerial.maps.api.here.com/maptile/2.1/basetile/newest/satellite.day/{z}/{x}/{y}/256/png8?app_id=KwLXbg6LOTkhaYvdwXTT&app_code=2GPgUXdpheikFj24EYQVTw
 
     _xyz_crops_polygon_tags:
-        url: https://xyz.api.here.com/hub/spaces/aw6LD9wa/tile/web/{z}_{x}_{y}
+        url: https://xyz.api.here.com/hub/spaces/mJhQSETo/tile/web/{z}_{x}_{y}
         type: GeoJSON
         min_zoom: 10
         max_zoom: 20
         url_params:
             access_token: AeFnybJJXb9zhnaSOXA-PPQ
-            # clip: true
             # margin: 0
-            tags: crop__mapping_2014
+            p.Crop2014!: undefined
             selection: p.Crop2014,p.Acres
             mode: viz
 
             # limit: 50000 #
 
     _xyz_crops_centroid_tags:
-        url: https://xyz.api.here.com/hub/spaces/aw6LD9wa/tile/web/{z}_{x}_{y}
+        url: https://xyz.api.here.com/hub/spaces/mJhQSETo/tile/web/{z}_{x}_{y}
         type: GeoJSON
         min_zoom: 2
         max_zoom: 20  # we need centroids at deep zooms for the labels
         url_params:
             access_token: AeFnybJJXb9zhnaSOXA-PPQ
-            # clip: true
             # margin: 0
-            tags: crop_centroids
+            p.crop2014!: undefined
             selection: p.crop2014
             mode: viz
             # limit: 50000 #

@@ -7,19 +7,25 @@ sources:
         url: https://xyz.api.here.com/hub/spaces/DX1sViy7/tile/web/{z}_{x}_{y}
         url_params:
             access_token: 48XtBKvI2SDiL2wNvgnqqg
-            clip: true
+            mode: viz
+            selection: p.Functie,p.Vermogen
+            p.Functie: NietWonen,Wonen
+
         type: GeoJSON
     neighborhoods:
         url: https://xyz.api.here.com/hub/spaces/Osgei82v/tile/web/{z}_{x}_{y}
         url_params:
             access_token: 48XtBKvI2SDiL2wNvgnqqg
-            clip: true
+            mode: viz
+            selection: p.Buurtcombinatie,p.totalPower
+
         type: GeoJSON
     trees:
         url: https://xyz.api.here.com/hub/spaces/ZXKLXJZ4/tile/web/{z}_{x}_{y}
         url_params:
             access_token: AQAd6lqjXCQJrGMMkvbUItM
-            clip: true
+            mode: viz
+            selection: p.Stamdiameter
         type: GeoJSON
 
 styles:
