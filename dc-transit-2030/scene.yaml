@@ -14,16 +14,19 @@ sources:
         url: https://xyz.api.here.com/hub/spaces/uUcr2nxd/tile/web/{z}_{x}_{y}
         url_params:
             access_token: AQHyuv2gpBaEgEGvHzdP5_k
+            mode: viz
     _rapid_bus_transit:
         type: GeoJSON
         url: https://xyz.api.here.com/hub/spaces/vZe6Isdm/tile/web/{z}_{x}_{y}
         url_params:
             access_token: AQHyuv2gpBaEgEGvHzdP5_k
+            mode: viz
     _street_car:
         type: GeoJSON
         url: https://xyz.api.here.com/hub/spaces/rFrdDb7a/tile/web/{z}_{x}_{y}
         url_params:
             access_token: AQHyuv2gpBaEgEGvHzdP5_k
+            mode: viz
 
 global:
     width: [[5, 5000], [8, 800], [10, 200], [12, 160],[14, 60], [18, 20]]

@@ -15,7 +15,6 @@ sources:
         url: https://xyz.api.here.com/hub/spaces/Cvfe5YJk/search #https://xyz.api.here.com/hub/spaces/Cvfe5YJk/tile/web/{z}_{x}_{y}
         url_params:
             access_token: AaeXxt1egUQps65QNzC_RAk
-            clip: true
         type: GeoJSON
 layers:
     buildings:

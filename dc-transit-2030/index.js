@@ -17,13 +17,9 @@ tangram.scene.subscribe({
       const checkboxes = document.querySelectorAll('input[type="checkbox"]');
       checkboxes.forEach((box) => {
          box.onclick = () => {
-            console.log(Object.keys(scene.config.layers[box.id].draw)[0])
-            console.log(box.id );
             if (box.id === 'street_car') {
-
                scene.config.layers[box.id].draw.lines.visible = box.checked ? true : false
             } else if (box.id === 'rapid_bus_transit') {
-               console.log(scene.config.layers[box.id].draw['long-dashed-lines'])
                scene.config.layers[box.id].draw['long-dashed-lines'].visible = box.checked ? true : false
             } else if (box.id === 'rapid_bus') {
                scene.config.layers[box.id].draw['short-dashed-lines'].visible = box.checked ? true : false
