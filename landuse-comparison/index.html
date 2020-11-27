@@ -286,7 +286,8 @@
             var is_lots_mode = document.getElementById('lots_cb').checked;
             if (layer && layer.scene) {
                 layer.scene.config.global.mode =  is_lots_mode ? 'lots' : 'zoning'
-                layer.scene.config.layers._buildings_mvt.visible = is_lots_mode;
+                layer.scene.config.layers._buildings.enabled = is_lots_mode;
+                
                 // none of these work:
                 //layer.scene.config.scene.background = 'red';
                 //layer.scene.config.background = 'red';
@@ -321,7 +322,7 @@
                 return;
             }
             console.log('Requesting features in viewport');
-            layer.scene.queryFeatures({filter: { $layer: 'oDV9Oruy', $source: 'lots_mvt'}})
+            layer.scene.queryFeatures({filter: {$source: 'lots'}})
                 .then(updateChartFromFeatures);
         }
 
@@ -334,8 +335,8 @@
             trace1.y = [];
             features.forEach((feature) => {
                 // TODO check the feature is actually inside the viewport.
-                trace1.x.push(Math.round(feature.properties['properties.LotArea']));
-                trace1.y.push(Math.round(feature.properties['properties.BldgArea']));
+                trace1.x.push(Math.round(feature.properties['LotArea']));
+                trace1.y.push(Math.round(feature.properties['BldgArea']));
             });
             Plotly.update('chart', data, layout);
             // this legend is a hack
@@ -426,6 +427,7 @@
             scene: 'scene.yaml',
             attribution: '<a href="https://mapzen.com/tangram" target="_blank">Tangram</a> | &copy; OSM contributors | <a href="https://mapzen.com/" target="_blank">Mapzen</a>'
         });
+
         layer.addTo(map);
         map.setView([40.723627, -73.992264], 16);
 
@@ -435,6 +437,7 @@
         let viewComplete = async () => {
           console.log("view complete");
           map.spin(false);
+          updateChart();
         }
         layer.scene.subscribe({view_complete: viewComplete});
 
@@ -446,7 +449,7 @@
             .on('markgeocode', onGeocodeResult)
             .addTo(map);
 
-        map.on("moveend", () => updateChart());
+        // map.on("moveend", () => updateChart());
         layer.on('init', () => {
             enableCheckboxes();
             updateVisibleElements();

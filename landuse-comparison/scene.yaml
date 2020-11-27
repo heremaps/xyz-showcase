@@ -5,37 +5,24 @@ global:
     sdk_api_key: DpCrhQqsR2igQPEINRTfcw
     mode: zoning
 sources:
-    # buildings:
-    #     url: https://xyz.api.here.com/hub/spaces/oDV9Oruy/tile/web/{z}_{x}_{y}
-    #     url_params:
-    #         access_token: AEuNHxlHRlZzsTielhu6ZqA
-    #         clip: true
-    #         tags: building
-    #         limit: 99999
-    #     type: GeoJSON
-    # lots:
-    #     url: https://xyz.api.here.com/hub/spaces/oDV9Oruy/tile/web/{z}_{x}_{y}
-    #     url_params:
-    #         access_token: AEuNHxlHRlZzsTielhu6ZqA
-    #         clip: true
-    #         tags: lot
-    #     type: GeoJSON
-    buildings_mvt:
-        url: https://xyz.api.here.com/hub/spaces/oDV9Oruy/tile/web/{z}_{x}_{y}.mvtf
+    buildings:
+        url: https://xyz.api.here.com/hub/spaces/oDV9Oruy/tile/web/{z}_{x}_{y}
         url_params:
             access_token: AEuNHxlHRlZzsTielhu6ZqA
-            clip: true
-            tags: building
+            p.shape_area!: undefined
+            # mode: viz
+            # selection: p.shape_area
             limit: 99999
-        type: MVT
-    lots_mvt:
-        url: https://xyz.api.here.com/hub/spaces/oDV9Oruy/tile/web/{z}_{x}_{y}.mvtf
+        type: GeoJSON
+    lots:
+        url: https://xyz.api.here.com/hub/spaces/oDV9Oruy/tile/web/{z}_{x}_{y}
         url_params:
             access_token: AEuNHxlHRlZzsTielhu6ZqA
-            clip: true
-            tags: lot
+            p.LotArea!: undefined
+            # mode: viz
+            # selection: p.LotArea,p.LandUse,p.BldgArea
             limit: 99999
-        type: MVT
+        type: GeoJSON
 
 scene:
     background:
@@ -61,55 +48,11 @@ layers:
             enabled: false
     platforms:
         enabled: false
-    # _lots:
-    #     enabled: false
-    #     data: {source: lots}
-    #     filter: {$zoom: {min: 12}}
-    #     draw:
-    #         polygons:
-    #             interactive: true
-    #             order: global.sdk_order_under_water_0
-    #             color: [1, 0, 0]
-    #             color: |
-    #                 function() {
-    #                   area = feature.LotArea
-    #                   // copying numbers from la.stamen.com... needs adjustment
-    #                   if (area >= 18749) color = '#252525';
-    #                   else if (area >= 9615) color = '#525252';
-    #                   else if (area >= 7559) color = '#737373';
-    #                   else if (area >= 6661) color = '#969696';
-    #                   else if (area >= 5924) color = '#BDBDBD';
-    #                   else if (area >= 5043)  color = '#D9D9D9';
-    #                   else color = '#F7F7F7';
-    #                   return color;
-    #                 }
 
-    # _buildings:
-    #     enabled: false
-    #     data: {source: buildings}
-    #     filter: {$zoom: {min: 10}}
-    #     draw:
-    #         polygons:
-    #             interactive: true
-    #             order: global.sdk_order_under_water_0
-    #             color: [0, 1, 0]
-    #             color: |
-    #                 function() {
-    #                   area = feature.shape_area
-    #                   // copying numbers from la.stamen.com... needs adjustment
-    #                   if (area >= 3074) color = '#F7F7F7';
-    #                   else if (area >= 2379) color = '#D9D9D9';
-    #                   else if (area >= 1904) color = '#BDBDBD';
-    #                   else if (area >= 1424) color = '#969696';
-    #                   else if (area >= 830)  color = '#737373';
-    #                   else if (area >= 437)  color = '#525252';
-    #                   else color = '#252525';
-    #                   return color;
-                    # }
-
-    _lots_mvt:
-        data: {source: lots_mvt, layer: oDV9Oruy}
+    _lots:
+        data: {source: lots}
         filter: {$zoom: {min: 12}}
+        # enabled: false
         draw:
             polygons:
                 interactive: true
@@ -117,7 +60,7 @@ layers:
                 color: |
                     function() {
                       if (context.global.mode == 'lots') { // Black and white mode
-                        area = feature['properties.LotArea']
+                        area = feature['LotArea']
                         // area = feature.LotArea
                         // copying numbers from la.stamen.com... needs adjustment
                         if (area >= 18749) color = '#252525';
@@ -131,7 +74,7 @@ layers:
                       } else { // Zoning mode
                         var is_la = feature["bbox.1"] < 37;
                         if (!is_la) {
-                          var use = parseInt(feature['properties.LandUse']);
+                          var use = parseInt(feature['LandUse']);
                           switch (use) {
                             case 1: //  One & Two Family Buildings
                                 return '#fee08b';
@@ -157,7 +100,7 @@ layers:
                                 return '#fff';
                           }
                         } else {
-                          var use = feature['properties.LandUse'];
+                          var use = feature['LandUse'];
                           if (!use) { // Not set
                             return '#9dd572'; // Open Space & Outdoor Recreation
                             //return '#000'; // Unset
@@ -223,23 +166,24 @@ layers:
                               return '#c49331'; // Public Facilities & Institutions
 
                             default:
-                              console.log(use);
+                              // console.log(use);
                               return '#fff'; // Vacant
                           }
                         }
                       }
                     }
 
-    _buildings_mvt:
-        data: {source: buildings_mvt, layer: oDV9Oruy}
+    _buildings:
+        data: {source: buildings}
         filter: {$zoom: {min: 10}}
+        # enabled: false
         draw:
             polygons:
                 interactive: true
                 order: 1000
                 color: |
                     function() {
-                      area = feature['properties.shape_area']
+                      area = feature['shape_area']
                       // area = feature.shape_area
                       // copying numbers from la.stamen.com... needs adjustment
                       if (area >= 3074) color = '#F7F7F7';
