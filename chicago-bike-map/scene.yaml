@@ -15,14 +15,6 @@ global:
         function() {
             return (global.language && feature['name:'+global.language]) || feature.name;
         }
-styles:
-    polygons_transparent:
-        base: polygons
-        blend: overlay
-        blend_order: 1
-    short-dashed-lines:
-        base: lines
-        dash: [1, 2]
 
 layers:
     places:

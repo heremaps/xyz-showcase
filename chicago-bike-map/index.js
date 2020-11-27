@@ -25,6 +25,9 @@ async function init() {
       fetch(neighborhoodsUrl).then(x => x.json())
    ])
 
+   let newLinesAsFeatureCollection = routes;
+   let newLinesForCalcDistance = routes.features;
+
    const bikemap = L.geoJSON(routes, {
       style: function(feature) {
             const bikeroute = feature.properties.bikeroute;
@@ -71,11 +74,15 @@ async function init() {
 
    async function resetMap() {
       fetch(routesUrl).then(x => x.json()).then(routes => {
+         newLinesAsFeatureCollection = routes;
+         newLinesForCalcDistance = routes.features;
+
          bikemap.clearLayers();
          bikemap.addData(routes);
 
-         const distances = calculateDistance(routes.features);
-         assignTotals(distances);
+         assignTotals(
+            calculateDistance(routes.features)
+         );
       })
 
       document.getElementById('clear').style.visibility = 'hidden';
@@ -143,7 +150,7 @@ async function init() {
          }
       })
 
-      const newLinesForCalc = temp.map(u => {
+      newLinesForCalcDistance = temp.map(u => {
          return {
             "type": "Feature",
             "properties": u.features[0].properties,
@@ -154,7 +161,7 @@ async function init() {
          }
       });
 
-      const newLinesAsFeatureCollection = {
+      newLinesAsFeatureCollection = {
          type: 'FeatureCollection',
          features: temp.map(u => {
             return {
@@ -176,7 +183,7 @@ async function init() {
       document.getElementById('clear').style.visibility = 'visible';
 
       assignTotals(
-         calculateDistance(newLinesForCalc)
+         calculateDistance(newLinesForCalcDistance)
       )
    }
 
@@ -202,6 +209,24 @@ async function init() {
       }
       return distances;
    }
-}
 
+   function bikeMapHandler(item) {
+      const laneType = item.id;
+
+      bikemap.clearLayers();
+      bikemap.addData(laneType == 'total' ? newLinesAsFeatureCollection : {
+         'type': 'FeatureCollection',
+         'features': newLinesAsFeatureCollection.features.filter(feature => {
+            return feature.properties.bikeroute == laneType
+         })
+      });
+   }
+
+   const bikeMaps = document.querySelectorAll('.row');
+   bikeMaps.forEach(item => {
+      item.onclick = () => {
+         bikeMapHandler(item);
+      }
+   })
+}
 init();
