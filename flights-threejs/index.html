@@ -461,16 +461,14 @@ h2 {
 
             function fetchPlanes() {
                 console.log('fetching planes', airport);
-                var spaceID = 'l9F3RBfX';
-                var accessToken = 'AQAd6lqjXCQJrGMMkvbUItM';
-                var p = fetch('https://xyz.api.here.com/hub/spaces/' + spaceID + '/search?access_token=' + accessToken + '&tags=to-' + airport).then(function(response) {
-                    return response.json()
-                }).then(function(json) {
-                    var p2 = fetch('https://xyz.api.here.com/hub/spaces/' + spaceID + '/search?access_token=' + accessToken + '&tags=from-' + airport).then(function(response2) {
-                        return response2.json()
-                    }).then(function(json2) {
-                        //window.data = json;
-                        planeData = [...json.features,...json2.features];
+                var spaceID = 'HKl2SyEL';
+                var accessToken = 'ALftJA9aTLmD1iirPyN2kwA';
+                var p = fetch('https://xyz.api.here.com/hub/spaces/' + spaceID + '/search?access_token=' + accessToken + '&p.to_icao=' + airport);
+                var p2 = fetch('https://xyz.api.here.com/hub/spaces/' + spaceID + '/search?access_token=' + accessToken + '&p.from_icao=' + airport);
+                
+                Promise.all([p, p2]).then(response=>{
+                    Promise.all([response[0].json(), response[1].json()]).then(json=>{
+                        planeData = [...json[0].features,...json[1].features];
                         console.log("planeData number of records: " + planeData.length);
                         planeData.forEach(a => {
                             // tag to and from
@@ -491,8 +489,10 @@ h2 {
                         addPlaneTrails(planeData.filter(a => a.properties.Lat) // check to be sure we have coords
                                            .filter(a => { return a.properties.PosTime !== mostRecent[a.properties.Call];}) // only display most recent
                           , world);
-                   });
-                });
+                    })
+                })
+                
+                
             }
 
             function renderAirportPicker() {

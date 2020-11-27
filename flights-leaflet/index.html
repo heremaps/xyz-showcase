@@ -205,11 +205,14 @@
 
 
 
-        function fetchData(airport) {
-            var url = 'https://xyz.api.here.com/hub/spaces/CcZXUo0i/search?access_token=AQAd6lqjXCQJrGMMkvbUItM&tags=' + airport.code;
+        async function fetchData(airport) {
+            const urlto = 'https://xyz.api.here.com/hub/spaces/HKl2SyEL/search?access_token=ALftJA9aTLmD1iirPyN2kwA&p.to_icao=' + airport.code.toUpperCase();
+            const urlfrom = 'https://xyz.api.here.com/hub/spaces/HKl2SyEL/search?access_token=ALftJA9aTLmD1iirPyN2kwA&p.from_icao=' + airport.code.toUpperCase();
 
-            fetch(url).then(resp => resp.json()).then(data => {
-                renderPlanes(data.features);
+            Promise.all([fetch(urlto), fetch(urlfrom)]).then(resp => {
+                Promise.all([resp[0].json(), resp[1].json()]).then(data => {
+                    renderPlanes(data[0].features.concat(data[1].features));
+                })
             });
 
             theMap.panTo(airport.location);
