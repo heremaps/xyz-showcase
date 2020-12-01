@@ -408,7 +408,15 @@
             .append("div")
               .attr("class", "item")
               .style("background-color", d => colors[d].c)
-              .style("height", d => (colors[d].header ? "25px" : "0px"));
+              .style("height", d => (colors[d].header ? "25px" : "0px"))
+              .on("mouseover", function(l,i) { if(!colors[l].header) document.body.style.cursor = "pointer"; })
+              .on("mouseout",  function(l,i) { if(!colors[l].header) document.body.style.cursor = "default"; })
+              .on('click', (l)=>{
+                if(!colors[l].header) {
+                  scene.config.sources._xyz_crops_polygon_tags.url_params["p.Crop2014"] = l;
+                  scene.updateConfig();
+                }
+              })
 
 
         item.append("div")

@@ -8,25 +8,28 @@ sources:
         max_zoom: 16
         tile_size: 512
         url_params:
-            access_token: AQHyuv2gpBaEgEGvHzdP5_k
+            access_token: AAFX7JDSTbqJ9VDZ8ZM_bQA
     _rapid_bus:
         type: GeoJSON
-        url: https://xyz.api.here.com/hub/spaces/uUcr2nxd/tile/web/{z}_{x}_{y}
+        url: https://xyz.api.here.com/hub/spaces/noxCcT0u/tile/web/{z}_{x}_{y}
         url_params:
-            access_token: AQHyuv2gpBaEgEGvHzdP5_k
-            mode: viz
+            access_token: AAFX7JDSTbqJ9VDZ8ZM_bQA
+            p.type: 'Rapid Bus'
+            # mode: viz
     _rapid_bus_transit:
         type: GeoJSON
-        url: https://xyz.api.here.com/hub/spaces/vZe6Isdm/tile/web/{z}_{x}_{y}
+        url: https://xyz.api.here.com/hub/spaces/noxCcT0u/tile/web/{z}_{x}_{y}
         url_params:
-            access_token: AQHyuv2gpBaEgEGvHzdP5_k
-            mode: viz
+            access_token: AAFX7JDSTbqJ9VDZ8ZM_bQA
+            p.type: 'Rapid Bus Transit'
+            # mode: viz
     _street_car:
         type: GeoJSON
-        url: https://xyz.api.here.com/hub/spaces/rFrdDb7a/tile/web/{z}_{x}_{y}
+        url: https://xyz.api.here.com/hub/spaces/noxCcT0u/tile/web/{z}_{x}_{y}
         url_params:
-            access_token: AQHyuv2gpBaEgEGvHzdP5_k
-            mode: viz
+            access_token: AAFX7JDSTbqJ9VDZ8ZM_bQA
+            p.type: 'Street Car'
+            # mode: viz
 
 global:
     width: [[5, 5000], [8, 800], [10, 200], [12, 160],[14, 60], [18, 20]]
