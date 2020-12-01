@@ -146,7 +146,7 @@
             events: {
                 hover: function(selection) {
                     if (mode === 'solar') {
-                        if (selection.feature) {
+                        if (selection.feature && selection.feature.id) {
                             showPopup(selection.leaflet_event.latlng, selection.feature.properties.Buurtcombinatie, selection.feature.properties.totalPower);
                         } else {
                             map.closePopup();
