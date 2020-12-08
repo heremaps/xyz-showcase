@@ -1,0 +1,124 @@
+#map {
+    position: absolute;
+    overflow: hidden;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#tree {
+    position: relative;
+    display: inline-block;
+    margin: 7px 0 7px 0;
+    left: 20px;
+    width: 200px;
+    height: 140px;
+    background-color: #353D42;
+}
+
+#tree div {
+    display: block;
+    margin-left: 10px;
+    margin-top: 5px;
+    color: #FFFFFF;
+}
+
+#tree v {
+    position: absolute;
+    padding-top: 0.5rem;
+    width: 30px;
+}
+#tree span {
+    padding-left: 70px;
+    margin-bottom: 3px;
+    display: block;
+}
+.auth {
+    padding: 0.5rem;
+}
+
+pre div, span div {
+    position: relative;
+    display: inline-block;
+    left: 20px;
+    background-color: #373D49;
+    color: #FFFFFF;
+    padding: 10px;
+    margin: 0 0 0 0;
+    font-family: 'LFira Sans',Arial,Helvetica,sans-serif;
+}
+
+pre .properties{
+    max-width: 50%;
+    overflow-x: auto;
+}
+
+a.button {
+    position: relative;
+    display: block;
+    color: #FFFFFF;
+    cursor: pointer;
+    left: 20px;
+    height: 23px;
+    padding: 5px 16px 0px;
+    width: 130px;
+    text-align: center;
+    margin: 12px 0 0 0;
+    background-color: #94A962;
+    border-radius: 2px;
+}
+#delete {
+    width: 50px;
+    height: 17px;
+    padding: 0px;
+    left: 140px;
+}
+a.button:hover{
+    background-color: #849952;
+}
+ul {
+    background: #A4B972;
+    list-style: none;
+    margin: 0;
+    padding-left: 0;
+}
+
+li {
+    display: block;
+    transition-duration: 0.5s;
+    color: #fff;
+    background: #94A962;
+    padding: 0.5rem;
+    position: relative;
+    z-index: 2;
+    text-decoration: none;
+}
+
+li:hover,
+li:focus-within {
+  background: #849952;
+  cursor: pointer;
+}
+
+ul li ul {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    transition: all 0.5s ease;
+    margin-top: 0.5rem;
+    left: 0;
+    display: none;
+}
+
+ul li:hover > ul,
+ul li ul:hover {
+    visibility: visible;
+    opacity: 1;
+    display: block;
+}
+
+ul li ul li {
+    clear: both;
+    width: 100%;
+}

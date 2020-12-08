@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=no">
+		<title>London Tree Species</title>
+
+	   	<script src="https://xyz.api.here.com/maps/latest/xyz-maps-common.min.js" type="text/javascript" charset="UTF-8" ></script>
+	    <script src="https://xyz.api.here.com/maps/latest/xyz-maps-core.min.js" type="text/javascript" charset="UTF-8" ></script>
+	    <script src="https://xyz.api.here.com/maps/latest/xyz-maps-display.min.js" type="text/javascript" charset="UTF-8" ></script>
+	    <script src="https://xyz.api.here.com/maps/latest/xyz-maps-editor.min.js" type="text/javascript" charset="UTF-8" ></script>
+		<link rel="stylesheet" href="index.css">
+
+	</head>
+	<body>
+		<div id="map"></div>
+
+		
+		<div id="tree">
+			<div class="titlePane">Tree Species</div>
+			<div><v>Name:</v>
+				<span>
+					<ul class="name">
+						<li value="selected"><svg height="10" width="10">
+							<circle cx="5" cy="5" r="5" fill="#EEEEEE" />
+						   </svg><a>Unselected</a>
+							<ul class="dropdown">
+							<li><svg height="10" width="10">
+								<circle cx="5" cy="5" r="5" fill="#A80085" />
+							   </svg><a>Adler</a></li>
+							<li><svg height="10" width="10">
+								<circle cx="5" cy="5" r="5" fill="#FF5500" />
+							   </svg><a>Apple</a></li>
+							<li><svg height="10" width="10">
+								<circle cx="5" cy="5" r="5" fill="#00C5FF" />
+							   </svg><a>Ash</a></li>
+							<li><svg height="10" width="10">
+								<circle cx="5" cy="5" r="5" fill="#00FFC5" />
+							   </svg><a>Beech</a></li>
+							<li><svg height="10" width="10">
+								<circle cx="5" cy="5" r="5" fill="#A9FF00" />
+							   </svg><a>Birch</a></li>
+							<li><svg height="10" width="10">
+								<circle cx="5" cy="5" r="5" fill="#E69900" />
+							   </svg><a>Black Locust</a></li>
+							<li><svg height="10" width="10">
+								<rect cx="5" cy="5" width="10" height="10" fill="#FF0000" stroke="#FFFFFF"/>
+							   </svg><a>Cherry</a></li>
+							<li><svg height="10" width="10">
+								<circle cx="5" cy="5" r="5" fill="#00C5FF" />
+							   </svg><a>Chestnut</a></li>
+							<li><svg height="10" width="10">
+								<rect cx="5" cy="5" width="10" height="10" fill="#6678CE" stroke="#FFFFFF"/>
+							   </svg><a>Cypress</a></li>
+							<li><svg height="10" width="10">
+								<circle cx="5" cy="5" r="5" fill="#747400" />
+							   </svg><a>Elm</a></li>
+							<li><svg height="10" width="10">
+								<circle cx="5" cy="5" r="5" fill="#E69900" />
+							   </svg><a>Hawthorn</a></li>
+							<li><svg height="10" width="10">
+								<rect cx="5" cy="5" width="10" height="10" fill="#6FA800" stroke="#FFFFFF"/>
+							   </svg><a>Hazel</a></li>
+							<li><svg height="10" width="10">
+								<circle cx="5" cy="5" r="5" fill="#F57B7B" />
+							   </svg><a>Hornbeam</a></li>
+							<li><svg height="10" width="10">
+								<circle cx="5" cy="5" r="5" fill="#A3FF74" />
+							   </svg><a>Lime</a></li>
+							<li><svg height="10" width="10">
+								<circle cx="5" cy="5" r="5" fill="#FFBEE8" />
+							   </svg><a>Maple</a></li>
+							<li><svg height="10" width="10">
+								<circle cx="5" cy="5" r="5" fill="#45886F" stroke="#FFFFFF"/>
+							   </svg><a>Oak</a></li>
+							<li><svg height="10" width="10">
+								<circle cx="5" cy="5" r="5" fill="#E84700" />
+							   </svg><a>Pear</a></li>
+							<li><svg height="10" width="10">
+								<circle cx="5" cy="5" r="5" fill="#A80000" />
+							   </svg><a>Pine</a></li>
+							<li><svg height="10" width="10">
+								<circle cx="5" cy="5" r="5" fill="#FF00C5" />
+							   </svg><a>Plane</a></li>
+							<li><svg height="10" width="10">
+								<circle cx="5" cy="5" r="5" fill="#E074FF" stroke="#FFFFFF"/>
+							   </svg><a>Poplar</a></li>
+							<li><svg height="10" width="10">
+								<circle cx="5" cy="5" r="5" fill="#00E6A9" />
+							   </svg><a>Whitebeam</a></li>
+							<li><svg height="10" width="10">
+								<rect cx="5" cy="5" width="10" height="10" fill="#0085A8"/>
+							   </svg><a>Willow</a></li>
+							<li><svg height="10" width="10">
+								<circle cx="5" cy="5" r="5" fill="#A86F00" />
+							   </svg><a>Other</a></li>
+							</ul>
+						</li>
+					</ul>
+			</span>
+		</div>
+			<div><v>Authority:</v><span class="auth">Unselected</span></div>
+			<a id="delete" class="button">Delete</a>
+		</div>
+		<a id="submitchange" class="button">Submit</a>
+		<script src="index.js"></script>
+	</body>
+</html>
