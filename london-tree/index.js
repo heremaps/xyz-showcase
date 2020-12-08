@@ -102,8 +102,8 @@ var bgLayer = new here.xyz.maps.layers.MVTLayer({
     }
 });
 var customLayer = new here.xyz.maps.layers.TileLayer({
-    name: 'Navlink Layer',
-    min: 14,
+    name: 'London Tree Layer',
+    min: 12,
     max: 20,
     // Customized provider to provide features
     provider: new here.xyz.maps.providers.SpaceProvider({
@@ -111,7 +111,7 @@ var customLayer = new here.xyz.maps.layers.TileLayer({
         credentials: {
             access_token: ACCESS_TOKEN
         },
-        level: 14
+        level: 13
     }),
 
     // customize layer style
@@ -163,83 +163,145 @@ const editor = new here.xyz.maps.editor.Editor( display, {
     featureSelectionByDefault: false
 } );
 
-// add navlink layer to editor, make layers editable
+// add custom layer to editor, make layers editable
 editor.addLayer( customLayer );
 
+editor.addObserver("history.current", ()=>{
+    const current = editor.get("history.current");
+    console.log('finish...', current);
+
+    if(current>0) {
+        submitButton.style.display = 'block';
+    } else {
+        submitButton.style.display = 'none';
+    }
+})
 
 var deleteButton = document.querySelector("#delete");
 var submitButton = document.querySelector("#submitchange");
 var tree;
 
 deleteButton.onclick = function(){
-    tree && tree.remove();
+    if(tree) {
+        tree.remove();
+        setFeaturePanel();
+        deleteButton.style.display = 'none';
+    }
 };
 
 submitButton.onclick = function(){
+    if(tree) {
+        customLayer.setStyleGroup(tree);
+    }
     tree = null;
     // submit changes
-    editor.submit();
+    editor.submit({
+        onSuccess: ()=>{
+            deleteButton.style.display = 'none';
+            setFeaturePanel();
+        }
+    });
 };
 
-editor.addEventListener('pointerup', function(event) {
+display.addEventListener('pointerup', function(event) {
     if(event.button == 0) {
         var feature = event.target;
+        
+        if(tree) {
+            customLayer.setStyleGroup(tree);
+        }
 
-        if(feature && feature.geometry) {
-            var attrs = feature.prop();
-
-            setFeature(feature)
-            // roadnameTag.value = attrs.display_name;
-
+        if(feature && feature.geometry.type != "Polygon") {
             tree = feature;
+            deleteButton.style.display = 'block';
+            setFeaturePanel(feature)
+        } else {
+            deleteButton.style.display = 'none';
+            setFeaturePanel();
         }
     }
 });
 
 editor.addEventListener('pointerenter', function(event) {
     document.body.style.cursor = "pointer";
-    const feature = event.target;
-    var style = customLayer.getStyleGroup(feature);
-
-    customLayer.setStyleGroup(feature, [{zIndex:3, type:"Circle", fill:style[0].fill, radius: 8}]);
+    updateFeatureStyle(event.target);
 });
 
 editor.addEventListener('pointerleave', function(event) {
     document.body.style.cursor = "default";
     const feature = event.target;
-    customLayer.setStyleGroup(feature);
+
+    if(!tree || tree.id !== feature.id)
+        customLayer.setStyleGroup(feature);
 });
 
 const auth = document.querySelector('.auth');
+const easting = document.querySelector('.easting');
+const northing = document.querySelector('.northing');
 const icon = document.querySelector('#tree div span ul li svg');
 const name = document.querySelector('#tree div span ul li a');
 const types = document.querySelectorAll('#tree div span ul li');
+const dropdown = document.querySelector('ul li ul');
 
 types.forEach((type, idx)=>{
-    if(idx)
-    type.addEventListener('click', (e)=>{
-        const a = type.querySelector('a');
-        const svg = type.querySelector('svg');
-        name.innerHTML = a.innerHTML;
-        icon.innerHTML = svg.innerHTML;
-
-        var attr = {'display_name': name.innerHTML};
-        // set new road name
-        tree && tree.prop(attr);
-    })
-})
-function setFeature(feature){
-    const prop = feature.properties;
-    types.forEach((type, idx) =>{
-        const a = type.querySelector('a');
-        const svg = type.querySelector('svg');
-
-        if(a.innerHTML == prop.display_name) {
+    if(idx) {
+        type.addEventListener('click', (e)=>{
+            const a = type.querySelector('a');
+            const svg = type.querySelector('svg');
+            name.innerHTML = a.innerHTML;
             icon.innerHTML = svg.innerHTML;
-        }
 
-    })
-    name.innerHTML = prop.display_name;
-    auth.innerHTML = prop.borough;
+            var attr = {'display_name': name.innerHTML};
+            if(tree) {
+                tree.prop(attr);
+                updateFeatureStyle(tree)
+            }
+
+            dropdown.classList.remove('open')
+            dropdown.classList.add('closed');
+        })
+    }
+    else {
+        type.addEventListener('pointerover', (e)=>{
+            dropdown.classList.remove('closed')
+            dropdown.classList.add('open');
+        });
+    }
+})
+function updateFeatureStyle(feature){
+    if(feature) {
+        var style = customLayer.getStyleGroup(feature);
+        var newStyle = Object.assign({}, style[0]);
+        newStyle.zIndex++;
+        newStyle.radius = 12;
+        newStyle.width = 20;
+        customLayer.setStyleGroup(feature, [newStyle]);
+    } else {
+
+    }
+}
+function setFeaturePanel(feature){
+    if(feature){
+        const prop = feature.properties;
+        types.forEach((type, idx) =>{
+            const a = type.querySelector('a');
+            const svg = type.querySelector('svg');
+    
+            if(a.innerHTML == prop.display_name) {
+                icon.innerHTML = svg.innerHTML;
+            }
+    
+        })
+        name.innerHTML = prop.display_name;
+        auth.innerHTML = prop.borough;
+        easting.innerHTML = prop.easting;
+        northing.innerHTML = prop.northing;
+    } else {
+        icon.innerHTML = '<svg height="10" width="10"><circle cx="5" cy="5" r="5" fill="#EEEEEE" /></svg>';
+        name.innerHTML = "Unselected";
+        auth.innerHTML = "Unselected";
+        easting.innerHTML = 0;
+        northing.innerHTML = 0;
+    }
 
 }

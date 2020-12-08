@@ -14,7 +14,6 @@
 	<body>
 		<div id="map"></div>
 
-		
 		<div id="tree">
 			<div class="titlePane">Tree Species</div>
 			<div><v>Name:</v>
@@ -23,7 +22,7 @@
 						<li value="selected"><svg height="10" width="10">
 							<circle cx="5" cy="5" r="5" fill="#EEEEEE" />
 						   </svg><a>Unselected</a>
-							<ul class="dropdown">
+							<ul class="dropdown open">
 							<li><svg height="10" width="10">
 								<circle cx="5" cy="5" r="5" fill="#A80085" />
 							   </svg><a>Adler</a></li>
@@ -98,10 +97,15 @@
 					</ul>
 			</span>
 		</div>
-			<div><v>Authority:</v><span class="auth">Unselected</span></div>
-			<a id="delete" class="button">Delete</a>
+			
+		<div>
+			<v>Authority:</v><span class="auth">Unselected</span>
 		</div>
-		<a id="submitchange" class="button">Submit</a>
+		<div><v>Easting:</v><span class="easting">0</span></div>
+		<div><v>Northing:</v><span class="northing">0</span></div>
+			<a id="delete" class="button hidden">Delete</a>
+		</div>
+		<a id="submitchange" class="button hidden">Submit</a>
 		<script src="index.js"></script>
 	</body>
 </html>
