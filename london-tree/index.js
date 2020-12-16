@@ -168,24 +168,37 @@ editor.addLayer( customLayer );
 
 editor.addObserver("history.current", ()=>{
     const current = editor.get("history.current");
-    console.log('finish...', current);
 
     if(current>0) {
-        submitButton.style.display = 'block';
+        submitButton.classList.add('show');
+        submitButton.classList.remove('hidden');
+
+        revertButton.classList.add('show');
+        revertButton.classList.remove('hidden');
     } else {
-        submitButton.style.display = 'none';
+        submitButton.classList.add('hidden');
+        submitButton.classList.remove('show');
+
+        revertButton.classList.add('hidden');
+        revertButton.classList.remove('show');
     }
 })
 
+const eastingDiff = -169285;
+const northingDiff = -5529788;
 var deleteButton = document.querySelector("#delete");
 var submitButton = document.querySelector("#submitchange");
+var revertButton = document.querySelector("#revert");
+var newButton = document.querySelector("#new");
+var mode = 'edit';
 var tree;
 
 deleteButton.onclick = function(){
     if(tree) {
         tree.remove();
         setFeaturePanel();
-        deleteButton.style.display = 'none';
+        deleteButton.classList.add('hidden');
+        deleteButton.classList.remove('show');
     }
 };
 
@@ -197,43 +210,108 @@ submitButton.onclick = function(){
     // submit changes
     editor.submit({
         onSuccess: ()=>{
-            deleteButton.style.display = 'none';
+            deleteButton.classList.add('hidden');
+            deleteButton.classList.remove('show');
             setFeaturePanel();
         }
     });
 };
 
+revertButton.onclick = function(){
+    editor.revert();
+
+    deleteButton.classList.add('hidden');
+    deleteButton.classList.remove('show');
+    setFeaturePanel();
+}
+
+newButton.onclick = function(){
+    toggleMode();
+
+    if(tree) {
+        customLayer.setStyleGroup(tree);
+    }
+    deleteButton.classList.add('hidden');
+    deleteButton.classList.remove('show');
+    setFeaturePanel();
+}
+
 display.addEventListener('pointerup', function(event) {
     if(event.button == 0) {
-        var feature = event.target;
-        
-        if(tree) {
-            customLayer.setStyleGroup(tree);
-        }
-
-        if(feature && feature.geometry.type != "Polygon") {
-            tree = feature;
-            deleteButton.style.display = 'block';
-            setFeaturePanel(feature)
+        if(mode == 'edit') {
+            var feature = event.target;
+            
+            if(tree) {
+                customLayer.setStyleGroup(tree);
+            }
+// console.log(feature)
+            if(feature && feature.geometry.type == "Point") {
+                tree = feature;
+                deleteButton.classList.add('show');
+                deleteButton.classList.remove('hidden');
+                setFeaturePanel(feature)
+            } else {
+                deleteButton.classList.add('hidden');
+                deleteButton.classList.remove('show');
+                setFeaturePanel();
+            }
         } else {
-            deleteButton.style.display = 'none';
-            setFeaturePanel();
+            var coord = new here.xyz.maps.editor.PixelCoordinate(event.mapX, event.mapY);
+            var geo = display.pixelToGeo(coord);
+            var a = fromLatLon(geo.latitude, geo.longitude);
+            var p = new here.xyz.maps.editor.features.Marker(coord, { display_name : 'Adler', borough: 'Westminster', easting: Math.round(a.easting) + eastingDiff, northing: Math.round(a.northing) + northingDiff });
+
+            tree = editor.addFeature(p);
+
+            deleteButton.classList.add('show');
+            deleteButton.classList.remove('hidden');
+            updateFeatureStyle(tree);
+            setFeaturePanel(tree);
+
+            toggleMode();
         }
     }
 });
 
+display.addEventListener('pointermove', function(e){
+    if(mode=='new'){
+        var coord = new here.xyz.maps.editor.PixelCoordinate(e.mapX, e.mapY);
+        var geo = display.pixelToGeo(coord);
+        var a = fromLatLon(geo.latitude, geo.longitude);
+        // console.log(a)
+        easting.innerHTML = Math.round(a.easting) + eastingDiff;
+        northing.innerHTML = Math.round(a.northing) + northingDiff;
+    }
+});
+
 editor.addEventListener('pointerenter', function(event) {
-    document.body.style.cursor = "pointer";
-    updateFeatureStyle(event.target);
+    if(mode == 'edit') {
+        document.body.style.cursor = "pointer";
+        updateFeatureStyle(event.target);
+    }
 });
 
 editor.addEventListener('pointerleave', function(event) {
-    document.body.style.cursor = "default";
-    const feature = event.target;
+    if(mode == 'edit') {
+        document.body.style.cursor = "default";
+        const feature = event.target;
 
-    if(!tree || tree.id !== feature.id)
-        customLayer.setStyleGroup(feature);
+        if(!tree || tree.id !== feature.id)
+            customLayer.setStyleGroup(feature);
+    }
 });
+
+function toggleMode(){
+    if(mode == 'edit') {
+        mode = 'new';
+        newButton.innerHTML = 'Stop';
+        document.body.style.cursor = "crosshair";
+    } else {
+        mode = 'edit';
+        newButton.innerHTML = 'New';
+        document.body.style.cursor = "default";
+    }
+}
 
 const auth = document.querySelector('.auth');
 const easting = document.querySelector('.easting');
