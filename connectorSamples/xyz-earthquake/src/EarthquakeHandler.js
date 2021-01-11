@@ -3,8 +3,9 @@ const ErrorResponse = require("./storage/ErrorResponse"),
     FeatureCollection = require("./storage/FeatureCollection"),
     SuccessResponse = require("./storage/SuccessResponse"),
     StatisticsResponse = require("./storage/StatisticsResponse"),
-    {get} = require("./storage/HttpUtil"),
     {URL, URLSearchParams} = require("url"),
+    https = require("https"),
+    http = require("http"),
     baseURL = "https://earthquake.usgs.gov/fdsnws/event/1/",
     winston = require("winston"),
     logger = winston.createLogger({
@@ -21,6 +22,41 @@ class EarthquakeHandler extends StorageEventHandler {
      */
     constructor(relocationS3Bucket) {
         super(relocationS3Bucket);
+    }
+
+    async getRequest(url, headers) {
+        let urlObj = url instanceof URL ? url : new URL(url);
+        let options = {
+            hostname: urlObj.hostname,
+            path: urlObj.pathname + urlObj.search,
+            method: 'GET',
+            headers: headers
+        }
+        return new Promise(function(resolve, reject) {
+            let req = (urlObj.protocol === "https:" ? https : http).request(options, res => {
+                // on bad status, reject
+                if (res.statusCode < 200 || res.statusCode >= 300) {
+                    return reject(new Error('statusCode=' + res.statusCode));
+                }
+                let body = "";
+                res.on('data', function(chunk) {
+                    body += chunk;
+                });
+                res.on('end', function() {
+                    resolve(body);
+                });
+            });
+            req.on('error', function(err) {
+                reject(err);
+            });
+            req.end();
+        });
+    }
+
+    async get(url, headers) {
+        return this.getRequest(url, headers).then( function (body) {
+            return body;
+        })
     }
 
     async transformResponse(event, response) {
@@ -63,7 +99,7 @@ class EarthquakeHandler extends StorageEventHandler {
     async requestHandler(event, requestUrl) {
         let resp = "";
         try {
-            resp = await get(requestUrl);
+            resp = await this.get(requestUrl, {});
             logger.debug("Earthquake API response: ", resp);
         } catch (e) {
             logger.debug("Could not request from USGS Earthquake API.");

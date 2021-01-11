@@ -2,7 +2,10 @@
   {
     "description": "Geom",
     "event": {
-      "type": "GetFeaturesByTileEvent",
+      "type": "GetFeaturesByGeometryEvent",
+      "lat": 50.1,
+      "lon": 8.9,
+      "radius": 10000,
       "space": "foo",
       "params": {},
       "bbox": [

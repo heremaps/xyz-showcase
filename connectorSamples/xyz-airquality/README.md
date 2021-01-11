@@ -69,14 +69,47 @@ The data covers 93 countries with more than 12 thousand locations and provides t
 }
 ```
 
-### GetFeaturesByTileEvent
-#### Request
-#### Response
-
     
 ### GetFeaturesByGeometryEvent
 #### Request
+```
+{
+    "type" : "GetFeaturesByGeometryEvent",
+    "space": "foo",
+    "lat": 50.1,
+    "lon": 8.9,
+    "radius": 10000,
+    "limit": 100
+}
+```
 #### Response
+```
+{"type": "FeatureCollection", 
+    "features": [
+        {   
+            "type": "Feature", 
+            "geometry": {
+                "type": "Point", 
+                "coordinates": [8.92157, 50.13577]
+            }, 
+            "properties": {
+                "no2": 31.77, 
+                "unit": "\u00b5g/m\u00b3", 
+                "date": "2021-01-11T00:00:00Z", 
+                "country": "DE", 
+                "location": "DEHE011", 
+                "city": "Hessen", 
+                "@ns:com:here:xyz": {
+                    "space": "foo", 
+                    "updatedAt": 1610382306528, 
+                    "tags": ["DEHE011", "DE", "Hessen"]
+                    }
+                }
+        },
+        ...
+    ]
+}
+```
 
 ### GetStatisticsEvent
 #### Request

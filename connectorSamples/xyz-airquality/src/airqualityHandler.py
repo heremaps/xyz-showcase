@@ -111,5 +111,5 @@ class airqualityHandler:
     def getfeaturesbygeometry(event):
         if ('lat' or 'lon' or 'radius') not in event:
             return ErrorResponse(event['streamId'], 500, 'No lat, lon or radius provided!')
-        url = f'{base}?has_geo=true&radius={event["radius"]}&coordinates={event["lat"]}{event["lon"]}&limit={event["limit"]}'
+        url = f'{base}?has_geo=true&radius={event["radius"]}&coordinates={event["lat"]},{event["lon"]}&limit={event["limit"]}'
         return airqualityHandler.handle_request(event, url)
