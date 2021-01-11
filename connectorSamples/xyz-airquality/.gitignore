@@ -1,4 +1,6 @@
 __pycache__
 src/venv
-src/geojson*
-src/urllib3*
+src/geojson/
+src/geojson-2.5.0.dist-info/
+src/urllib3/
+src/urllib3-1.25.9.dist-info/
