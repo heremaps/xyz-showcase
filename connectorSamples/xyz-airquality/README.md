@@ -1,7 +1,7 @@
 XYZ Air Quality
 -----------------------------------------
 
-This costum connector for DataHub requests free air quality data from OpenAQ (https://openaq.org; Documentation: https://docs.openaq.org/, License: CC-By 4.0).
+This custom connector for Data Hub requests free air quality data from OpenAQ (https://openaq.org; Documentation: https://docs.openaq.org/, License: CC-By 4.0).
 The data covers 93 countries with more than 12 thousand locations and provides these parameters:
 
 | Parameter | Description |
@@ -256,6 +256,6 @@ The data covers 93 countries with more than 12 thousand locations and provides t
 }
 ```
 
-#####General Information:
+##### General Information:
 - Maximum limit for returned features is 10.000
 

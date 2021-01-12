@@ -151,21 +151,5 @@ describe('ALL', function(){
         chai.expect(response["byteSize"], "ByteSite is mandatory!").to.exist;
         chai.expect(response["geometryTypes"].value.length > 0, "No geometryType provided!").to.be.true;
     });
-    it('Test many', async function(){
-        let eventTypes = [getStatisticsEvent, getFeaturesByBBoxEvent, getFeaturesByIdEvent, getFeaturesByTileEvent];
-        for (let it = 0; it < manyEvents.length; it++) {
-            for (let eT of eventTypes) {
-                eT.params = manyEvents[it];
-                if (eT.type === "GetFeaturesByIdEvent") {
-                    eT["ids"] = [eT.params.typeName + ".1"];
-                }
-                await router.execute(eT as LambdaEvent,undefined, responseHandler);
-                await responseProcessor(response);
-                if (eT["limit"] && response.features) {
-                    chai.expect(response.features.length <= eT["limit"], "More features than requested!").to.be.true;
-                }
-            }
-        }
-    });
 });
 
