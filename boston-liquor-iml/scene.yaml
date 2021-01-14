@@ -1,0 +1,126 @@
+cameras:
+    camera1:
+        type: perspective
+sources:
+    xyz_osm:
+        type: MVT
+        url: https://xyz.api.here.com/tiles/osmbase/512/all/{z}/{x}/{y}.mvt
+        max_zoom: 16
+        tile_size: 512
+        url_params:
+            access_token: AHhYRw6-TyaQ1JuNBJp_qwA
+
+global:
+    width: [[5, 5000], [8, 800], [10, 200], [12, 160],[14, 60], [18, 20]]
+    language: en # optional ISO 2-char code
+    language_text_source: |
+        function() {
+            // Use preferred language label if available
+            return (global.language && feature['name:'+global.language]) || feature.name;
+        }
+layers:
+    places:
+        data: { source: xyz_osm }
+        city-points:
+            filter:
+                kind: locality
+                # name:
+                #    not: Arlington
+                # not:
+                #    name: Arlington
+                kind_detail: city
+                $zoom: { max: 18 }
+            draw:
+                 text:
+                     text_source: global.language_text_source
+                     priority: 10
+                     order: 999
+                     font:
+                         family: Lato
+                         # size: 12px
+                         fill: '#C3CDD4'
+                         stroke: { color: white, width: 4 }
+                         transform: uppercase
+                         # weight: bold
+                         size: [[4, 15px], [8, 18px], [12, 26px]]
+                         buffer: 2px
+        neighborhoods:
+            filter:
+                - { kind: [neighbourhood, macrohood], $zoom: { min: 13 } }
+                - { kind: microhood, $zoom: { min: 15 } }
+            draw:
+                 text:
+                     text_source: global.language_text_source
+                     priority: 10
+                     order: 999
+                     font:
+                         family: Lato
+                         # size: 12px
+                         fill: '#C3CDD4'
+                         stroke: { color: white, width: 4 }
+                         # transform: uppercase
+                         # weight: bold
+                         size: [[4, 10px], [8, 14px], [12, 14px]]
+                         buffer: 2px
+    earth:
+        data: { source: xyz_osm }
+        draw:
+            polygons:
+                order: function() { return feature.sort_rank; }
+                color: 'white'
+
+    landuse:
+        data: { source: xyz_osm }
+        draw:
+            polygons:
+                order: function() { return feature.sort_rank; }
+                color: '#E9EEF1'
+
+    water:
+        data: { source: xyz_osm }
+        draw:
+            polygons:
+                order: function() { return feature.sort_rank; }
+                color: '#DEE1E3'
+
+    roads:
+        data: { source: xyz_osm }
+        filter:
+            not: { kind: [path, rail, ferry] }
+        draw:
+            lines:
+                order: function() { return feature.sort_rank; }
+                color: '#C3CDD4'
+                width: 8
+                cap: round
+        highway:
+            filter:
+                kind: highway
+            draw:
+                lines:
+                    order: function() { return feature.sort_rank; }
+                    color: '#D3DCE1'
+                    width: [[5, 5000], [8, 800], [10, 200], [12, 100],[14,40], [18, 20]]
+                    outline:
+                        color: '#EEEEEE'
+                        width: [[16, 0], [18, 1.5]]
+        minor_road:
+            filter:
+                kind: minor_road
+            draw:
+                lines:
+                    order: function() { return feature.sort_rank; }
+                    color: '#F8FAFB'
+                    width: 5
+
+    buildings:
+        data: { source: xyz_osm }
+        draw:
+            polygons:
+                order: function() { return feature.sort_rank; }
+                color: '#E9EBEB'
+        3d-buildings:
+            filter: { $zoom: { min: 15 } }
+            draw:
+                polygons:
+                    extrude: function () { return feature.height > 20 || $zoom >= 16; }
