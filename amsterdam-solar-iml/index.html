@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Amsterdam Solar Energy</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.3/dist/leaflet.css" />
+    <link rel="stylesheet" href="leaflet-areaselect.css" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@here" />
+    <meta name="twitter:title" content="Amsterdam Solar Energy" />
+    <meta name="twitter:description" content="Solar panels and trees in Amsterdam." />
+    <meta name="twitter:image" content="https://heremaps.github.io/xyz-showcase/amsterdam-solar/opengraph.png" />
+    <meta property="og:url" content="https://heremaps.github.io/xyz-showcase/amsterdam-solar/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Amsterdam Solar Energy" />
+    <meta property="og:description" content="Solar panels and trees in Amsterdam." />
+    <meta property="og:image" content="https://heremaps.github.io/xyz-showcase/amsterdam-solar/opengraph.png" />
+
+
+    <style>
+        body {
+            margin: 0px;
+            border: 0px;
+            padding: 0px;
+            font-family: Helvetica, Arial, sans-serif;
+        }
+        .container {
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            position: absolute;
+        }
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+
+        #slider {
+            width: 180px;
+        }
+
+        #controls {
+            position: absolute;
+            left: 1em;
+            top: 100px;
+            z-index: 1000;
+            background-color: rgba(200, 200, 200, 0.75);
+            /* display: none; */
+            width: 240px;
+            height: 490px;
+            border-radius: 6px;
+        }
+
+        #controls div {
+            margin: 16px;
+            padding: 0.5em;
+            background-color: hsl(204, 100%, 72%);
+            border: 1px solid black;
+            border-radius: 3px;
+            color: black;
+            box-shadow: 2px 2px 2px black;
+        }
+
+        #controls div.off {
+            background-color: hsl(204, 50%, 72%);
+            color: gray;
+        }
+
+        #controls div:hover {
+            background-color: dodgerblue;
+            margin-top: 16px;
+            margin-bottom: 16px;
+            color: white;
+            box-shadow: 4px 4px 4px black;
+        }
+
+        #controls div#counttrees {
+            background-color: #228800;
+            color: white;
+        }
+
+        #controls div#counttrees:hover {
+            background-color: #44AA00;
+            box-shadow: 4px 4px 4px black;
+        }
+
+    </style>
+  </head>
+
+  <body>
+    <div id="controls">
+        <div id="solar" class="on" onclick="toggle('solar')">Solar installations</div>
+        <div id="solarpower" class="on">
+            <label id="msg">Power greater than: <span id='slidervalue'>100</span></label>
+	        <input id='slider' type='range' min='1' max='500' step='0' value='1' />
+        </div>
+        <div id="neighborhoods" class="on" onclick="toggle('neighborhoods')">Neighborhoods</div>
+        <div id="trees" class="off" onclick="toggle('trees')">Trees</div>
+        <div id="counttrees" class="off" onclick="countTrees()">Count trees</div>
+        <div id="treetypes" class="on" > Tree types:
+        </br>
+            <input type="checkbox" id="1" name="Boom vrij uitgroeiend" checked><label for="Boom vrij uitgroeiend">Boom vrij uitgroeiend</label>
+        </br>
+            <input type="checkbox" id="2" name="Boom niet vrij uitgroeiend" checked><label for="Boom niet vrij uitgroeiend">Boom niet vrij uitgroeiend</label>
+        </br>
+            <input type="checkbox" id="3" name="Gekandelaberde boom" checked><label for="Gekandelaberde boom">Gekandelaberde boom</label>
+        </br>
+            <input type="checkbox" id="4" name="Knotboom" checked><label for="Knotboom">Knotboom</label>
+        </br>
+            <input type="checkbox" id="5" name="Leiboom" checked><label for="Leiboom">Leiboom</label>
+        </br>
+            <input type="checkbox" id="6" name="Vormboom" checked><label for="Vormboom">Vormboom</label>
+        </div>
+    </div>
+    <div class="container">
+        <div id="map"></div>
+    </div>
+
+
+    <!-- leaflet -->
+    <script src="https://unpkg.com/leaflet@1.3.3/dist/leaflet.js"></script>
+    <!-- <script src="https://unpkg.com/leaflet@1.0.1/dist/leaflet.js"></script> -->
+
+    <!-- Main tangram library -->
+    <script src="https://unpkg.com/tangram/dist/tangram.min.js"></script>
+
+    <script src="leaflet-areaselect.js"></script>
+    <script src="spin.min.js"></script>
+    <script src="leaflet.spin.min.js"></script>
+
+    <!-- Demo setup -->
+    <script>
+        var map = L.map('map', {boxZoom: false});
+
+        var areaSelect = L.areaSelect({width:200, height:300});
+
+        var mode = 'solar';
+
+        var layer = Tangram.leafletLayer({
+            scene: 'scene.yaml',
+            attribution: '<a href="https://mapzen.com/tangram" target="_blank">Tangram</a> | &copy; OSM contributors | <a href="https://mapzen.com/" target="_blank">Mapzen</a>',
+            events: {
+                hover: function(selection) {
+                    if (mode === 'solar') {
+                        if (selection.feature && selection.feature.id) {
+                            showPopup(selection.leaflet_event.latlng, selection.feature.properties.Buurtcombinatie, selection.feature.properties.totalPower);
+                        } else {
+                            map.closePopup();
+                        }
+                    }
+                }
+            }
+        });
+
+        layer.addTo(map);
+
+        // center of amsterdam
+        map.setView([52.372548, 4.893920], 12);
+
+        function formatNumber(x) {
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        // popups
+        var popup = L.popup({closeButton: false});
+
+        function showPopup(latlng, name, power) {
+            popup
+                .setLatLng(latlng)
+                .setContent('<p><strong>Neighborhood:</strong> ' + name + '</p><p>Total Power: ' + formatNumber(power) + ' kW</p>')
+                .openOn(map);
+        }
+
+        // bounding box
+        var trees = document.querySelectorAll('#treetypes input');
+
+        var slider = document.getElementById('slider');
+        var sliderValue = document.getElementById('slidervalue');
+        var solarpower = 50000;
+        slider.addEventListener('input', function(e) {
+            // Value indicator
+            solarpower = e.target.value + '00';
+            sliderValue.textContent = solarpower;
+        });
+        slider.addEventListener('pointerup', async function(e) {
+            layer.scene.config.sources.solar.url_params["p.Vermogen=gt"] = solarpower;
+            layer.scene.updateConfig();
+        });
+        var treeTypes = {};
+
+        function selectTreeType(){
+            trees.forEach((type)=>{
+                if(type.checked){
+                    treeTypes[type.name] = type.checked;
+                } else {
+                    delete treeTypes[type.name];
+                }
+            })
+            if (mode == 'trees'){ 
+                calcArea(areaSelect.getBounds()); 
+            }
+        }
+
+        selectTreeType();
+
+        for(var i = 0; i < trees.length; i++) {
+            trees[i].addEventListener('click', (type)=>{
+                selectTreeType();
+                layer.scene.config.sources.trees.url_params["p.Boomtype"] = Object.keys(treeTypes).join(",");
+                layer.scene.updateConfig();
+            });
+        }
+   
+        function calcArea(bounds) {
+            if (mode == 'trees') { // Prevent this from accidentally running in the other mode
+                map.spin(true);
+                var apiKey = 'wuhhFoo3HHQ8Bxw68fCZe8iA_J9v4dBnRhSbkAlMup4';
+                var url = 'https://interactive.data.api.platform.here.com/interactive/v1/catalogs/hrn:here:data::olp-here:dh-showcase-as/layers/amsterdam-solar-trees/bbox?apiKey=' + apiKey + '&west=' + bounds.getWest() + '&south=' + bounds.getSouth() + '&east=' + bounds.getEast() + '&north=' + bounds.getNorth() + '&p.Boomtype=' + Object.keys(treeTypes).join(',');
+                fetch(url).then((response) => response.json()).then(function(data) {
+                    var len = data.features.length;
+                    map.spin(false);
+                    L.popup().setLatLng(map.getCenter()).setContent(formatNumber(len) + ' trees selected').openOn(map);
+                });
+            }
+        };
+
+        function countTrees() {
+            if (mode === 'trees') {
+                areaSelect.remove();
+                mode = 'solar';
+            } else {
+                mode = 'trees';
+                areaSelect = L.areaSelect({width:200, height:300}); // Need to make a new one each time for some reason
+                areaSelect.addTo(map);
+
+
+                calcArea(areaSelect.getBounds()); // Run it once at load time
+
+                areaSelect.on("change", function() {
+                  calcArea(this.getBounds());  // Then run it again anytime the box changes
+                });
+            }
+        }
+
+        function toggle(layerName) {
+            layer.scene.config.layers["_" + layerName].enabled = !layer.scene.config.layers["_" + layerName].enabled;
+            document.getElementById(layerName).className = layer.scene.config.layers["_" + layerName].enabled ? "on" : "off";
+            if(layerName == "solar") {
+                document.getElementById(layerName + "power").className = layer.scene.config.layers["_" + layerName].enabled ? "on" : "off";
+            }
+            layer.scene.updateConfig();
+        }
+
+    </script>
+
+  </body>
+</html>
