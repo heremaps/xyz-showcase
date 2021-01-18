@@ -1,7 +1,6 @@
 const hereCredentials = {
-   id: 'wN6he75pbBMHW1V5g0wI',
-   code: 'HdDGiLkEL0zFeDsGTNeIxA',
-   apiKey: 'qzclC3ij80OtYVmvou8aT1sYwTWTNoLu9pBHgbbdQ_0'
+   id: 'amxmh2DxNV8EYfX6W9Lm',
+   code: 'WFmyiFcGFxyYEOgrZjDcGA'
 }
 
 const xyz = {
