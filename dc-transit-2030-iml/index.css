@@ -1,0 +1,105 @@
+body {
+   margin: 0px;
+   border: 0px;
+   padding: 0px;
+   font-family: 'Roboto Mono', sans-serif;
+   color: #333;
+}
+
+#map {
+   height: 100%;
+   width: 100%;
+   position: absolute;
+}
+
+#sidebar {
+   position: absolute;
+   top: 0;
+   left: 0;
+   margin: 20px;
+   padding: 20px;
+   width: 300px;
+   background: #EFF2F3;
+   border: 1.5px solid #D3D6D8;
+   z-index: 10000;
+   color: #656565;
+   animation-name: fade;
+   animation-duration: 1s;
+}
+
+@keyframes fade {
+   0% {
+      opacity: 0;
+      transform: translateY(20px);
+   }
+
+   100% {
+      opacity: 1;
+      transform: translateY(0px);
+   }
+}
+
+h1 {
+   margin-top: 0px;
+   color: #3C3C3C;
+   font-size: 24px;
+}
+
+h2 {
+   color: #3C3C3C;
+   font-size: 18px;
+}
+
+a {
+   color: #4983BC;
+   text-decoration: none;
+   display: inline-block;
+   transition: .3s all;
+}
+
+a:hover {
+   /* font-weight: bold; */
+   color: #2C5F91;
+   transform: translateY(-3px);
+}
+
+#xyz {
+   margin-top: 20px;
+}
+
+label {
+   line-height: 30px;
+}
+
+.line {
+   display: inline-block;
+   border-bottom: 3px solid black;
+   margin-bottom: 5px;
+   width: 20px;
+}
+
+#rapid_bus_line {
+   border-bottom: 3px solid #0258AE;
+}
+
+#rapid_bus_transit_line {
+   border-bottom: 3px solid #FFA42C;
+}
+
+#street_car_line {
+   border-bottom: 3px solid #DB3F46;
+}
+
+.custom .leaflet-popup-tip {
+   display: none;
+}
+.custom .leaflet-popup-content-wrapper {
+   background: #EFF2F3;
+   border: 1.5px solid #D3D6D8;
+   color: #656565;
+   padding: 0;
+   border-radius: 0;
+   box-shadow: none;
+   font-family: 'Roboto Mono', sans-serif;
+   font-size: 16px;
+}
