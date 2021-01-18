@@ -135,6 +135,12 @@
         var layer = Tangram.leafletLayer({
             scene: 'scene.yaml',
             attribution: '<a href="https://mapzen.com/tangram" target="_blank">Tangram</a> | Map data &copy; <a href="http://openstreetmap.org">OSM contributors</a> | Flight data via <a href="http://adsbexchange.com/">ADS-B Exchange</a>',
+            events: {
+                hover: function() {
+                    if(mode == 'areaSelectHidden')
+                    theMap.closePopup();
+                }
+            }
         });
 
         layer.addTo(theMap);
@@ -216,13 +222,18 @@
         }
 
         function updateSource(airport) {
-            layer.scene.setDataSource("airplanes", { type: "GeoJSON",
-                url: "https://xyz.api.here.com/hub/spaces/CcZXUo0i/tile/web/{z}_{x}_{y}",
-                url_params: {
-                    "access_token": "AQAd6lqjXCQJrGMMkvbUItM",
-                    "tags": airport.code,
-                    "clip": true
-                }});
+            const code = airport.code.toUpperCase();
+
+            if(code === 'ALLFLIGHTS') {
+                layer.scene.config.layers._airplanes2.enabled = false;
+                delete layer.scene.config.sources.airplanes1.url_params['p.from_icao'];
+                delete layer.scene.config.sources.airplanes2.url_params['p.from_icao']
+            } else {
+                layer.scene.config.layers._airplanes2.enabled = true;
+                layer.scene.config.sources.airplanes1.url_params['p.from_icao'] = code;
+                layer.scene.config.sources.airplanes2.url_params['p.to_icao'] = code;
+            }
+            layer.scene.updateConfig();
 
             if (airport.location) {
               theMap.panTo(airport.location);
@@ -239,22 +250,29 @@
         }
 
         function countPlanes() {
-
             if (mode === 'areaSelect') {
-                areaSelect.remove();
                 mode = 'areaSelectHidden';
+                areaSelect.remove();
             } else {
                 mode = 'areaSelect';
+                areaSelect = L.areaSelect({width:200, height:300}); // Need to make a new one each time for some reason
+
                 areaSelect.addTo(theMap);
-                areaSelect.on("change", function() {
-                  var bounds = this.getBounds();
-                  var url = 'https://xyz.api.here.com/hub/spaces/CcZXUo0i/bbox?access_token=AQAd6lqjXCQJrGMMkvbUItM&west=' + bounds.getWest() + '&south=' + bounds.getSouth() + '&east=' + bounds.getEast() + '&north=' + bounds.getNorth();
+
+                function calcArea(bounds){
+                  var url = 'https://xyz.api.here.com/hub/spaces/HKl2SyEL/bbox?access_token=ALftJA9aTLmD1iirPyN2kwA&west=' + bounds.getWest() + '&south=' + bounds.getSouth() + '&east=' + bounds.getEast() + '&north=' + bounds.getNorth();
 
                   fetch(url).then((response) => response.json()).then(function(data) {
                       var len = data.features.length;
                       console.log(formatNumber(len) + ' planes selected');
                       L.popup().setLatLng(theMap.getCenter()).setContent(formatNumber(len) + ' planes within bounding box').openOn(theMap);
                   });
+                }
+
+                calcArea(areaSelect.getBounds()); // Run it once at load time
+
+                areaSelect.on("change", function() {
+                    calcArea(this.getBounds());
                 });
             }
         }

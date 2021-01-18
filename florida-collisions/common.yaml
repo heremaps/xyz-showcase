@@ -20,12 +20,11 @@ sources:
         type: MVT
         url: https://xyz.api.here.com/tiles/osmbase/256/all/{z}/{x}/{y}.mvt
         url_params:
-            access_token: Af375WwfMwEmN5W844jLoYk
+            access_token: ACzhEVJGQguPsVU5c_JVjgA
   collisions:
-      url: https://xyz.api.here.com/hub/spaces/jpAxLoue/tile/web/{z}_{x}_{y}
+      url: https://xyz.api.here.com/hub/spaces/ekT6bAd2/tile/web/{z}_{x}_{y}
       url_params:
-          access_token: Af375WwfMwEmN5W844jLoYk
-          clip: true
+          access_token: ACzhEVJGQguPsVU5c_JVjgA
       type: GeoJSON
 
 layers:

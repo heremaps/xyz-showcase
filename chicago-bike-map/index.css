@@ -92,6 +92,7 @@ label {
    position: absolute;
    transition: .8s all ease-out;
    width: 100%;
+   cursor: pointer;
 }
 
 .bar {

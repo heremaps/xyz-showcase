@@ -4,13 +4,17 @@ import:
     - https://www.nextzen.org/carto/refill-style/themes/label-5.zip
 
 sources:
-    airplanes:
-        url: https://xyz.api.here.com/hub/spaces/CcZXUo0i/tile/web/{z}_{x}_{y}
+    airplanes1:
+        url: https://xyz.api.here.com/hub/spaces/HKl2SyEL/tile/web/{z}_{x}_{y}
         url_params:
-            access_token: AQAd6lqjXCQJrGMMkvbUItM
-            clip: true
+            access_token: ALftJA9aTLmD1iirPyN2kwA
         type: GeoJSON
 
+    airplanes2:
+        url: https://xyz.api.here.com/hub/spaces/HKl2SyEL/tile/web/{z}_{x}_{y}
+        url_params:
+            access_token: ALftJA9aTLmD1iirPyN2kwA
+        type: GeoJSON
 
 styles:
     _points:
@@ -35,12 +39,21 @@ styles:
         blend_order: 1
 
 layers:
-    _airplanes:
+    _airplanes1:
         enabled: true
-        data: {source: airplanes}
+        data: {source: airplanes1}
         draw: 
             points:
                 collide: false
-                color: '#00A000'
-                size: 5
+                color: '#8AECE4'
+                size: 15
+    
+    _airplanes2:
+        enabled: false
+        data: {source: airplanes2}
+        draw: 
+            points:
+                collide: false
+                color: '#FF6464'
+                size: 15
 

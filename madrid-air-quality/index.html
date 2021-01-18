@@ -153,7 +153,7 @@
     <!-- Demo setup -->
     <script>
         var circles = [];
-        var initDate = '2001-02-23t09:00:00';
+        var currDate = '2001-02-23t09:00:00';
         var timeFormatter = d3.timeFormat('%Y-%m-%dt%H:%M:%S');
         var numberFormatter = d3.format(".1f");
         var calendar = flatpickr("#datepicker", {
@@ -163,7 +163,8 @@
             maxDate: "2001-12-31",
             minuteIncrement: 60,
             onChange: function(selectedDates, dateStr, instance) {
-                fetchData(timeFormatter(selectedDates[0]))
+                currDate = timeFormatter(selectedDates[0]);
+                fetchData(currDate);
             }
         });
 
@@ -194,7 +195,8 @@
                 .on('click', d => {
                     currProperty = d.code;
                     renderProperties();
-                    renderCircles();
+                    // renderCircles();
+                    fetchData(currDate);
                 })
                 .attr('title', d => d.desc)
                 .text(d => d.code)
@@ -229,7 +231,7 @@
         // center of madrid
         theMap.setView([40.416232, -3.703637], 13);
 
-        var spaceID = 'sZZXbJam';
+        var spaceID = 'lrBWoUxU';
         var accessToken = '48XtBKvI2SDiL2wNvgnqqg';
         var radiusScale = d3.scaleLinear().domain([0, 200]).range([7, 70]).clamp(true);
         var colorScale = d3.scaleSequential(d3.interpolateOrRd).domain([0, 100]);
@@ -255,15 +257,15 @@
         }
 
         function fetchData(dateStr) {
-            var url = 'https://xyz.api.here.com/hub/spaces/' + spaceID + '/search?limit=100&access_token=' + accessToken + '&tags=' + dateStr;
+            var url = 'https://xyz.api.here.com/hub/spaces/' + spaceID + '/search?access_token=' + accessToken + '&p.timestamp=' + (new Date(dateStr)).getTime() + '&selection=p.name,p.' + currProperty;
             d3.json(url).then(function(data) {
                 theData = data;
                 renderCircles();
             });
         }
 
-        calendar.setDate(initDate);
-        fetchData(initDate);
+        calendar.setDate(currDate);
+        fetchData(currDate);
         renderProperties();
 
 

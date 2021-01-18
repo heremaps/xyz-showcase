@@ -1,5 +1,5 @@
-const routesUrl = `https://xyz.api.here.com/hub/spaces/Pqh7dfFY/search?access_token=AJXABoLRYHN488wIHnxheik`;
-const neighborhoodsUrl = `https://xyz.api.here.com/hub/spaces/5kwzZmtK/search?access_token=AJXABoLRYHN488wIHnxheik`
+const routesUrl = `https://xyz.api.here.com/hub/spaces/zvEXPAdl/search?access_token=AN4BOGrRT_2XHOsEFHCG3QA`;
+const neighborhoodsUrl = `https://xyz.api.here.com/hub/spaces/0C8ckhZk/search?access_token=AN4BOGrRT_2XHOsEFHCG3QA&mode=viz`
 const types = ["BIKE LANE", "BUFFERED BIKE LANE", "SHARED-LANE", "PROTECTED BIKE LANE", "OFF-STREET TRAIL", "ACCESS PATH", "NEIGHBORHOOD GREENWAY"]
 
 async function init() {
@@ -25,6 +25,39 @@ async function init() {
       fetch(neighborhoodsUrl).then(x => x.json())
    ])
 
+   let newLinesAsFeatureCollection = routes;
+   let newLinesForCalcDistance = routes.features;
+
+   const bikemap = L.geoJSON(routes, {
+      style: function(feature) {
+            const bikeroute = feature.properties.bikeroute;
+            let color;
+            if (bikeroute === 'OFF-STREET TRAIL') {
+               color = '#2B7DB4';
+            } else if (bikeroute === 'ACCESS PATH') {
+               color = '#1A9850';
+            } else if (bikeroute === 'PROTECTED BIKE LANE') {
+               color = '#91CF60';
+            } else if (bikeroute === 'BUFFERED BIKE LANE') {
+               color = '#D9EF8B';
+            } else if (bikeroute === 'BIKE LANE') {
+               color = '#FFD150';
+            } else if (bikeroute === 'NEIGHBORHOOD GREENWAY') {
+               color = '#FC8D59';
+            } else if (bikeroute === 'SHARED-LANE') {
+               color = '#D72F27';
+            }
+            
+         return { stroke: true, color: color, weight: 2}
+      }
+   });
+   
+   bikemap.addTo(map);
+
+   L.geoJSON(neighborhoods, {
+      style: { color: '#7B7B7B', weight: 2, dashArray: [2, 5], lineCap: 'butt', fillOpacity: 0}
+   }).addTo(map);
+
    L.geoJSON(neighborhoods, {
       style: { color: '#484848', weight: 0, opacity: 0},
       onEachFeature: (feature, layer) => {
@@ -39,23 +72,24 @@ async function init() {
    }).addTo(map);
 
 
-   function resetMap() {
-      tangram.scene.setDataSource('_routes', {
-         type: 'GeoJSON',
-         url: 'https://xyz.api.here.com/hub/spaces/Pqh7dfFY/tile/web/{z}_{x}_{y}',
-         url_params: {
-            access_token: 'AZL4Ab9z2cBFt9d2PQ2hh0k'
-         }
-      });
+   async function resetMap() {
+      fetch(routesUrl).then(x => x.json()).then(routes => {
+         newLinesAsFeatureCollection = routes;
+         newLinesForCalcDistance = routes.features;
+
+         bikemap.clearLayers();
+         bikemap.addData(routes);
+
+         assignTotals(
+            calculateDistance(routes.features)
+         );
+      })
+
       document.getElementById('clear').style.visibility = 'hidden';
-      const distances = calculateDistance(routes.features);
-      assignTotals(distances);
       document.getElementById('neighborhood').innerText = 'City of Chicago';
    }
 
    document.getElementById('clear').onclick = () => resetMap();
-
-   // document.getElementById('clip').onchange = (evt) => !evt.target.checked && resetMap();
 
    document.getElementById('clip').onchange = () => console.log(this);
 
@@ -95,6 +129,7 @@ async function init() {
    }
 
    function handleFeatureClick(evt) {
+      
       document.getElementById('neighborhood').innerText = 'Neighborhood: ' + evt.target.feature.properties.pri_neigh;
       document.getElementById('loading').style.opacity = '1';
 
@@ -115,19 +150,18 @@ async function init() {
          }
       })
 
-      const newLinesForCalc = temp.map(u => {
+      newLinesForCalcDistance = temp.map(u => {
          return {
             "type": "Feature",
             "properties": u.features[0].properties,
             "geometry": {
                "type": "LineString",
                "coordinates": [u.features.map(f => f.geometry.coordinates)]
-
             }
          }
       });
 
-      const newLinesAsFeatureCollection = {
+      newLinesAsFeatureCollection = {
          type: 'FeatureCollection',
          features: temp.map(u => {
             return {
@@ -141,13 +175,15 @@ async function init() {
          })
       };
 
+      
       if (document.getElementById('clip').checked){
-         tangram.scene.setDataSource('_routes', { type: 'GeoJSON', data: newLinesAsFeatureCollection });
+         bikemap.clearLayers();
+         bikemap.addData(newLinesAsFeatureCollection);
       }
       document.getElementById('clear').style.visibility = 'visible';
 
       assignTotals(
-         calculateDistance(newLinesForCalc)
+         calculateDistance(newLinesForCalcDistance)
       )
    }
 
@@ -173,6 +209,26 @@ async function init() {
       }
       return distances;
    }
-}
 
+   function bikeMapHandler(item) {
+      const laneType = item.id;
+
+      bikemap.clearLayers();
+      bikemap.addData(laneType == 'total' ? newLinesAsFeatureCollection : {
+         'type': 'FeatureCollection',
+         'features': newLinesAsFeatureCollection.features.filter(feature => {
+            return feature.properties.bikeroute == laneType
+         })
+      });
+
+      document.getElementById('clear').style.visibility = 'visible';
+   }
+
+   const bikeMaps = document.querySelectorAll('.row');
+   bikeMaps.forEach(item => {
+      item.onclick = () => {
+         bikeMapHandler(item);
+      }
+   })
+}
 init();

@@ -39,6 +39,10 @@
             width: 100%;
         }
 
+        #slider {
+            width: 180px;
+        }
+
         #controls {
             position: absolute;
             left: 1em;
@@ -46,8 +50,8 @@
             z-index: 1000;
             background-color: rgba(200, 200, 200, 0.75);
             /* display: none; */
-            width: 200px;
-            height: 230px;
+            width: 240px;
+            height: 490px;
             border-radius: 6px;
         }
 
@@ -90,9 +94,27 @@
   <body>
     <div id="controls">
         <div id="solar" class="on" onclick="toggle('solar')">Solar installations</div>
+        <div id="solarpower" class="on">
+            <label id="msg">Power greater than: <span id='slidervalue'>100</span></label>
+	        <input id='slider' type='range' min='1' max='500' step='0' value='1' />
+        </div>
         <div id="neighborhoods" class="on" onclick="toggle('neighborhoods')">Neighborhoods</div>
         <div id="trees" class="off" onclick="toggle('trees')">Trees</div>
         <div id="counttrees" class="off" onclick="countTrees()">Count trees</div>
+        <div id="treetypes" class="on" > Tree types:
+        </br>
+            <input type="checkbox" id="1" name="Boom vrij uitgroeiend" checked><label for="Boom vrij uitgroeiend">Boom vrij uitgroeiend</label>
+        </br>
+            <input type="checkbox" id="2" name="Boom niet vrij uitgroeiend" checked><label for="Boom niet vrij uitgroeiend">Boom niet vrij uitgroeiend</label>
+        </br>
+            <input type="checkbox" id="3" name="Gekandelaberde boom" checked><label for="Gekandelaberde boom">Gekandelaberde boom</label>
+        </br>
+            <input type="checkbox" id="4" name="Knotboom" checked><label for="Knotboom">Knotboom</label>
+        </br>
+            <input type="checkbox" id="5" name="Leiboom" checked><label for="Leiboom">Leiboom</label>
+        </br>
+            <input type="checkbox" id="6" name="Vormboom" checked><label for="Vormboom">Vormboom</label>
+        </div>
     </div>
     <div class="container">
         <div id="map"></div>
@@ -124,7 +146,7 @@
             events: {
                 hover: function(selection) {
                     if (mode === 'solar') {
-                        if (selection.feature) {
+                        if (selection.feature && selection.feature.id) {
                             showPopup(selection.leaflet_event.latlng, selection.feature.properties.Buurtcombinatie, selection.feature.properties.totalPower);
                         } else {
                             map.closePopup();
@@ -154,6 +176,59 @@
         }
 
         // bounding box
+        var trees = document.querySelectorAll('#treetypes input');
+
+        var slider = document.getElementById('slider');
+        var sliderValue = document.getElementById('slidervalue');
+        var solarpower = 50000;
+        slider.addEventListener('input', function(e) {
+            // Value indicator
+            solarpower = e.target.value + '00';
+            sliderValue.textContent = solarpower;
+        });
+        slider.addEventListener('pointerup', async function(e) {
+            layer.scene.config.sources.solar.url_params["p.Vermogen=gt"] = solarpower;
+            layer.scene.updateConfig();
+        });
+        var treeTypes = {};
+
+        function selectTreeType(){
+            trees.forEach((type)=>{
+                if(type.checked){
+                    treeTypes[type.name] = type.checked;
+                } else {
+                    delete treeTypes[type.name];
+                }
+            })
+            if (mode == 'trees'){ 
+                calcArea(areaSelect.getBounds()); 
+            }
+        }
+
+        selectTreeType();
+
+        for(var i = 0; i < trees.length; i++) {
+            trees[i].addEventListener('click', (type)=>{
+                selectTreeType();
+                layer.scene.config.sources.trees.url_params["p.Boomtype"] = Object.keys(treeTypes).join(",");
+                layer.scene.updateConfig();
+            });
+        }
+   
+        function calcArea(bounds) {
+            if (mode == 'trees') { // Prevent this from accidentally running in the other mode
+                map.spin(true);
+                var spaceID = 'ZXKLXJZ4';
+                var accessToken = 'AQAd6lqjXCQJrGMMkvbUItM';
+                var url = 'https://xyz.api.here.com/hub/spaces/' + spaceID + '/bbox?access_token=' + accessToken + '&west=' + bounds.getWest() + '&south=' + bounds.getSouth() + '&east=' + bounds.getEast() + '&north=' + bounds.getNorth() + '&p.Boomtype=' + Object.keys(treeTypes).join(',');
+
+                fetch(url).then((response) => response.json()).then(function(data) {
+                    var len = data.features.length;
+                    map.spin(false);
+                    L.popup().setLatLng(map.getCenter()).setContent(formatNumber(len) + ' trees selected').openOn(map);
+                });
+            }
+        };
 
         function countTrees() {
             if (mode === 'trees') {
@@ -164,20 +239,6 @@
                 areaSelect = L.areaSelect({width:200, height:300}); // Need to make a new one each time for some reason
                 areaSelect.addTo(map);
 
-                function calcArea(bounds) {
-                    if (mode == 'trees') { // Prevent this from accidentally running in the other mode
-                      map.spin(true);
-                      var spaceID = 'ZXKLXJZ4';
-                      var accessToken = 'AQAd6lqjXCQJrGMMkvbUItM';
-                      var url = 'https://xyz.api.here.com/hub/spaces/' + spaceID + '/bbox?access_token=' + accessToken + '&west=' + bounds.getWest() + '&south=' + bounds.getSouth() + '&east=' + bounds.getEast() + '&north=' + bounds.getNorth();
-
-                      fetch(url).then((response) => response.json()).then(function(data) {
-                          var len = data.features.length;
-                          map.spin(false);
-                          L.popup().setLatLng(map.getCenter()).setContent(formatNumber(len) + ' trees selected').openOn(map);
-                      });
-                    }
-                };
 
                 calcArea(areaSelect.getBounds()); // Run it once at load time
 
@@ -190,9 +251,11 @@
         function toggle(layerName) {
             layer.scene.config.layers["_" + layerName].enabled = !layer.scene.config.layers["_" + layerName].enabled;
             document.getElementById(layerName).className = layer.scene.config.layers["_" + layerName].enabled ? "on" : "off";
+            if(layerName == "solar") {
+                document.getElementById(layerName + "power").className = layer.scene.config.layers["_" + layerName].enabled ? "on" : "off";
+            }
             layer.scene.updateConfig();
         }
-
 
     </script>
 

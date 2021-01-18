@@ -163,7 +163,7 @@
           crops producing 8% of America’s agricultural output. This map illustrates
           the incredible diversity of the region’s agriculture through the seasons,
           using a <a href="https://data.cnra.ca.gov/dataset/crop-mapping-2014">large public data set</a> and XYZ Hub API features such as styling 
-          with tags, search with properties and dynamically filtering tags within the viewport.
+          with properties, search with properties and dynamically filtering properties within the viewport.
         </p>
         <p>
           Source files and data can be accessed on <a href="https://github.com/heremaps/xyz-showcase">GitHub</a>.
@@ -256,9 +256,16 @@
             .attr("transform", "translate(" + (width - 3*margin.right) + "," + -height/2 + ")")
             .append("text")
             .style("fill","#2ECFC2")
+            .style("pointer-events", "all")
+            .style("cursor", "pointer")
             .on("click", function() {
-              brushSelection.call(brush.move,[0,1]);
-              updateFilter(1,1);
+              brushSelection.call(brush.move, [0, 1]);
+              
+              selectCrop = false;
+              delete scene.config.sources._xyz_crops_polygon.url_params["p.Crop2014"];
+              delete scene.config.sources._xyz_crops_centroid.url_params["p.crop2014"];
+
+              scene.updateConfig();
             })
             .text("[clear]");
 
@@ -331,6 +338,8 @@
         layer.addTo(map);
 
         var scene = layer.scene;
+        var selectCrop = false;
+        var filteredCrops;
 
         // Most months are from http://www.pickyourown.org/CAharvestcalendar.htm
 
@@ -408,7 +417,22 @@
             .append("div")
               .attr("class", "item")
               .style("background-color", d => colors[d].c)
-              .style("height", d => (colors[d].header ? "25px" : "0px"));
+              .style("height", d => (colors[d].header ? "25px" : "0px"))
+              .on("mouseover", function(l,i) { if(!colors[l].header) document.body.style.cursor = "pointer"; })
+              .on("mouseout",  function(l,i) { if(!colors[l].header) document.body.style.cursor = "default"; })
+              .on('click', (l)=>{
+                if(!colors[l].header) {
+                  if(selectCrop && !filteredCrops) {
+                    delete scene.config.sources._xyz_crops_polygon.url_params["p.Crop2014"];
+                    delete scene.config.sources._xyz_crops_centroid.url_params["p.crop2014"];
+                  } else {
+                    scene.config.sources._xyz_crops_polygon.url_params["p.Crop2014"] = selectCrop ? filteredCrops : l;
+                    scene.config.sources._xyz_crops_centroid.url_params["p.crop2014"] = selectCrop ? filteredCrops : l;
+                  }
+                  selectCrop = !selectCrop;
+                  scene.updateConfig();
+                }
+              })
 
 
         item.append("div")
@@ -450,8 +474,10 @@
           });
           // In order to search a string with comma (,), we need to encode it
 
-          scene.config.sources._xyz_crops_polygon_tags.url_params["p.Crop2014"] = list_of_crops.join(",");
-          scene.config.sources._xyz_crops_centroid_tags.url_params["p.crop2014"] = list_of_crops.join(",");
+          selectCrop = false;
+          filteredCrops = list_of_crops.join(",");
+          scene.config.sources._xyz_crops_polygon.url_params["p.Crop2014"] = filteredCrops;
+          scene.config.sources._xyz_crops_centroid.url_params["p.crop2014"] = filteredCrops;
           // Note that the property name is capitalized for the polygons, but lowercase for the points. :(
 
           scene.updateConfig();

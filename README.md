@@ -24,7 +24,9 @@ Plan your next pub crawl with this interactive map listing all establishments th
 
 ### D.C. Proposed Public Transit 2030
 
-__[Source Code](https://github.com/heremaps/xyz-showcase/tree/master/dc-transit-2030) - [Live Map](https://heremaps.github.io/xyz-showcase/dc-transit-2030)__
+Space: __[Source Code](https://github.com/heremaps/xyz-showcase/tree/master/dc-transit-2030) - [Live Map](https://heremaps.github.io/xyz-showcase/dc-transit-2030)__
+
+Interactive Map Layer: __[Source Code](https://github.com/heremaps/xyz-showcase/tree/master/dc-transit-2030-iml) - [Live Map](https://heremaps.github.io/xyz-showcase/dc-transit-2030-iml)__
 
 Explore the proposed public transit system of Washington D.C. in 2030.
 
