@@ -100,6 +100,11 @@ __Three.js: [Source Code](https://github.com/heremaps/xyz-showcase/tree/master/f
 
 Flight data visualized in three different renderers.
 
+### London Trees
+
+__[Source Code](https://github.com/heremaps/xyz-showcase/tree/master/london-tree) - [Live Map](https://heremaps.github.io/xyz-showcase/london-tree)__
+
+Interactive Map visualizes Trees in London, to which you can add new or remove dead trees from the map.
 ### DC Transit 2030
 
 Interactive Map Layer: __[Source Code](https://github.com/heremaps/xyz-showcase/tree/master/transit-mapsjs-iml) - [Live Map](https://heremaps.github.io/xyz-showcase/transit-mapsjs-iml)__

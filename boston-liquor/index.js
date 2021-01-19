@@ -1,28 +1,22 @@
-const hereCredentials = {
-   id: 'amxmh2DxNV8EYfX6W9Lm',
-   code: 'WFmyiFcGFxyYEOgrZjDcGA'
-}
-
 const xyz = {
    space: 'ugpYaAUf',
-   token: 'AHhYRw6-TyaQ1JuNBJp_qwA'
+   token: 'AHhYRw6-TyaQ1JuNBJp_qwA',
+   apiKey: '5VcMPNVXT5EydOUUbLSxwesRGtGBHbrIf4JXKQQ0jQ0'
 }
-
-const hereIsolineUrl = (coords, range) => `https://isoline.route.api.here.com/routing/7.2/calculateisoline.json?app_id=${hereCredentials.id}&app_code=${hereCredentials.code}&mode=shortest;pedestrian;traffic:disabled&start=geo!${coords.lat},${coords.lng}&range=${range * 60}&rangetype=time`
-
 const maxIsolineRangeLookup = {
    time: 5000,
    distance: 80000
 }
 
-const hereGeocoderUrl = (query) => `https://geocoder.api.here.com/6.2/geocode.json?app_id=${hereCredentials.id}&app_code=${hereCredentials.code}&searchtext=${query}`;
+const hereIsolineUrl = (coords, range) => `https://isoline.router.hereapi.com/v8/isolines?transportMode=pedestrian&range[type]=distance&range[values]=${range * 60}&origin=${coords.lat},${coords.lng}&apiKey=${xyz.apiKey}`
 
-const hereReverseGeocodeUrl = (coordinates) => `https://reverse.geocoder.api.here.com/6.2/reversegeocode.json?prox=${coordinates.lat},${coordinates.lng},250&mode=retrieveAddresses&maxresults=1&gen=9&app_id=${hereCredentials.id}&app_code=${hereCredentials.code}`;
+const hereGeocoderUrl = (query) => `https://geocode.search.hereapi.com/v1/geocode?apiKey=${xyz.apiKey}&q=${query}`;
 
-const alcoholSearchUrl = (type) => `https://xyz.api.here.com/hub/spaces/${xyz.space}/${type}?access_token=${xyz.token}`;
+const hereReverseGeocodeUrl = (coordinates) => `https://revgeocode.search.hereapi.com/v1/revgeocode?at=${coordinates.lat},${coordinates.lng}&apiKey=${xyz.apiKey}`;
+
+const liquorSearchUrl = (type) => `https://xyz.api.here.com/hub/spaces/${xyz.space}/${type}?access_token=${xyz.token}`;
 
 async function init() {
-
    const tangram = Tangram.leafletLayer({
       scene: 'scene.yaml',
       events: {
@@ -51,7 +45,7 @@ async function init() {
    const searchInput = document.querySelector('.search-address input');
 
    const [alcohols] = await Promise.all([
-      fetch(alcoholSearchUrl('search')).then(x => x.json()),
+      fetch(liquorSearchUrl('search')).then(x => x.json()),
    ])
 
    const isolineCenter = L.geoJSON([]).addTo(map);
@@ -134,11 +128,11 @@ async function init() {
       fetch(hereReverseGeocodeUrl(latlng))
       .then(res => res.json())
       .then(res => {
-         const address = res.Response.View[0].Result[0].Location.Address;
+         const address = res.items[0].address;
 
          description[0].innerHTML = range;
-         const idx = address.Label.indexOf(address.City);
-         description[1].innerHTML = [address.Label.substring(0, idx-2), address.City].join(" ");
+         const idx = address.label.indexOf(address.city);
+         description[1].innerHTML = [address.label.substring(0, idx-2), address.city].join(" ");
          searchInput.value = description[1].innerHTML;
       })
 
@@ -149,8 +143,8 @@ async function init() {
       fetch(hereIsolineUrl(latlng, range))
       .then(res => res.json())
       .then(res => {
-         if (res.hasOwnProperty('response')) {
-            makeSpatialSearch(res);
+         if (res.hasOwnProperty('isolines')) {
+            makeSpatialSearch(decode(res.isolines[0].polygons[0].outer));
          } 
       });
     }
@@ -158,13 +152,13 @@ async function init() {
     function makeSpatialSearch(res){
       const polygon = {
          type: "MultiPolygon",
-         coordinates: [[res.response.isoline[0].component[0].shape.map(x => [Number(x.split(',')[1]), Number(x.split(',')[0]), 0])]]
+         coordinates: [[res.polyline.map(x => [parseFloat(x[1].toFixed(8)), parseFloat(x[0].toFixed(8)), 0])]]
       };
 
-      fetch(alcoholSearchUrl('spatial'), {
+      fetch(liquorSearchUrl('spatial'), {
          method: 'POST',
          headers: {
-            'Content-Type': 'application/geo+json',
+            'Content-Type': 'application/geo+json'
          },
          body: JSON.stringify(polygon)
       })
@@ -198,9 +192,8 @@ async function init() {
       fetch(hereGeocoderUrl(searchInput.value))
       .then(res => res.json())
       .then(res => {
-         if (res.Response.View.length > 0) {
-            const location = res.Response.View[0].Result[0].Location.DisplayPosition;
-            latlng = {lat: location.Latitude, lng: location.Longitude};
+         if (res.items.length > 0) {
+            latlng = res.items[0].position;
 
             clear.classList.remove("hidden");
             clear.classList.add("show");
