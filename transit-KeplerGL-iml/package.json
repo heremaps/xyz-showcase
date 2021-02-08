@@ -1,0 +1,32 @@
+{
+  "name": "showcase",
+  "version": "0.0.1",
+  "description": "showcase IML with Kepler GL",
+  "license": "Apache-2.0",
+  "main": "index.html",
+  "scripts": {
+    "build": "webpack --config webpack.config.js --mode production",
+    "dev": "webpack --config webpack.config.js --mode development"
+  },
+  "dependencies": {
+    "@babel/core": "^7.12.13",
+    "@babel/preset-env": "^7.12.13",
+    "assert": "^2.0.0",
+    "babel-loader": "^8.2.2",
+    "kepler.gl": "^2.4.0",
+    "process": "^0.11.10",
+    "querystring": "^0.2.0",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-palm": "^3.3.7",
+    "react-redux": "^7.2.2",
+    "redux": "^4.0.5",
+    "styled-components": "^5.2.1",
+    "url": "^0.11.0"
+  },
+  "devDependencies": {
+    "@babel/preset-react": "^7.12.13",
+    "webpack": "^5.21.0",
+    "webpack-cli": "^4.5.0"
+  }
+}

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>D.C. Transit 2030</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.js"></script>
+<link href="https://api.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.css" rel="stylesheet" />
+<style>
+	body { margin: 0; padding: 0; }
+	#map { position: absolute; top: 0; bottom: 0; width: 100%; }
+</style>
+</head>
+<body>
+<div id="map"></div>
+<script>
+    const apikey = 'wuhhFoo3HHQ8Bxw68fCZe8iA_J9v4dBnRhSbkAlMup4';
+    const catalogArn = 'hrn:here:data::olp-here:dh-showcase-dc-transit';
+    const layerId = 'dc-transit';
+
+	mapboxgl.accessToken = 'pk.eyJ1IjoieGhhaWZlbmciLCJhIjoiY2trcHh1eXJrMGhldTJ1cDhqdHZ2NXZoZyJ9.oM1XeaXJpeDhGeVc_v0bqA';
+    var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/light-v10',
+        zoom: 12,
+        center: [-76.97605, 38.90192]
+    });
+ 
+    map.on('load', function () {
+        // Add interactive map layer.
+        map.addSource('iml', {
+            'type': 'vector',
+            'tiles': [
+                `https://interactive.data.api.platform.here.com/interactive/v1/catalogs/${catalogArn}/layers/${layerId}/tile/web/{z}_{x}_{y}.mvt?apiKey=${apikey}`
+            ],
+            'minzoom': 6,
+            'maxzoom': 14
+        });
+        map.addLayer(
+        {
+            'id': 'iml',
+            'type': 'line',
+            'source': 'iml',
+            'source-layer': `${catalogArn}:${layerId}`,
+            'layout': {
+                'line-cap': 'round',
+                'line-join': 'round'
+            },
+            'paint': {
+                'line-opacity': 0.6,
+                'line-color': 'rgb(53, 175, 109)',
+                'line-width': 2
+            }
+        },
+        'waterway-label'
+        );
+    });
+    
+    map.addControl(new mapboxgl.NavigationControl());
+</script>
+ 
+</body>
+</html>
