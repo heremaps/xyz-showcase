@@ -27,12 +27,10 @@ styles:
 
 
 sources:
-    xyz_osm:
+    heremvt:
         type: MVT
-        url: https://xyz.api.here.com/tiles/osmbase/256/all/{z}/{x}/{y}.mvt
+        url: https://vector.hereapi.com/v2/vectortiles/base/mc/{z}/{x}/{y}/omv?apikey=wuhhFoo3HHQ8Bxw68fCZe8iA_J9v4dBnRhSbkAlMup4
         max_zoom: 16
-        url_params:
-            access_token: AB9di0Bpr3GBxODEMbb5PWU
 
     xyz_lamps:
         type: GeoJSON
@@ -44,33 +42,33 @@ sources:
 
 layers:
     earth:
-        data: { source: xyz_osm }
+        data: { source: heremvt }
         draw:
             polygons:
                 order: function() { return feature.sort_rank; }
                 color: [0.145, 0.145, 0.145, 1.00]
 
     landuse:
-        data: { source: xyz_osm }
+        data: { source: heremvt }
         draw:
             polygons:
                 order: function() { return feature.sort_rank; }
                 color: [0.741, 0.741, 0.741, 1.00]
 
     water:
-        data: { source: xyz_osm }
+        data: { source: heremvt }
         draw:
             polygons:
                 order: function() { return feature.sort_rank; }
                 color: [0.941, 0.941, 0.941, 1.00]
 
     roads:
-        data: { source: xyz_osm }
+        data: { source: heremvt }
         filter:
             not: { kind: [path, rail, ferry] }
         draw:
             lines:
-                order: function() { return feature.sort_rank; }
+                order: function() { return feature.sort_rank || 380; }
                 color: [0.576, 0.580, 0.439, 0.50]
                 width: 8
                 cap: round
@@ -95,7 +93,7 @@ layers:
                     width: 4
 
     buildings:
-        data: { source: xyz_osm }
+        data: { source: heremvt }
         draw:
             polygons:
                 order: function() { return feature.sort_rank || 0; }
