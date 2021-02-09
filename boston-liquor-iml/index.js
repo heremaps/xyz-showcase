@@ -20,6 +20,7 @@ const liquorSearchUrl = (type) => `https://interactive.data.api.platform.here.co
 async function init() {
    const tangram = Tangram.leafletLayer({
       scene: 'scene.yaml',
+      attribution: '<a href="https://github.com/tangrams/tangram">Tangram</a> | © HERE 2020 ',
       events: {
          click: handleClick
       }
@@ -30,9 +31,7 @@ async function init() {
       layers: [tangram],
       zoomControl: false
    });
-
-   map.attributionControl.addAttribution('<a href="https://github.com/tangrams/tangram">Tangram</a> | <a href="https://here.xyz">HERE XYZ</a> | <a href="https://www.openstreetmap.org/">OSM</a>');
-
+   
    var range = 20; // 20 min walk distance
    var latlng;
    const tooltip = document.querySelector('#tooltip');
@@ -129,7 +128,6 @@ async function init() {
       fetch(hereReverseGeocodeUrl(latlng))
       .then(res => res.json())
       .then(res => {
-         console.log(res)
          const address = res.items[0].address;
 
          description[0].innerHTML = range;
