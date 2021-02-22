@@ -48,14 +48,23 @@
       font-size: 13px;
       color: grey;
     }
+    .attribution a{
+      position: absolute;
+      right: 0px;
+      bottom:0px;
+      background-color: lightgrey;
+      color: #222526;
+      font: 12px/20px Helvetica Neue,Arial,Helvetica,sans-serif;
+      padding: 0 8px 0 8px;
+      text-decoration: none;
+      opacity: 0.8;
+    }
   </style>
   <script src="https://unpkg.com/deck.gl@latest/dist.min.js"></script>
-  <!-- optional if mapbox base map is needed -->
-  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.js'></script>
-  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css' rel='stylesheet' />
 </head>
 <body>
     <div id="container"></div>
+    <div class='attribution'><a href="https://www.openstreetmap.org/copyright">© OpenStreetMap</a></div>
     <div id="controller">
       <h3>Flight routes</h1>
       <p>Show flight routes from an airport around the world</p>
@@ -74,20 +83,6 @@
               <label class="aname">Singapore Changi Airport</label>
             </td>
           </tr>
-          <tr>
-            <td rowspan="2">
-              <input type="radio" name="airport" value="HND">
-            </td>
-            <td>
-              <label class="code">Tokyo (HND)</label>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <label class="aname">Tokyo International Airport Haneda</label>
-            </td>
-          </tr>
-
           <tr>
             <td rowspan="2">
               <input type="radio" name="airport" value="DOH">
@@ -113,6 +108,19 @@
           <tr>
             <td>
               <label class="aname">Munich Airport</label>
+            </td>
+          </tr>
+          <tr>
+            <td rowspan="2">
+              <input type="radio" name="airport" value="JFK">
+            </td>
+            <td>
+              <label class="code">New York (JFK)</label>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <label class="aname">John F. Kennedy International Airport</label>
             </td>
           </tr>
         </table>

@@ -1,7 +1,7 @@
 //specify credentials
 var ACCESS_TOKEN = "AFuLw_fHSwunbKRiCOuy9gA";
 const apikey = 'ec3PFUEkQV_xTVGwaFu10SFj5SNI98RDT35J9IriX1U';
-const catalogArn = 'hrn:here:data::olp-here:cell-towers';
+const catalogHrn = 'hrn:here:data::olp-here:cell-towers';
 const layerId = 'cell-towers';
 
 var bgLayer = new here.xyz.maps.layers.MVTLayer({
@@ -102,7 +102,7 @@ function getCellLayer(stds) {
         min: 2,
         max: 20,
         remote: {
-            url: `https://interactive.data.api.platform.here.com/interactive/v1/catalogs/${catalogArn}/layers/${layerId}/tile/web/{z}_{x}_{y}.mvt?apiKey=${apikey}&p.radio=${stds}&clip=false&clustering=hexbin&clustering.relativeResolution=2`
+            url: `https://interactive.data.api.platform.here.com/interactive/v1/catalogs/${catalogHrn}/layers/${layerId}/tile/web/{z}_{x}_{y}.mvt?apiKey=${apikey}&p.radio=${stds}&clip=false&clustering=hexbin&clustering.relativeResolution=1`
         },
         // customize layer style
         style:{

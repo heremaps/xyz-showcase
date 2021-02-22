@@ -1,6 +1,6 @@
 
 const xyz = {
-   catalogARN: 'hrn:here:data::olp-here:dh-showcase',
+   catalogHRN: 'hrn:here:data::olp-here:dh-showcase',
    layer: 'boston-liquor',
    apiKey: 'wuhhFoo3HHQ8Bxw68fCZe8iA_J9v4dBnRhSbkAlMup4'
 }
@@ -15,7 +15,7 @@ const hereGeocoderUrl = (query) => `https://geocode.search.hereapi.com/v1/geocod
 
 const hereReverseGeocodeUrl = (coordinates) => `https://revgeocode.search.hereapi.com/v1/revgeocode?at=${coordinates.lat},${coordinates.lng}&apiKey=${xyz.apiKey}`;
 
-const liquorSearchUrl = (type) => `https://interactive.data.api.platform.here.com/interactive/v1/catalogs/${xyz.catalogARN}/layers/${xyz.layer}/${type}?apiKey=${xyz.apiKey}`;
+const liquorSearchUrl = (type) => `https://interactive.data.api.platform.here.com/interactive/v1/catalogs/${xyz.catalogHRN}/layers/${xyz.layer}/${type}?apiKey=${xyz.apiKey}`;
 
 async function init() {
    const tangram = Tangram.leafletLayer({

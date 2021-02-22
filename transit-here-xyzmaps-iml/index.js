@@ -1,7 +1,7 @@
 //specify credentials
 var ACCESS_TOKEN = "AFuLw_fHSwunbKRiCOuy9gA";
 const apikey = 'wuhhFoo3HHQ8Bxw68fCZe8iA_J9v4dBnRhSbkAlMup4';
-const catalogArn = 'hrn:here:data::olp-here:dh-showcase-dc-transit';
+const catalogHrn = 'hrn:here:data::olp-here:dh-showcase-dc-transit';
 const layerId = 'dc-transit';
 
 var bgLayer = new here.xyz.maps.layers.MVTLayer({
@@ -95,7 +95,7 @@ var transitLayer = new here.xyz.maps.layers.MVTLayer({
     min: 2,
     max: 20,
     remote: {
-        url: `https://interactive.data.api.platform.here.com/interactive/v1/catalogs/${catalogArn}/layers/${layerId}/tile/web/{z}_{x}_{y}.mvt?apiKey=${apikey}`
+        url: `https://interactive.data.api.platform.here.com/interactive/v1/catalogs/${catalogHrn}/layers/${layerId}/tile/web/{z}_{x}_{y}.mvt?apiKey=${apikey}`
     },
     // customize layer style
     style:{

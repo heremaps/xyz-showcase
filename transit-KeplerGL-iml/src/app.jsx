@@ -8,9 +8,9 @@ import {processGeojson} from 'kepler.gl/processors';
 
 
 const apiKey = 'wuhhFoo3HHQ8Bxw68fCZe8iA_J9v4dBnRhSbkAlMup4';
-const catalogArn = 'hrn:here:data::olp-here:dh-showcase-dc-transit';
+const catalogHrn = 'hrn:here:data::olp-here:dh-showcase-dc-transit';
 const layerId = 'dc-transit';
-const dctransitURL = `https://interactive.data.api.platform.here.com/interactive/v1/catalogs/${catalogArn}/layers/${layerId}/search?apiKey=${apiKey}`;
+const dctransitURL = `https://interactive.data.api.platform.here.com/interactive/v1/catalogs/${catalogHrn}/layers/${layerId}/search?apiKey=${apiKey}`;
 const token = 'pk.eyJ1IjoieGhhaWZlbmciLCJhIjoiY2trcHh1eXJrMGhldTJ1cDhqdHZ2NXZoZyJ9.oM1XeaXJpeDhGeVc_v0bqA';
 
 
