@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=no">
+		<title>Display Cell  data with xyz maps</title>
+
+	   	<script src="https://xyz.api.here.com/maps/latest/xyz-maps-common.min.js" type="text/javascript" charset="UTF-8" ></script>
+	    <script src="https://xyz.api.here.com/maps/latest/xyz-maps-core.min.js" type="text/javascript" charset="UTF-8" ></script>
+	    <script src="https://xyz.api.here.com/maps/latest/xyz-maps-display.min.js" type="text/javascript" charset="UTF-8" ></script>
+		<link rel="stylesheet" href="index.css">
+
+	</head>
+	<body>
+		<div id="map"></div>
+		<div id="controller">
+			<h3>Cell Towers</h1>
+			<p>Visualize global cell Towers coverage with Hexbin</p>
+		</div>
+		<div id="cell">
+			<table>
+			  <tr>
+				<td>
+				  <input type="checkbox" value="LTE" checked>
+				  <label class="code">(4G) LTE</label>
+				</td>
+				<td>
+				  <input type="checkbox" value="UMTS" checked>
+				  <label class="code">(3G) UMTS</label>
+				</td>
+				<td>
+				  <input type="checkbox" value="GSM" checked>
+				  <label class="code">(2G) GSM</label>
+				</td>
+				<td>
+				  <input type="checkbox" value="CDMA" checked>
+				  <label class="code">(2G) CDMA</label>
+				</td>
+			  </tr>
+			</table>
+		  </div>
+		<script src="index.js"></script>
+	</body>
+</html>
