@@ -145,7 +145,7 @@ window.display = new here.xyz.maps.Map( document.getElementById("map"), {
 });
 
 const standardsInputs = document.querySelectorAll("input");
-const slider = document.querySelector(".slider input");
+const ratios = document.querySelectorAll(".sampling");
 
 standardsInputs.forEach(standard => {
     standard.onchange = function(){
@@ -164,28 +164,25 @@ standardsInputs.forEach(standard => {
         display.addLayer(cellLayer)
   }
 })
-const sampleingmap = {
-    1: 'off',
-    2: 'low',
-    3: 'lowmed',
-    4: 'med',
-    5: 'medhigh',
-    6: 'high'
-}
-slider.addEventListener('pointerup', function() {
-    if(sampleingmap[this.value] != currentSampling) {
-        currentSampling = sampleingmap[this.value];
 
-        const cellLayer = getCellLayer(standards, currentSampling);
-        const cb = function(){
-            const layers = display.getLayers();
-            display.removeLayer(layers[1]);
-            cellLayer.removeEventListener('viewportReady', cb);
+ratios.forEach((e)=>{
+    e.addEventListener('pointerup', function() {
+        if(this.getAttribute('value') != currentSampling) {
+            currentSampling = this.getAttribute('value');
+            
+            this.querySelector('input').checked = true
+
+            const cellLayer = getCellLayer(standards, currentSampling);
+            const cb = function(){
+                const layers = display.getLayers();
+                display.removeLayer(layers[1]);
+                cellLayer.removeEventListener('viewportReady', cb);
+            }
+            cellLayer.addEventListener('viewportReady', cb)
+            display.addLayer(cellLayer)
+
         }
-        cellLayer.addEventListener('viewportReady', cb)
-        display.addLayer(cellLayer)
-
-    }
+    })
 })
 
 

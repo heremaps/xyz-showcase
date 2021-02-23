@@ -29,31 +29,15 @@
     top: 15px;
     border-radius: 5px;
 }
-
-#datasampling {
-    position: absolute;
-    background-color: lightgrey;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 1px solid black;
-    padding: 10px;
-    opacity: 0.9;
-    bottom: 15px;
-    width: 300px;
-    border-radius: 5px;
-}
-#datasampling .sampling {
-    width: 40px;
-    text-align: center;
+.sampling {
+    height: 25px;
 }
 
-.slider{
-    text-align: center;
+.sampling input{
+    position: relative;
+    top:2px;
 }
 
-.slider input{
-    width: 270px;
-}
 .attribution a{
     position: absolute;
     right: 0px;

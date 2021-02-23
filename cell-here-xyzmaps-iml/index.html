@@ -13,8 +13,33 @@
 	<body>
 		<div id="map"></div>
 		<div id="controller">
-			<h3>Cell Towers</h1>
+			<h3>Cell Towers</h3>
 			<p>Visualize global cell Towers coverage with hexbin and its different samplingratio</p>
+			<p><b>Select Sampling Ratio:</b></p>
+			<div class="sampling" value="off">
+				<input type="radio" value="off" name = "sampling" checked>
+				<label value="off">1/1 - off</label>
+			</div>
+			<div class="sampling" value="low">
+				<input type="radio" value="low" name = "sampling">
+				<label>1/8 - low</label>
+			</div>
+			<div class="sampling" value="lowmed">
+				<input type="radio" value="lowmed" name = "sampling">
+				<label>1/32 - lowmed</label>
+			</div>
+			<div class="sampling" value="med">
+				<input type="radio" value="med" name = "sampling">
+				<label>1/128 - med</label>
+			</div>
+			<div class="sampling" value="medhigh">
+				<input type="radio" value="medhigh" name = "sampling">
+				<label>1/1024 - medhigh</label>
+			</div>
+			<div class="sampling" value="high">
+				<input type="radio" value="high" name = "sampling">
+				<label>1/4096 - high</label>
+			</div>
 		</div>
 		<div id="cell">
 			<table>
@@ -39,35 +64,48 @@
 			</table>
 		</div>
 
-		<div id="datasampling">
+		<!-- <div id="datasampling">
 			<table>
 				<tr>
-				<td class="sampling">
-						<label>off</label>
-				</td>
-				<td class="sampling">
-						<label>low</label>
-				</td>
-				<td class="sampling">
-						<label>lowmed</label>
-				</td>
-				<td class="sampling">
-						<label>med</label>
-				</td>
-				<td class="sampling">
-					<label>medhigh</label>
-				</td>
-				<td class="sampling">
-					<label>high</label>
-				</td>
-				</tr>
-				<tr>
-				<td colspan=6>
-					<div class="slider"><input type="range" min="1" max="6" value="1"></div>
-				</td>
+					<td class="sampling">
+						<div value="off">
+							<input type="radio" value="off" name = "sampling" checked>
+							<label value="off">1/1</label>
+						</div>
+					</td>
+					<td class="sampling">
+						<div value="low">
+							<input type="radio" value="low" name = "sampling">
+							<label>1/8</label>
+						</div>
+					</td>
+					<td class="sampling">
+						<div value="lowmed">
+							<input type="radio" value="lowmed" name = "sampling">
+							<label>1/32</label>
+						</div>
+					</td>
+					<td class="sampling">
+						<div value="med">
+							<input type="radio" value="med" name = "sampling">
+							<label>1/128</label>
+						</div>
+					</td>
+					<td class="sampling">
+						<div value="medhigh">
+							<input type="radio" value="medhigh" name = "sampling">
+							<label>1/1024</label>
+						</div>
+					</td>
+					<td class="sampling">
+						<div value="high">
+							<input type="radio" value="high" name = "sampling">
+							<label>1/4096</label>
+						</div>
+					</td>
 				</tr>
 			</table>
-		</div>
+		</div> -->
 		<script src="index.js"></script>
 	</body>
 </html>
