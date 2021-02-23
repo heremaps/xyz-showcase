@@ -87,6 +87,7 @@ var bgLayer = new here.xyz.maps.layers.MVTLayer({
 //     1: 150000
 // }
 
+var currentSampling = 'off';
 var standards = {
     "LTE": true,
     "UMTS": true,
@@ -94,7 +95,7 @@ var standards = {
     "CDMA": true
 };
 
-function getCellLayer(stds) {
+function getCellLayer(stds, sampling) {
     stds = Object.keys(stds).join(',');
 
     return new here.xyz.maps.layers.MVTLayer({
@@ -102,7 +103,7 @@ function getCellLayer(stds) {
         min: 2,
         max: 20,
         remote: {
-            url: `https://interactive.data.api.platform.here.com/interactive/v1/catalogs/${catalogHrn}/layers/${layerId}/tile/web/{z}_{x}_{y}.mvt?apiKey=${apikey}&p.radio=${stds}&clip=false&clustering=hexbin&clustering.relativeResolution=1`
+            url: `https://interactive.data.api.platform.here.com/interactive/v1/catalogs/${catalogHrn}/layers/${layerId}/tile/web/{z}_{x}_{y}.mvt?apiKey=${apikey}&p.radio=${stds}&clip=false&clustering=hexbin&clustering.relativeResolution=1&clustering.sampling=${sampling}`
         },
         // customize layer style
         style:{
@@ -140,10 +141,11 @@ window.display = new here.xyz.maps.Map( document.getElementById("map"), {
     // set initial map pitch in degrees
     pitch: 30,
     // add layers to display
-    layers: [bgLayer, getCellLayer(standards)]
+    layers: [bgLayer, getCellLayer(standards, currentSampling)]
 });
 
 const standardsInputs = document.querySelectorAll("input");
+const slider = document.querySelector(".slider input");
 
 standardsInputs.forEach(standard => {
     standard.onchange = function(){
@@ -152,7 +154,7 @@ standardsInputs.forEach(standard => {
         else
             delete standards[this.value];
             
-        const cellLayer = getCellLayer(standards);
+        const cellLayer = getCellLayer(standards, currentSampling);
         const cb = function(){
             const layers = display.getLayers();
             display.removeLayer(layers[1]);
@@ -161,6 +163,29 @@ standardsInputs.forEach(standard => {
         cellLayer.addEventListener('viewportReady', cb)
         display.addLayer(cellLayer)
   }
+})
+const sampleingmap = {
+    1: 'off',
+    2: 'low',
+    3: 'lowmed',
+    4: 'med',
+    5: 'medhigh',
+    6: 'high'
+}
+slider.addEventListener('pointerup', function() {
+    if(sampleingmap[this.value] != currentSampling) {
+        currentSampling = sampleingmap[this.value];
+
+        const cellLayer = getCellLayer(standards, currentSampling);
+        const cb = function(){
+            const layers = display.getLayers();
+            display.removeLayer(layers[1]);
+            cellLayer.removeEventListener('viewportReady', cb);
+        }
+        cellLayer.addEventListener('viewportReady', cb)
+        display.addLayer(cellLayer)
+
+    }
 })
 
 

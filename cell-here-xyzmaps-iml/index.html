@@ -14,30 +14,60 @@
 		<div id="map"></div>
 		<div id="controller">
 			<h3>Cell Towers</h1>
-			<p>Visualize global cell Towers coverage with Hexbin</p>
+			<p>Visualize global cell Towers coverage with hexbin and its different samplingratio</p>
 		</div>
 		<div id="cell">
 			<table>
 			  <tr>
 				<td>
 				  <input type="checkbox" value="LTE" checked>
-				  <label class="code">(4G) LTE</label>
+				  <label class="standard">(4G) LTE</label>
 				</td>
 				<td>
 				  <input type="checkbox" value="UMTS" checked>
-				  <label class="code">(3G) UMTS</label>
+				  <label class="standard">(3G) UMTS</label>
 				</td>
 				<td>
 				  <input type="checkbox" value="GSM" checked>
-				  <label class="code">(2G) GSM</label>
+				  <label class="standard">(2G) GSM</label>
 				</td>
 				<td>
 				  <input type="checkbox" value="CDMA" checked>
-				  <label class="code">(2G) CDMA</label>
+				  <label class="standard">(2G) CDMA</label>
 				</td>
 			  </tr>
 			</table>
-		  </div>
+		</div>
+
+		<div id="datasampling">
+			<table>
+				<tr>
+				<td class="sampling">
+						<label>off</label>
+				</td>
+				<td class="sampling">
+						<label>low</label>
+				</td>
+				<td class="sampling">
+						<label>lowmed</label>
+				</td>
+				<td class="sampling">
+						<label>med</label>
+				</td>
+				<td class="sampling">
+					<label>medhigh</label>
+				</td>
+				<td class="sampling">
+					<label>high</label>
+				</td>
+				</tr>
+				<tr>
+				<td colspan=6>
+					<div class="slider"><input type="range" min="1" max="6" value="1"></div>
+				</td>
+				</tr>
+			</table>
+		</div>
 		<script src="index.js"></script>
 	</body>
 </html>

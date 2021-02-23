@@ -15,24 +15,44 @@
     opacity: 0.9;
     left: 20px;
     top: 20px;
+    width: 200px;
     border-radius: 5px;
 }
 #cell {
+    position: absolute;
     background-color: lightgrey;
-    display: table;
-    margin: 0 auto;
+    left: 50%;
+    transform: translateX(-50%);
     border: 1px solid black;
     padding: 10px;
     opacity: 0.9;
-    top: 20px;
+    top: 15px;
     border-radius: 5px;
 }
-.code{
-    font-size: 14px;
+
+#datasampling {
+    position: absolute;
+    background-color: lightgrey;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 1px solid black;
+    padding: 10px;
+    opacity: 0.9;
+    bottom: 15px;
+    width: 300px;
+    border-radius: 5px;
 }
-.aname{
-    font-size: 13px;
-    color: grey;
+#datasampling .sampling {
+    width: 40px;
+    text-align: center;
+}
+
+.slider{
+    text-align: center;
+}
+
+.slider input{
+    width: 270px;
 }
 .attribution a{
     position: absolute;
