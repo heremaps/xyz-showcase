@@ -94,6 +94,14 @@ var standards = {
     "GSM": true,
     "CDMA": true
 };
+const samplingRatioMap = {
+    "off": 1,
+    "low": 8,
+    "lowmed": 32,
+    "med": 128,
+    "medhigh": 1024,
+    "high": 4096
+};
 
 function getCellLayer(stds, sampling) {
     stds = Object.keys(stds).join(',');
@@ -114,7 +122,7 @@ function getCellLayer(stds, sampling) {
                 // 4: [{zIndex: 2, type: 'Polygon', opacity: 0.8, fill: '#48E3CD', extrude: (feature) => JSON.parse(feature.properties.aggregation).qty * 5 || 250}],
                 // 5: [{zIndex: 2, type: 'Polygon', opacity: 0.8, fill: '#0098BD', extrude: (feature) => JSON.parse(feature.properties.aggregation).qty * 5 || 250}]
             
-                cell: [{zIndex: 2, type: 'Polygon', opacity: 0.8, fill: '#0097BC', extrude: (feature) => JSON.parse(feature.properties.aggregation).qty * 10 || 250}]
+                cell: [{zIndex: 2, type: 'Polygon', opacity: 0.8, fill: '#0097BC', extrude: (feature) => JSON.parse(feature.properties.aggregation).qty * 10 * samplingRatioMap[currentSampling] || 250}]
             },
     
             assign: function(feature, zoomlevel){
