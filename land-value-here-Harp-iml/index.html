@@ -1,0 +1,102 @@
+<html>
+    <head>
+        <title>Standard Land value map Chemnitz 2011 - 2020</title>
+        <style>
+            body,
+            html {
+                border: 0;
+                margin: 0;
+                padding: 0;
+            }
+            #map {
+                position: absolute;
+                overflow: hidden;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+            }
+            #copyrightNotice {
+                position: absolute;
+                right: 0;
+                bottom: 0;
+                background-color: #f0fef1;
+                z-index: 100;
+                font: 12px/20px Helvetica Neue,Arial,Helvetica,sans-serif;
+                padding: 0 8px 0 8px;
+                text-decoration: none;
+                opacity: 0.8;
+            }
+            #controller {
+                position: absolute;
+                background-color: lightgrey;
+                padding: 20px;
+                opacity: 0.9;
+                left: 20px;
+                top: 20px;
+                width: 300px;
+                border-radius: 5px;
+            }
+            #cell {
+                position: absolute;
+                background-color: lightgrey;
+                top: 50%;
+                transform: translateY(-50%);
+                top: 350px;
+                border: 1px solid black;
+                padding: 10px;
+                opacity: 0.9;
+                left: 20px;
+                border-radius: 5px;
+            }
+            #cell span {
+                position: relative;
+                display: block;
+                left: 0px;
+                width: 60px;
+                height: 20px;
+                border-style: solid;
+                border-width: 1px;
+                border-color: black;
+                background-color: grey;
+                padding: 5 0 0 20;
+                cursor: pointer;
+            }
+            #cell div {
+                position: relative;
+                display: block;
+                left: 28px;
+                top:3px;
+                cursor: pointer;
+            }
+            #cell .pressed {
+                background-color: lightgrey;
+            }
+        </style>
+        <!-- <script src="https://unpkg.com/three/build/three.min.js"></script> -->
+        <script src="three.min.js"></script>
+        <script src="https://unpkg.com/@here/harp.gl/dist/harp.js"></script>
+    </head>
+    <body>
+        <canvas id="map"></canvas>
+        <div id="copyrightNotice"></div>
+        <div id="controller">
+			<h3>Standard Land value Chemnitz</h1>
+			<p>Visualize standard land value in Chemnitz from 2011 to 2020</p>
+		</div>
+		<span id="cell">
+            <span value="2011" class="pressed">2011</span>
+            <span value="2012">2012</span>
+            <span value="2013">2013</span>
+            <span value="2014">2014</span>
+            <span value="2015">2015</span>
+            <span value="2016">2016</span>
+            <span value="2017">2017</span>
+            <span value="2018">2018</span>
+            <span value="2019">2019</span>
+            <span value="2020">2020</span>
+            <div id="play"><img src="./icons/pause.svg"></img></div>
+		  </span>
+        <script src="index.js"></script>
+    </body>
+</html>
