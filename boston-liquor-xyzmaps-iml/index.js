@@ -1,7 +1,7 @@
 
 const xyz = {
    token: "AFuLw_fHSwunbKRiCOuy9gA",
-   catalogARN: 'hrn:here:data::olp-here:dh-showcase',
+   catalogHrn: 'hrn:here:data::olp-here:dh-showcase',
    layer: 'boston-liquor',
    apiKey: 'wuhhFoo3HHQ8Bxw68fCZe8iA_J9v4dBnRhSbkAlMup4'
 }
@@ -16,7 +16,7 @@ const hereGeocoderUrl = (query) => `https://geocode.search.hereapi.com/v1/geocod
 
 const hereReverseGeocodeUrl = (coordinates) => `https://revgeocode.search.hereapi.com/v1/revgeocode?at=${coordinates.latitude},${coordinates.longitude}&apiKey=${xyz.apiKey}`;
 
-const liquorSearchUrl = (type) => `https://interactive.data.api.platform.here.com/interactive/v1/catalogs/${xyz.catalogARN}/layers/${xyz.layer}/${type}?apiKey=${xyz.apiKey}`;
+const liquorSearchUrl = (type) => `https://interactive.data.api.platform.here.com/interactive/v1/catalogs/${xyz.catalogHrn}/layers/${xyz.layer}/${type}?apiKey=${xyz.apiKey}`;
 
 var customStyle = {
    styleGroups: {
@@ -24,12 +24,36 @@ var customStyle = {
          {zIndex:0, type:"Polygon", opacity: 0.2, stroke:"#3288FF", fill: '#0000FF', strokeWidth:3},
          {zIndex:1, type:"Line", opacity: 1, stroke:"#3288FF", strokeWidth:3}
       ],
-      'All_Alcohol': [{zIndex: 3, type: 'Circle', radius: 7, fill: '#3C4BF1'}],
-      'Malt_Wine': [{zIndex: 3, type: 'Circle', radius: 7, fill: '#50D05E'}],
-      'Malt_Wine_Liquor': [{zIndex: 3, type: 'Circle', radius: 7, fill: '#E265F0'}],
-      'Tavern': [{zIndex: 3, type: 'Circle', radius: 7, fill: '#EC3B43'}],
-      'Farmer': [{zIndex: 3, type: 'Circle', radius: 7, fill: '#8BFFF2'}],
-      'Other': [{zIndex: 3, type: 'Circle', radius: 7, fill: '#00FFFF'}],
+      'All_Alcohol': [
+         {zLayer:1, zIndex:8, type:"Rect", stroke:"#3D4BF1", width:1, height:24, offsetY:-17},
+         {zLayer:1, zIndex:8, type:"Image", src:"./icons/all.png", width:32, height:32,offsetY:-40}
+      ],
+      'Malt_Wine': [
+         {zLayer:1, zIndex:8, type:"Rect", stroke:"#50D05E", width:1, height:24, offsetY:-17},
+         {zLayer:1, zIndex:8, type:"Image", src:"./icons/malt.png", width:32, height:32,offsetY:-40}
+      ],
+      'Malt_Wine_Liquor': [
+         {zLayer:1, zIndex:8, type:"Rect", stroke:"#E265F0", width:1, height:24, offsetY:-17},
+         {zLayer:1, zIndex:8, type:"Image", src:"./icons/malt-liquor.png", width:32, height:32,offsetY:-40}
+      ],
+      'Tavern': [
+         {zLayer:1, zIndex:8, type:"Rect", stroke:"#EC3B43", width:1, height:24, offsetY:-17},
+         {zLayer:1, zIndex:8, type:"Image", src:"./icons/tavern.png", width:32, height:32,offsetY:-40}
+      ],
+      'Farmer': [
+         {zLayer:1, zIndex:8, type:"Rect", stroke:"#8BFFF2", width:1, height:24, offsetY:-17},
+         {zLayer:1, zIndex:8, type:"Image", src:"./icons/farmer.png", width:32, height:32,offsetY:-40}
+      ],
+      'Other': [
+         {zLayer:1, zIndex:8, type:"Rect", stroke:"#00FFFF", width:1, height:24, offsetY:-17},
+         {zLayer:1, zIndex:8, type:"Image", src:"./icons/other.png", width:32, height:32,offsetY:-40}
+      ]
+      // 'All_Alcohol': [{zIndex: 3, type: 'Circle', radius: 7, fill: '#3D4BF1'}],
+      // 'Malt_Wine': [{zIndex: 3, type: 'Circle', radius: 7, fill: '#50D05E'}],
+      // 'Malt_Wine_Liquor': [{zIndex: 3, type: 'Circle', radius: 7, fill: '#E265F0'}],
+      // 'Tavern': [{zIndex: 3, type: 'Circle', radius: 7, fill: '#EC3B43'}],
+      // 'Farmer': [{zIndex: 3, type: 'Circle', radius: 7, fill: '#8BFFF2'}],
+      // 'Other': [{zIndex: 3, type: 'Circle', radius: 7, fill: '#00FFFF'}],
    },
    assign: function(feature){
       return feature.properties.Description;
@@ -64,39 +88,12 @@ var bgLayer = new here.xyz.maps.layers.MVTLayer({
           'ferry': [{zIndex: 4, type: 'Line', stroke: '#164ac8', strokeWidth: 1}],
           'highway': [{zIndex: 5, type: 'Line', stroke: '#D3DCE1', strokeWidth: 16}],
           'boundaries': [{zIndex: 6, type: 'Line', stroke: '#b3b1ad', strokeWidth: 2}],
-          'buildings': [{
-              zIndex: 7, type: 'Polygon', fill: 'rgb(155,175,196)',
-              // define extrude in meters to display polygons with extrusion
-              extrude: (feature) => feature.properties.height || 25
+          'buildings': [{zIndex: 7, type: 'Polygon', fill: (f) => 'rgb(155,175,196)', extrude: (feature) => feature.properties.height || 25}],
+          'roads': [
+             {zIndex: 4, type: 'Line', stroke: '#D3DCE1', strokeWidth: 2}, 
+             {zIndex: 6, type: 'Text', fill: '#222222', font: '12px sans-serif', strokeWidth: 2, stroke: 'white', text: (f) => f.properties.name, alignment: 'map',priority: 2
           }],
-          'roads': [{zIndex: 4, type: 'Line', stroke: '#D3DCE1', strokeWidth: 2}, {
-              zIndex: 6, type: 'Text', fill: '#222222',
-              font: '12px sans-serif',
-              strokeWidth: 2,
-              stroke: 'white', text: (f) => f.properties.name,
-              // Alignment for Text. "map" aligns to the plane of the map.
-              alignment: 'map',
-              // Text with a higher priority (lower value) will be drawn before lower priorities (higher value)
-              // make sure "road labels" are drawn after "place labels".
-              priority: 2
-          }],
-          'places': [{
-              zIndex: 8,
-              type: 'Text',
-              text: (f) => f.properties.name,
-              stroke: 'black',
-              fill: 'white',
-              font: "18px sans-serif",
-              strokeWidth: 4,
-              // set collide property to false to enable label collision detection [default]
-              collide: false,
-              // Alignment for Text. "viewport" aligns to the plane of the viewport/screen.
-              alignment: 'viewport',
-              // Text with a higher priority (lower value) will be drawn before lower priorities (higher value)
-              // In case of "place label" and "road label" are colliding "place label" will be draw
-              // because priority 1 is smaller than priority 2
-              priority: 1
-          }]
+          'places': [{zIndex: 9, type: 'Text', text: (f) => f.properties.name, stroke: 'black', fill: 'white', font: "18px sans-serif", strokeWidth: 4, collide: false, alignment: 'viewport', priority: 1}]
       },
 
       assign: (feature, zoom) => {
@@ -143,6 +140,65 @@ var bgLayer = new here.xyz.maps.layers.MVTLayer({
    }
 });
 
+
+var bdLayer = new here.xyz.maps.layers.MVTLayer({
+   name: 'background layer',
+   min: 1,
+   max: 20,
+   remote: {
+       url: 'https://xyz.api.here.com/tiles/osmbase/512/all/{z}/{x}/{y}.mvt?access_token='+xyz.token
+   },
+   style: {
+     backgroundColor: '#FFFFFF',
+     strokeWidthZoomScale: (level) => level > 17 ? 1 : level > 14 ? .5 : level > 9 ? .25 : .1,
+
+     styleGroups: {
+     },
+
+     assign: (feature, zoom) => {
+         let props = feature.properties;
+         let kind = props.kind;
+         let layer = props.layer;
+         let geom = feature.geometry.type;
+
+         if (layer == 'landuse') {
+             switch (kind) {
+                 case 'pier':
+                     return 'pier';
+                 case 'nature_reserve':
+                     return 'nature_reserve';
+                 case 'park':
+                 case 'garden':
+                 case 'pedestrian':
+                 case 'forrest':
+                     return 'park';
+                 case 'hospital':
+                     return 'hospital';
+                 default:
+                     return 'landuse'
+             }
+         }
+
+         if (layer == 'water') {
+             if (geom == 'LineString' || geom == 'MultiLineString') {
+                 return;
+             }
+         } else if (layer == 'roads') {
+             if (kind == 'rail' || kind == 'ferry') {
+                 return;
+             }
+             if (props.is_tunnel && zoom > 13) {
+                 return 'tunnel';
+             }
+             if (kind == 'highway' || kind == 'path') {
+                 return kind;
+             }
+         }
+         return layer;
+     }
+  }
+});
+
 var liquorLayer = new here.xyz.maps.layers.TileLayer({
    name: 'liquor',
    min: 1,
@@ -150,7 +206,7 @@ var liquorLayer = new here.xyz.maps.layers.TileLayer({
    provider: new here.xyz.maps.providers.IMLProvider({
       level: 10,
       layer: xyz.layer,
-      catalog: xyz.catalogARN,
+      catalog: xyz.catalogHrn,
       credentials: {
           apiKey: xyz.apiKey,
       }
@@ -170,7 +226,7 @@ var utilsLayer = new here.xyz.maps.layers.TileLayer({
 async function init() {
    // setup the Map Display
    const display = new here.xyz.maps.Map( document.getElementById("map"), {
-       zoomLevel : 12,
+       zoomLevel : 13,
        center: { longitude: -71.05780662703944, latitude: 42.35999762427866},
    
        behavior: {
@@ -178,9 +234,8 @@ async function init() {
          rotate: true
       },
       pitch: 30,
-      rotate: 30,
        // add layers to display
-       layers: [bgLayer, liquorLayer, utilsLayer]
+       layers: [bgLayer, liquorLayer, utilsLayer, bdLayer]
    });
 
    var range = 20; // 20 min walk distance
@@ -201,30 +256,32 @@ async function init() {
 
 
    display.addEventListener("pointerup", function(e) {
-      latlng = display.pixelToGeo(e.mapX, e.mapY);
-
-      clear.classList.remove("hidden");
-      clear.classList.add("show");
-      search.classList.remove("show");
-      search.classList.add("hidden");
-       
-
-      fetch(hereReverseGeocodeUrl(latlng))
-      .then(res => res.json())
-      .then(res => {
-         const address = res.items[0].address;
-
-         description[0].innerHTML = range;
-         const idx = address.label.indexOf(address.city);
-         description[1].innerHTML = [address.label.substring(0, idx-2), address.city].join(" ");
-         searchInput.value = description[1].innerHTML;
-      })
-
-      makeIsolineSearch();
+      if(e.button == 0){
+         latlng = display.pixelToGeo(e.mapX, e.mapY);
+   
+         clear.classList.remove("hidden");
+         clear.classList.add("show");
+         search.classList.remove("show");
+         search.classList.add("hidden");
+          
+   
+         fetch(hereReverseGeocodeUrl(latlng))
+         .then(res => res.json())
+         .then(res => {
+            const address = res.items[0].address;
+   
+            description[0].innerHTML = range;
+            const idx = address.label.indexOf(address.city);
+            description[1].innerHTML = [address.label.substring(0, idx-2), address.city].join(" ");
+            searchInput.value = description[1].innerHTML;
+         })
+   
+         makeIsolineSearch();
+      }
    })
 
    display.setCenter({longitude: -71.05780662703944, latitude: 42.35999762427866});
-   display.setZoomlevel(14, window.innerWidth/2, window.innerHeight/2, 1000)
+   display.setZoomlevel(16, window.innerWidth/2, window.innerHeight/2, 1000)
 
 
    function makeIsolineSearch(){
