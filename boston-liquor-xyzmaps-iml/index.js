@@ -48,12 +48,6 @@ var customStyle = {
          {zLayer:1, zIndex:8, type:"Rect", stroke:"#00FFFF", width:1, height:24, offsetY:-17},
          {zLayer:1, zIndex:8, type:"Image", src:"./icons/other.png", width:32, height:32,offsetY:-40}
       ]
-      // 'All_Alcohol': [{zIndex: 3, type: 'Circle', radius: 7, fill: '#3D4BF1'}],
-      // 'Malt_Wine': [{zIndex: 3, type: 'Circle', radius: 7, fill: '#50D05E'}],
-      // 'Malt_Wine_Liquor': [{zIndex: 3, type: 'Circle', radius: 7, fill: '#E265F0'}],
-      // 'Tavern': [{zIndex: 3, type: 'Circle', radius: 7, fill: '#EC3B43'}],
-      // 'Farmer': [{zIndex: 3, type: 'Circle', radius: 7, fill: '#8BFFF2'}],
-      // 'Other': [{zIndex: 3, type: 'Circle', radius: 7, fill: '#00FFFF'}],
    },
    assign: function(feature){
       return feature.properties.Description;
@@ -141,64 +135,6 @@ var bgLayer = new here.xyz.maps.layers.MVTLayer({
 });
 
 
-var bdLayer = new here.xyz.maps.layers.MVTLayer({
-   name: 'background layer',
-   min: 1,
-   max: 20,
-   remote: {
-       url: 'https://xyz.api.here.com/tiles/osmbase/512/all/{z}/{x}/{y}.mvt?access_token='+xyz.token
-   },
-   style: {
-     backgroundColor: '#FFFFFF',
-     strokeWidthZoomScale: (level) => level > 17 ? 1 : level > 14 ? .5 : level > 9 ? .25 : .1,
-
-     styleGroups: {
-     },
-
-     assign: (feature, zoom) => {
-         let props = feature.properties;
-         let kind = props.kind;
-         let layer = props.layer;
-         let geom = feature.geometry.type;
-
-         if (layer == 'landuse') {
-             switch (kind) {
-                 case 'pier':
-                     return 'pier';
-                 case 'nature_reserve':
-                     return 'nature_reserve';
-                 case 'park':
-                 case 'garden':
-                 case 'pedestrian':
-                 case 'forrest':
-                     return 'park';
-                 case 'hospital':
-                     return 'hospital';
-                 default:
-                     return 'landuse'
-             }
-         }
-
-         if (layer == 'water') {
-             if (geom == 'LineString' || geom == 'MultiLineString') {
-                 return;
-             }
-         } else if (layer == 'roads') {
-             if (kind == 'rail' || kind == 'ferry') {
-                 return;
-             }
-             if (props.is_tunnel && zoom > 13) {
-                 return 'tunnel';
-             }
-             if (kind == 'highway' || kind == 'path') {
-                 return kind;
-             }
-         }
-         return layer;
-     }
-  }
-});
-
 var liquorLayer = new here.xyz.maps.layers.TileLayer({
    name: 'liquor',
    min: 1,
@@ -235,7 +171,7 @@ async function init() {
       },
       pitch: 30,
        // add layers to display
-       layers: [bgLayer, liquorLayer, utilsLayer, bdLayer]
+       layers: [bgLayer, liquorLayer, utilsLayer]
    });
 
    var range = 20; // 20 min walk distance
