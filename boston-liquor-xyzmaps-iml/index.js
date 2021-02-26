@@ -87,7 +87,7 @@ var bgLayer = new here.xyz.maps.layers.MVTLayer({
              {zIndex: 4, type: 'Line', stroke: '#D3DCE1', strokeWidth: 2}, 
              {zIndex: 6, type: 'Text', fill: '#222222', font: '12px sans-serif', strokeWidth: 2, stroke: 'white', text: (f) => f.properties.name, alignment: 'map',priority: 2
           }],
-          'places': [{zIndex: 9, type: 'Text', text: (f) => f.properties.name, stroke: 'black', fill: 'white', font: "18px sans-serif", strokeWidth: 4, collide: false, alignment: 'viewport', priority: 1}]
+          'places': [{zIndex: 9, type: 'Text', text: (f) => f.properties.name, stroke: 'black', fill: 'white', strokeWidth: 2, collide: false, alignment: 'viewport', priority: 1}]
       },
 
       assign: (feature, zoom) => {
