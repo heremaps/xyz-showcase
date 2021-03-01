@@ -3,8 +3,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
     <meta name="description" content="Use Here Maps API for JavaScript to load and visualize interactive map layer data on the map">
-    <title>D.C. Transit 2030</title>
+    <title>Interactive Map Layer</title>
     <link rel="stylesheet" type="text/css" href="https://js.api.here.com/v3/3.1/mapsjs-ui.css" />
+    <link rel="stylesheet" href="demo.css">
     <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-core.js"></script>
     <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-mapevents.js"></script>
     <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-service.js"></script>
@@ -23,60 +24,12 @@
   </head>
   <body>
     <div id="map"></div>
-    <script>
-        const apikey = "wuhhFoo3HHQ8Bxw68fCZe8iA_J9v4dBnRhSbkAlMup4";
-        const catalogHrn = "hrn:here:data::olp-here:dh-showcase-dc-transit";
-        const layerId = "dc-transit";
-
-        function overlay(map) {
-            const service = platform.getXYZService({
-                // authenticate with apiKey instead of token
-                toBypassToken: true,
-                host: 'interactive.data.api.platform.here.com',
-                path: 'interactive/v1/catalogs/' + catalogHrn + '/layers'
-            });
-
-            // create a provider for the custom user defined data
-            const imlProvider = new H.service.xyz.Provider(service, layerId);
-
-            var style = imlProvider.getStyle();
-            var styleConfig = style.extractConfig(['xyz']);
-            
-            styleConfig.layers.xyz.data.layer = catalogHrn + ':' + layerId;
-            styleConfig.layers.xyz.lines.draw.lines.color = '#0258AE';
-            styleConfig.layers.xyz.lines.draw.lines.dash = [1, 1];
-            styleConfig.layers.xyz.lines.draw.lines.width = [[5, 5000], [8, 800], [10, 200], [12, 160],[14, 60], [18, 20]]
-            
-            style.mergeConfig(styleConfig);
-
-            const imlLayer = new H.map.layer.TileLayer(imlProvider);
-            // add a layer to the map
-            map.addLayer(imlLayer);
-        }
-
-        // Initialize the platform object:
-        var platform = new H.service.Platform({
-            "apikey": apikey
-        });
-
-        var defaultLayers = platform.createDefaultLayers();
-
-        var map = new H.Map(
-            document.getElementById('map'), 
-            defaultLayers.vector.normal.map, 
-            {
-                center: new H.geo.Point(38.90192, -76.97605),
-                zoom: 12
-            }
-        );
-        
-        window.addEventListener('resize', () => map.getViewPort().resize());
-
-        var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
-
-        var ui = H.ui.UI.createDefault(map, defaultLayers);
-
-        overlay(map);
-    </script>
+    <div class="page-header">
+      <h1>Interactive Map Layer</h1>
+      <p>Visualize Data from Interactive Map Layer on Map</p>
+    
+      <p>This examples adds dashed lines showing the 2030 <b>Washington D.C.</b> Proposed Transit.</p>
+    </div>
+    <script type="text/javascript" src='demo.js'></script>
   </body>
 </html>
