@@ -1,0 +1,180 @@
+cameras:
+    camera1:
+        type: perspective
+sources:
+    xyz_osm:
+        type: MVT
+        url: https://xyz.api.here.com/tiles/osmbase/512/all/{z}/{x}/{y}.mvt
+        max_zoom: 16
+        tile_size: 512
+        url_params:
+            access_token: AAFX7JDSTbqJ9VDZ8ZM_bQA
+    _rapid_bus:
+        type: GeoJSON
+        url: https://interactive.data.api.platform.here.com/interactive/v1/catalogs/hrn:here:data::olp-here:dh-showcase-dc-transit/layers/dc-transit/tile/web/{z}_{x}_{y}
+        url_params:
+            apiKey: wuhhFoo3HHQ8Bxw68fCZe8iA_J9v4dBnRhSbkAlMup4
+            p.type: 'Rapid Bus'
+            # mode: viz
+    _rapid_bus_transit:
+        type: GeoJSON
+        url: https://interactive.data.api.platform.here.com/interactive/v1/catalogs/hrn:here:data::olp-here:dh-showcase-dc-transit/layers/dc-transit/tile/web/{z}_{x}_{y}
+        url_params:
+            apiKey: wuhhFoo3HHQ8Bxw68fCZe8iA_J9v4dBnRhSbkAlMup4
+            p.type: 'Rapid Bus Transit'
+            # mode: viz
+    _street_car:
+        type: GeoJSON
+        url: https://interactive.data.api.platform.here.com/interactive/v1/catalogs/hrn:here:data::olp-here:dh-showcase-dc-transit/layers/dc-transit/tile/web/{z}_{x}_{y}
+        url_params:
+            apiKey: wuhhFoo3HHQ8Bxw68fCZe8iA_J9v4dBnRhSbkAlMup4
+            p.type: 'Street Car'
+            # mode: viz
+
+global:
+    width: [[5, 5000], [8, 800], [10, 200], [12, 160],[14, 60], [18, 20]]
+    language: en # optional ISO 2-char code
+    language_text_source: |
+        function() {
+            // Use preferred language label if available
+            return (global.language && feature['name:'+global.language]) || feature.name;
+        }
+styles:
+    long-dashed-lines:
+        base: lines
+        dash: [1, 2]
+    short-dashed-lines:
+        base: lines
+        dash: [1, 1]
+layers:
+    rapid_bus:
+        data: { source: _rapid_bus }
+        draw:
+            short-dashed-lines:
+                color: '#0258AE'
+                width: global.width
+                order: 10000
+                interactive: true
+    rapid_bus_transit:
+        data: { source: _rapid_bus_transit }
+        draw:
+            long-dashed-lines:
+                color: '#FFA42C'
+                width: global.width
+                order: 10001
+                interactive: true
+
+    street_car:
+        data: { source: _street_car }
+        draw:
+            lines:
+                color: '#DB3F46'
+                width: global.width
+                order: 9999
+                interactive: true
+
+    places:
+        data: { source: xyz_osm }
+        city-points:
+            filter:
+                kind: locality
+                # name:
+                #    not: Arlington
+                not:
+                   name: Arlington
+                kind_detail: city
+                $zoom: { max: 18 }
+            draw:
+                 text:
+                     text_source: global.language_text_source
+                     priority: 10
+                     order: 999
+                     font:
+                         family: Roboto Mono
+                         # size: 12px
+                         fill: '#C3CDD4'
+                         stroke: { color: white, width: 4 }
+                         transform: uppercase
+                         # weight: bold
+                         size: [[4, 15px], [8, 18px], [12, 26px]]
+                         buffer: 2px
+        neighborhoods:
+            filter:
+                - { kind: [neighbourhood, macrohood], $zoom: { min: 12.5 } }
+                - { kind: microhood, $zoom: { min: 15 } }
+            draw:
+                 text:
+                     text_source: global.language_text_source
+                     priority: 10
+                     order: 999
+                     font:
+                         family: Roboto Mono
+                         # size: 12px
+                         fill: '#C3CDD4'
+                         stroke: { color: white, width: 4 }
+                         # transform: uppercase
+                         # weight: bold
+                         size: [[4, 10px], [8, 14px], [12, 14px]]
+                         buffer: 2px
+    earth:
+        data: { source: xyz_osm }
+        draw:
+            polygons:
+                order: function() { return feature.sort_rank; }
+                color: 'white'
+
+    landuse:
+        data: { source: xyz_osm }
+        draw:
+            polygons:
+                order: function() { return feature.sort_rank; }
+                color: '#E9EEF1'
+
+    water:
+        data: { source: xyz_osm }
+        draw:
+            polygons:
+                order: function() { return feature.sort_rank; }
+                color: '#C3CDD4'
+
+    roads:
+        data: { source: xyz_osm }
+        filter:
+            not: { kind: [path, rail, ferry] }
+        draw:
+            lines:
+                order: function() { return feature.sort_rank; }
+                color: '#C3CDD4'
+                width: 8
+                cap: round
+        highway:
+            filter:
+                kind: highway
+            draw:
+                lines:
+                    order: function() { return feature.sort_rank; }
+                    color: '#D3DCE1'
+                    width: [[5, 5000], [8, 800], [10, 200], [12, 100],[14,40], [18, 20]]
+                    outline:
+                        color: '#EEEEEE'
+                        width: [[16, 0], [18, 1.5]]
+        minor_road:
+            filter:
+                kind: minor_road
+            draw:
+                lines:
+                    order: function() { return feature.sort_rank; }
+                    color: '#F8FAFB'
+                    width: 5
+
+    buildings:
+        data: { source: xyz_osm }
+        draw:
+            polygons:
+                order: function() { return feature.sort_rank; }
+                color: '#E9EBEB'
+        3d-buildings:
+            filter: { $zoom: { min: 15 } }
+            draw:
+                polygons:
+                    extrude: function () { return feature.height > 20 || $zoom >= 16; }

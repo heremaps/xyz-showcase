@@ -1,13 +1,15 @@
-<!doctype html>
-<html lang="en">
+<html lang="en-us">
 
 <head>
-   <meta charset="utf-8" />
-   <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no" />
-   <meta name="theme-color" content="#000000" />
-   <link rel="manifest" href="/xyz-showcase/boston-liquor/manifest.json" />
-   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" />
+   <meta charset="utf-8">
+   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+   <title>Boston Liquor</title>
+   <script src="https://unpkg.com/leaflet@1.0.1/dist/leaflet.js"></script>
+   <script src="https://unpkg.com/tangram/dist/tangram.min.js"></script>
+   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.1/dist/leaflet.css" />
    <link href="https://fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet">
+   <link rel="stylesheet" href="index.css">
    <meta name="twitter:card" content="summary_large_image" />
    <meta name="twitter:site" content="@here" />
    <meta name="twitter:title" content="Boston Liquor" />
@@ -18,89 +20,38 @@
    <meta property="og:title" content="Boston Liquor" />
    <meta property="og:description" content="Interactive visualization of Boston liquor establishments" />
    <meta property="og:image" content="https://heremaps.github.io/xyz-showcase/boston-liquor/opengraph.png" />
-   <title>Boston Liquor</title>
-   <link href="/xyz-showcase/boston-liquor/static/css/main.9fd06503.chunk.css" rel="stylesheet">
+
 </head>
-
-<body><noscript>You need to enable JavaScript to run this app.</noscript>
-   <div id="root"></div>
-   <script>
-      ! function(f) {
-         function e(e) {
-            for (var r, t, n = e[0], o = e[1], u = e[2], i = 0, l = []; i < n.length; i++) t = n[i], p[t] && l.push(p[t][0]), p[t] = 0;
-            for (r in o) Object.prototype.hasOwnProperty.call(o, r) && (f[r] = o[r]);
-            for (s && s(e); l.length;) l.shift()();
-            return c.push.apply(c, u || []), a()
-         }
-
-         function a() {
-            for (var e, r = 0; r < c.length; r++) {
-               for (var t = c[r], n = !0, o = 1; o < t.length; o++) {
-                  var u = t[o];
-                  0 !== p[u] && (n = !1)
-               }
-               n && (c.splice(r--, 1), e = i(i.s = t[0]))
-            }
-            return e
-         }
-         var t = {},
-            p = {
-               1: 0
-            },
-            c = [];
-
-         function i(e) {
-            if (t[e]) return t[e].exports;
-            var r = t[e] = {
-               i: e,
-               l: !1,
-               exports: {}
-            };
-            return f[e].call(r.exports, r, r.exports, i), r.l = !0, r.exports
-         }
-         i.m = f, i.c = t, i.d = function(e, r, t) {
-            i.o(e, r) || Object.defineProperty(e, r, {
-               enumerable: !0,
-               get: t
-            })
-         }, i.r = function(e) {
-            "undefined" != typeof Symbol && Symbol.toStringTag && Object.defineProperty(e, Symbol.toStringTag, {
-               value: "Module"
-            }), Object.defineProperty(e, "__esModule", {
-               value: !0
-            })
-         }, i.t = function(r, e) {
-            if (1 & e && (r = i(r)), 8 & e) return r;
-            if (4 & e && "object" == typeof r && r && r.__esModule) return r;
-            var t = Object.create(null);
-            if (i.r(t), Object.defineProperty(t, "default", {
-                  enumerable: !0,
-                  value: r
-               }), 2 & e && "string" != typeof r)
-               for (var n in r) i.d(t, n, function(e) {
-                  return r[e]
-               }.bind(null, n));
-            return t
-         }, i.n = function(e) {
-            var r = e && e.__esModule ? function() {
-               return e.default
-            } : function() {
-               return e
-            };
-            return i.d(r, "a", r), r
-         }, i.o = function(e, r) {
-            return Object.prototype.hasOwnProperty.call(e, r)
-         }, i.p = "/xyz-showcase/boston-liquor/";
-         var r = window.webpackJsonp = window.webpackJsonp || [],
-            n = r.push.bind(r);
-         r.push = e, r = r.slice();
-         for (var o = 0; o < r.length; o++) e(r[o]);
-         var s = n;
-         a()
-      }([])
-   </script>
-   <script src="/xyz-showcase/boston-liquor/static/js/2.1305b4c4.chunk.js"></script>
-   <script src="/xyz-showcase/boston-liquor/static/js/main.fd979194.chunk.js"></script>
+<body>
+   <div id="map"></div>
+   <div id="sidebar">
+      <h1>Boston Liquor Licenses 🍻</h1>
+      <p>List of establishments with liquor licenses in Boston, MA from 2016.</p>
+      <input type="checkbox" id="tooltip">
+      <label for="tooltip">Tooltip active</label>
+      <h2>Establishment type</h2>
+      <div class="line-parent"><div class="line" id="All_Alcohol-label" style="background: rgb(60, 75, 241);"></div>All Alcohol</div>
+      <div class="line-parent"><div class="line" id="Malt_Wine-label" style="background: rgb(80, 208, 94);"></div>Malt &amp; Wine</div>
+      <div class="line-parent"><div class="line" id="Malt_Wine_Liquor-label" style="background: rgb(226, 101, 240);"></div>Malt, Wine, Liquor</div>
+      <div class="line-parent"><div class="line" id="Tavern-label" style="background: rgb(236, 59, 67);"></div>Tavern</div>
+      <div class="line-parent"><div class="line" id="Farmer-label" style="background: rgb(139, 255, 242);"></div>Farmer</div>
+      <div class="line-parent"><div class="line" id="Other-label" style="background: yellow;"></div>Other</div>
+      <h2>Explore establishments in walking distance</h2>
+      <div>
+         <div class="clear-filter hidden">
+            <div class="slider-container"><input type="range" min="1" max="60" value="20"><span>20 minutes</span></div>
+            <p>Within a <strong>20</strong> minute walk of <strong>  Emerald Necklace Trl Boston</strong>, there are <strong>140</strong> establishments that serve liquor.</p>
+            <button>Clear Filter</button>
+         </div>
+         <div class="search-address show">
+            <p>Click the map to add a draggable marker to explore establishments.</p>
+            <p>...or enter an address:</p>
+            <input type="text" value="134 Salem St. Boston">
+            <span style="margin-right: 10px; display: inline-block;"></span>
+            <button>Search</button>
+         </div>
+      </div>
+   </div>
+   <script src="index.js"></script>
 </body>
-
 </html>
