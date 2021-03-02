@@ -1,0 +1,157 @@
+
+#map {
+   height: 100%;
+   width: 100%;
+   position: absolute;
+}
+
+#sidebar {
+   position: absolute;
+   top: 0;
+   left: 0;
+   margin: 20px;
+   padding: 20px;
+   width: 300px;
+   background: white;
+   border: 2px solid #E9E9E9;
+   z-index: 10000;
+   color: #494949;
+   border-radius: 5px;
+}
+
+
+body {
+   margin: 0;
+   padding: 0;
+   font-family: 'Lato', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+     sans-serif;
+   -webkit-font-smoothing: antialiased;
+   -moz-osx-font-smoothing: grayscale;
+ }
+ 
+ body {
+    font-family: 12px;
+ }
+ 
+ .app {
+    display: block;
+    position: absolute;
+    height: 100vh;
+    width:100vw;
+ }
+ 
+ .map-grid {
+    height: 100%;
+    width: 100vw;
+    display: grid;
+    grid: repeat(1, 1fr) / repeat(1, 1fr);
+    position: relative;
+ }
+ 
+ .line-parent {
+    line-height: 30px;
+ }
+ 
+ .line {
+    display: inline-block;
+    border-radius: 50%;
+    width: 13px;
+    height: 13px;
+    background: blue;
+    margin-right: 15px;
+ }
+ 
+ .custom .leaflet-popup-tip {
+    display: none;
+ }
+ .custom .leaflet-popup-content-wrapper {
+    background: white;
+    border: 1px solid #E9E9E9;
+    color: #656565;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+    font-family: 'Lato', sans-serif;
+    font-size: 15px;
+    transition: none;
+ }
+ 
+ h1 {
+    font-size: 22px;
+    color: black;
+    margin-top: 0;
+ }
+ 
+ h2 {
+    font-size: 18px;
+    color: black;
+ }
+ 
+ h3 {
+    margin: 0px;
+    font-size: 16px;
+    color: black;
+    margin-bottom: 5px;
+ }
+ 
+ strong {
+    color: black;
+ }
+ 
+ input {
+    padding: 8px 12px;
+    border: 1.5px solid #E9E9E9;
+    border-radius: 3px;
+    font-family: Lato;
+    font-size: 16px;
+    color: #494949;
+ }
+ 
+ button {
+    padding: 8px 12px;
+    border: 1.5px solid #E9E9E9;
+    border-radius: 3px;
+    font-family: Lato;
+    font-size: 16px;
+    cursor: pointer;
+    transition: .3s all;
+ }
+ 
+ button:hover {
+    background: #F3F3F3;
+ }
+ 
+ a {
+    color: #3C4BF1;
+    text-decoration: none;
+    transition: .3s all;
+ }
+ 
+ a:hover {
+    color: #6E7AFD;
+ }
+ 
+ #link {
+    margin-top: 20px;
+    display: block;
+ }
+ 
+ p {
+    line-height: 26px;
+ }
+ 
+ .slider-container {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+            align-items: center;
+ }
+ 
+ .hidden {
+    display: none;
+ }
+
+ .show {
+    display: block;
+ }

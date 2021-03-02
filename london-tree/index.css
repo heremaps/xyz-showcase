@@ -57,7 +57,7 @@ pre .properties{
 
 a.button {
     position: relative;
-    display: block;
+    display: none;
     color: #FFFFFF;
     cursor: pointer;
     left: 20px;
@@ -69,35 +69,14 @@ a.button {
     background-color: #94A962;
     border-radius: 4px;
 }
-#delete{
+#delete {
     width: 50px;
     height: 17px;
     padding: 0px;
-    top: -29px;
-    left: 80px;
-    background-color: #D41922;
-}
-#new {
-    width: 50px;
-    height: 17px;
-    padding: 0px;
-    left: -50px;
+    left: 160px;
 }
 a.button:hover{
     background-color: #849952;
-}
-
-a.hidden {
-    display: none;
-}
-a.show {
-    display: block;
-}
-#revert {
-    background-color: #748962;
-}
-#revert:hover {
-    background-color: #647952;
 }
 ul {
     background: #A4B972;

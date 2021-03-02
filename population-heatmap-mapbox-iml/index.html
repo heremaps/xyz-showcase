@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Population Heatmap of Countries</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.js"></script>
+<link href="https://api.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.css" rel="stylesheet" />
+<link rel="stylesheet" href="style.css">
+<style>
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div id="controller">
+    <h3>Population Density</h3>
+    <p>Visualizes populaton density of some countries with heatmap</p>
+    <p><b>Select Country:</b></p>
+    <div class="country" value="United States">
+        <input type="radio" value="United States" name = "country" checked>
+        <label>United States</label>
+    </div>
+    <div class="country" value="Japan">
+        <input type="radio" value="Japan" name = "country">
+        <label>Japan</label>
+    </div>
+    <div class="country" value="Germany">
+        <input type="radio" value="Germany" name = "country">
+        <label value="Germany">Germany</label>
+    </div>
+    <div class="country" value="Belgium">
+        <input type="radio" value="Belgium" name = "country">
+        <label>Belgium</label>
+    </div>
+    <div class="country" value="France">
+        <input type="radio" value="France" name = "country">
+        <label>France</label>
+    </div>
+    <div class="country" value="Spain">
+        <input type="radio" value="Spain" name = "country">
+        <label>Spain</label>
+    </div>
+</div>
+<script>
+    const apiKey = 'wuhhFoo3HHQ8Bxw68fCZe8iA_J9v4dBnRhSbkAlMup4';
+    const catalogHrn = 'hrn:here:data::olp-here:dh-showcase-population-cities';
+    const layerId = 'population-cities';
+    const dataURL = `https://interactive.data.api.platform.here.com/interactive/v1/catalogs/${catalogHrn}/layers/${layerId}/search?apiKey=${apiKey}&p.country=`;
+
+
+	mapboxgl.accessToken = 'pk.eyJ1IjoieGhhaWZlbmciLCJhIjoiY2trcHh1eXJrMGhldTJ1cDhqdHZ2NXZoZyJ9.oM1XeaXJpeDhGeVc_v0bqA';
+    const locationMap = {
+        "United States":{zoom:4, center: [-102.1608, 37.903547]},
+        "Germany": {zoom:5, center: [10.62004, 51.14084]},
+        "France": {zoom:5, center: [2.82688, 46.57982]},
+        "Spain": {zoom: 5, center:[-3.8092, 39.339664]},
+        "Belgium": {zoom:5, center: [4.954331, 50.10424]},
+        "Japan": {zoom:5, center: [138.34878, 36.56824]}
+    }
+    window.map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/light-v10',
+        zoom: 5,
+        center: [8.6821, 50.1109]
+    });
+ 
+    map.on('load', async function () {
+        showHeatMap();
+    });
+    const removeHeatMap = function () {
+        map.removeLayer('population-heat');
+        map.removeSource('population');
+    };
+    const showHeatMap = function(){
+        // Add interactive map layer data.
+        map.addSource('population', {
+            'type': 'geojson',
+            'data': dataURL + country
+        });
+
+        map.addLayer(
+            {
+                'id': 'population-heat',
+                'type': 'heatmap',
+                'source': 'population',
+                'maxzoom': 9,
+                'paint': {
+                    // Increase the heatmap weight based on frequency and property magnitude
+                    'heatmap-weight': [ 'interpolate', ['linear'], ['get', 'mag'], 0, 0, 6, 1
+                    ],
+                    // Increase the heatmap color weight weight by zoom level
+                    // heatmap-intensity is a multiplier on top of heatmap-weight
+                    'heatmap-intensity': [ 'interpolate', ['linear'], ['zoom'], 0, 1, 9, 3
+                    ],
+                    // Color ramp for heatmap.  Domain is 0 (low) to 1 (high).
+                    // Begin color ramp at 0-stop with a 0-transparancy color
+                    // to create a blur-like effect.
+                    'heatmap-color': [ 'interpolate', ['linear'], ['heatmap-density'], 0, 'rgba(33,102,172,0)', 0.2, 'rgb(103,169,207)',  0.4, 'rgb(209,229,240)', 0.6, 'rgb(253,219,199)', 0.8, 'rgb(239,138,98)', 1, 'rgb(178,24,43)'
+                    ],
+                    // Adjust the heatmap radius by zoom level
+                    'heatmap-radius': [ 'interpolate', ['linear'], ['zoom'], 0, 2, 9, 20 ],
+                    // Transition from heatmap to circle layer by zoom level
+                    'heatmap-opacity': [ 'interpolate', ['linear'], ['zoom'], 7, 1, 9, 0 ]
+                }
+            }
+        );
+    }
+
+    const countries = document.querySelectorAll(".country");
+    var country;
+    countries.forEach((e)=>{
+        const radiobutton = e.querySelector('input');
+        if (radiobutton.checked) {
+            country = radiobutton.getAttribute('value');
+            map.flyTo(locationMap[country]);
+        }
+        e.addEventListener('pointerup', function() {
+            if(this.getAttribute('value') != country) {
+                country = this.getAttribute('value');
+                
+                this.querySelector('input').checked = true
+
+                removeHeatMap();
+                showHeatMap();
+
+                map.flyTo(locationMap[country]);
+
+            }
+        })
+    })
+    map.addControl(new mapboxgl.NavigationControl());
+</script>
+ 
+</body>
+</html>
