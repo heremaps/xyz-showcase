@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=no">
+		<title>Display Cell  data with xyz maps</title>
+
+	   	<script src="https://xyz.api.here.com/maps/latest/xyz-maps-common.min.js" type="text/javascript" charset="UTF-8" ></script>
+	    <script src="https://xyz.api.here.com/maps/latest/xyz-maps-core.min.js" type="text/javascript" charset="UTF-8" ></script>
+	    <script src="https://xyz.api.here.com/maps/latest/xyz-maps-display.min.js" type="text/javascript" charset="UTF-8" ></script>
+		<link rel="stylesheet" href="index.css">
+
+	</head>
+	<body>
+		<div id="map"></div>
+		<div id="controller">
+			<h3>Cell Towers</h3>
+			<p>Visualize global cell Towers coverage with hexbin and its different samplingratio</p>
+			<p><b>Select Sampling Ratio:</b></p>
+			<div class="sampling" value="off">
+				<input type="radio" value="off" name = "sampling" checked>
+				<label value="off">1/1 - off</label>
+			</div>
+			<div class="sampling" value="low">
+				<input type="radio" value="low" name = "sampling">
+				<label>1/8 - low</label>
+			</div>
+			<div class="sampling" value="lowmed">
+				<input type="radio" value="lowmed" name = "sampling">
+				<label>1/32 - lowmed</label>
+			</div>
+			<div class="sampling" value="med">
+				<input type="radio" value="med" name = "sampling">
+				<label>1/128 - med</label>
+			</div>
+			<div class="sampling" value="medhigh">
+				<input type="radio" value="medhigh" name = "sampling">
+				<label>1/1024 - medhigh</label>
+			</div>
+			<div class="sampling" value="high">
+				<input type="radio" value="high" name = "sampling">
+				<label>1/4096 - high</label>
+			</div>
+		</div>
+		<div id="cell">
+			<table>
+			  <tr>
+				<td>
+				  <input type="checkbox" value="LTE" checked>
+				  <label class="standard">(4G) LTE</label>
+				</td>
+				<td>
+				  <input type="checkbox" value="UMTS" checked>
+				  <label class="standard">(3G) UMTS</label>
+				</td>
+				<td>
+				  <input type="checkbox" value="GSM" checked>
+				  <label class="standard">(2G) GSM</label>
+				</td>
+				<td>
+				  <input type="checkbox" value="CDMA" checked>
+				  <label class="standard">(2G) CDMA</label>
+				</td>
+			  </tr>
+			</table>
+		</div>
+
+		<!-- <div id="datasampling">
+			<table>
+				<tr>
+					<td class="sampling">
+						<div value="off">
+							<input type="radio" value="off" name = "sampling" checked>
+							<label value="off">1/1</label>
+						</div>
+					</td>
+					<td class="sampling">
+						<div value="low">
+							<input type="radio" value="low" name = "sampling">
+							<label>1/8</label>
+						</div>
+					</td>
+					<td class="sampling">
+						<div value="lowmed">
+							<input type="radio" value="lowmed" name = "sampling">
+							<label>1/32</label>
+						</div>
+					</td>
+					<td class="sampling">
+						<div value="med">
+							<input type="radio" value="med" name = "sampling">
+							<label>1/128</label>
+						</div>
+					</td>
+					<td class="sampling">
+						<div value="medhigh">
+							<input type="radio" value="medhigh" name = "sampling">
+							<label>1/1024</label>
+						</div>
+					</td>
+					<td class="sampling">
+						<div value="high">
+							<input type="radio" value="high" name = "sampling">
+							<label>1/4096</label>
+						</div>
+					</td>
+				</tr>
+			</table>
+		</div> -->
+		<script src="index.js"></script>
+	</body>
+</html>

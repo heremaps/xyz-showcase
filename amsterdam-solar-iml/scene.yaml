@@ -1,0 +1,129 @@
+import:
+    - https://www.nextzen.org/carto/refill-style/refill-style.zip
+    - https://s3.amazonaws.com/xyz-demo/data/demo.yaml
+    - https://www.nextzen.org/carto/refill-style/themes/label-5.zip
+sources:
+    solar:
+        url: https://interactive.data.api.platform.here.com/interactive/v1/catalogs/hrn:here:data::olp-here:dh-showcase-as/layers/amsterdam-solar/tile/web/{z}_{x}_{y}
+        url_params:
+            apiKey: wuhhFoo3HHQ8Bxw68fCZe8iA_J9v4dBnRhSbkAlMup4
+            mode: viz
+            selection: p.Functie,p.Vermogen
+            # p.Functie: NietWonen,Wonen
+            p.Vermogen=gt: 00
+
+        type: GeoJSON
+    neighborhoods:        
+        url: https://interactive.data.api.platform.here.com/interactive/v1/catalogs/hrn:here:data::olp-here:dh-showcase-as/layers/amsterdam-solar-neighborhood/tile/web/{z}_{x}_{y}
+        url_params:
+            apiKey: wuhhFoo3HHQ8Bxw68fCZe8iA_J9v4dBnRhSbkAlMup4
+            mode: viz
+            selection: p.Buurtcombinatie,p.totalPower
+
+        type: GeoJSON
+    trees:
+        url: https://interactive.data.api.platform.here.com/interactive/v1/catalogs/hrn:here:data::olp-here:dh-showcase-as/layers/amsterdam-solar-trees/tile/web/{z}_{x}_{y}
+        url_params:
+            apiKey: wuhhFoo3HHQ8Bxw68fCZe8iA_J9v4dBnRhSbkAlMup4
+            mode: viz
+            selection: p.Stamdiameter
+        type: GeoJSON
+
+styles:
+    _polygons_inlay:
+        base: polygons
+        blend: inlay
+        blend_order: 1
+
+layers:
+    _trees:
+        enabled: false
+        data: {source: trees}
+        draw: 
+            points:
+                collide: false
+                color: '#00A000'
+                size: |
+                    function() {
+                        var value = feature.Stamdiameter;
+                        var size = value == "0 - 10 cm" ? 1.5 :
+                                   value == "11 - 20 cm" ? 2 :
+                                   value == "21 - 30 cm" ? 2.5 :
+                                   value == "31 - 50 cm" ? 3.25 :
+                                   value == "51 - 75 cm" ? 4 :
+                                   value == "76 - 100 cm" ? 5 :
+                                   1.5;
+
+                        if ($zoom > 13) {
+                            return Math.pow(1.5, $zoom - 13) * size;
+                        }
+
+                        return size;
+                    }
+
+    _solar:
+        data: {source: solar}
+        enabled: true
+        _all:
+            draw:
+                points:
+                    collide: false
+                    color: |
+                        function() {
+                            if (feature.Functie == 'Wonen') {
+                                return '#FF5306';
+                            } else {
+                                return '#FFC12B';
+                            }
+                        }
+                    size: |
+                        function() {
+                            var value = +feature.Vermogen;
+                            var size =  value >= 997440 ? 50 :
+                                        value >= 897696 ? 45.300000000000004 :
+                                        value >= 797952 ? 40.6 :
+                                        value >= 698208 ? 35.9 :
+                                        value >= 598464 ? 31.2 :
+                                        value >= 498720 ? 26.5 :
+                                        value >= 398976 ? 21.8 :
+                                        value >= 299232 ? 17.1 :
+                                        value >= 199488 ? 12.4 :
+                                        value >= 99744 ? 7.7 :
+                                        3;
+
+                            if ($zoom > 13) {
+                               return Math.pow(2, $zoom - 13) * size;
+                            }
+                            return size;
+                        }
+    _neighborhoods:
+        enabled: true
+        data: {source: neighborhoods}
+        draw:
+            _polygons_inlay:
+                interactive: true
+                order: global.sdk_order_under_water_0
+                color: |
+                    function() {
+                        var value = feature.totalPower;
+                        var color = value >= 1267538 ? "rgba(127, 0, 0, 0.5)" :
+                                    value >= 1140784.2 ? "rgba(167, 4, 3, 0.5)" :
+                                    value >= 1014030.4 ? "rgba(200, 29, 19, 0.5)" :
+                                    value >= 887276.6 ? "rgba(224, 69, 48, 0.5)" :
+                                    value >= 760522.8 ? "rgba(241, 108, 73, 0.5)" :
+                                    value >= 633769 ? "rgba(250, 142, 93, 0.5)" :
+                                    value >= 507015.19999999995 ? "rgba(253, 176, 122, 0.5)" :
+                                    value >= 380261.4 ? "rgba(253, 202, 148, 0.5)" :
+                                    value >= 253507.59999999998 ? "rgba(253, 220, 175, 0.5)" :
+                                    value >= 126753.80000000005 ? "rgba(254, 235, 207, 0.5)" :
+                                    "rgba(255, 247, 236, 0.3)";
+
+                        return color
+
+                    }
+            lines:
+                interactive: true
+                order: global.sdk_order_under_roads_0
+                color: black
+                width: 3px
+
