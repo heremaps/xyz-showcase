@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="description" content="Use Deck GL to load and visualize interactive map layer data on the map">
+  <title>Flight Routes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+    font-family: Helvetica, Arial, sans-serif;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    }
+
+    #container {
+    width: 100%;
+    height: 100%;
+    }
+
+    #info {
+    position: fixed;
+    top: 0;
+    left: 0;
+    margin: 12px;
+    }
+
+    a {
+    color: #08f;
+    }
+    #controller {
+      position: absolute;
+      background-color: lightgrey;
+      padding: 20px;
+      opacity: 0.8;
+      width: 300px;
+      height: 300px;
+      left: 20px;
+      top: 20px;
+      border-radius: 5px;
+    }
+    .code{
+      font-size: 14px;
+    }
+    .aname{
+      font-size: 13px;
+      color: grey;
+    }
+    .attribution a{
+      position: absolute;
+      right: 0px;
+      bottom:0px;
+      background-color: lightgrey;
+      color: #222526;
+      font: 12px/20px Helvetica Neue,Arial,Helvetica,sans-serif;
+      padding: 0 8px 0 8px;
+      text-decoration: none;
+      opacity: 0.8;
+    }
+  </style>
+  <script src="https://unpkg.com/deck.gl@latest/dist.min.js"></script>
+</head>
+<body>
+    <div id="container"></div>
+    <div class='attribution'><a href="https://www.openstreetmap.org/copyright">© OpenStreetMap</a></div>
+    <div id="controller">
+      <h3>Flight routes</h1>
+      <p>Show flight routes from an airport around the world</p>
+      <div class="airport">
+        <table>
+          <tr>
+            <td rowspan="2">
+              <input type="radio" name="airport" value="SIN" checked>
+            </td>
+            <td>
+              <label class="code">Singapore (SIN)</label>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <label class="aname">Singapore Changi Airport</label>
+            </td>
+          </tr>
+          <tr>
+            <td rowspan="2">
+              <input type="radio" name="airport" value="DOH">
+            </td>
+            <td>
+              <label class="code">Doha Hamad (DOH)</label>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <label class="aname">Hamad International Airport</label>
+            </td>
+          </tr>
+
+          <tr>
+            <td rowspan="2">
+              <input type="radio" name="airport" value="MUC">
+            </td>
+            <td>
+              <label class="code">Munich (MUC)</label>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <label class="aname">Munich Airport</label>
+            </td>
+          </tr>
+          <tr>
+            <td rowspan="2">
+              <input type="radio" name="airport" value="JFK">
+            </td>
+            <td>
+              <label class="code">New York (JFK)</label>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <label class="aname">John F. Kennedy International Airport</label>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+</body>
+<script type="text/javascript" src="app.js"></script>
+</html>
