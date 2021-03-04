@@ -45,7 +45,7 @@ var bgLayer = new here.xyz.maps.layers.MVTLayer({
                 return kind;
             }
 
-            if(props.kind_detail != "city" && props.kind_detail != "state") return;
+            if((props.layer == 'places' || props.layer == 'boundaries') && props.kind_detail != "city" && props.kind_detail != "state" && props.kind != "country") return;
             
             if (layer == 'water') {
                 if (geom == 'LineString' || geom == 'MultiLineString') {
@@ -97,12 +97,36 @@ var standards = {
     "CDMA": true
 };
 const samplingRatioMap = {
-    "off": 1,
-    "low": 8,
-    "lowmed": 32,
-    "med": 128,
-    "medhigh": 1024,
-    "high": 4096
+    "off": {
+        ratio: 1,
+        minZoom: 11,
+        maxZoom: 20
+    },
+    "low": {
+        ratio: 8,
+        minZoom: 9,
+        maxZoom: 20
+    },
+    "lowmed": {
+        ratio: 32,
+        minZoom: 7,
+        maxZoom: 20
+    },
+    "med": {
+        ratio: 128,
+        minZoom: 5,
+        maxZoom: 20
+    },
+    "medhigh": {
+        ratio: 1024,
+        minZoom: 1,
+        maxZoom: 20
+    },
+    "high": {
+        ratio: 4096,
+        minZoom: 1,
+        maxZoom: 20
+    }
 };
 
 const createCellLayer = (from, to, stds, sampling) => {
@@ -146,7 +170,7 @@ const createCellLayer = (from, to, stds, sampling) => {
                 // 4: [{zIndex: 2, type: 'Polygon', opacity: 0.8, fill: '#48E3CD', extrude: (feature) => JSON.parse(feature.properties.aggregation).qty * 5 || 250}],
                 // 5: [{zIndex: 2, type: 'Polygon', opacity: 0.8, fill: '#0098BD', extrude: (feature) => JSON.parse(feature.properties.aggregation).qty * 5 || 250}]
             
-                cell: [{zIndex: 2, type: 'Polygon', opacity: 0.8, fill: '#0097BC', extrude: (feature) => feature.properties.aggregation.qty * 10 * samplingRatioMap[currentSampling] || 250}]
+                cell: [{zIndex: 2, type: 'Polygon', opacity: 0.8, fill: '#0097BC', extrude: (feature) => feature.properties.aggregation.qty * 10 * samplingRatioMap[currentSampling].ratio || 250}]
             },
     
             assign: function(feature, zoomlevel){
@@ -162,41 +186,6 @@ const createCellLayer = (from, to, stds, sampling) => {
     })
 }
 
-// function createCellLayer(from, to, stds, sampling) {
-//     stds = Object.keys(stds).join(',');
-
-//     return new here.xyz.maps.layers.MVTLayer({
-//         name: 'cell Layer',
-//         min: 2,
-//         max: 20,
-//         remote: {
-//             url: `https://interactive.data.api.platform.here.com/interactive/v1/catalogs/${catalogHrn}/layers/${layerId}/tile/web/{z}_{x}_{y}.mvt?apiKey=${apiKey}&p.radio=${stds}&clip=false&clustering=hexbin&clustering.relativeResolution=1&clustering.sampling=${sampling}`
-
-//         },
-//         // customize layer style
-//         style:{
-//             styleGroups: {
-//                 // 1: [{zIndex: 2, type: 'Polygon', opacity: 0.9, fill: '#D2364D', extrude: (feature) => JSON.parse(feature.properties.aggregation).qty * 5 || 250}],
-//                 // 2: [{zIndex: 2, type: 'Polygon', opacity: 0.8, fill: '#FEAD53', extrude: (feature) => JSON.parse(feature.properties.aggregation).qty * 5 || 250}],
-//                 // 3: [{zIndex: 2, type: 'Polygon', opacity: 0.8, fill: '#FEEDB1', extrude: (feature) => JSON.parse(feature.properties.aggregation).qty * 5 || 250}],
-//                 // 4: [{zIndex: 2, type: 'Polygon', opacity: 0.8, fill: '#48E3CD', extrude: (feature) => JSON.parse(feature.properties.aggregation).qty * 5 || 250}],
-//                 // 5: [{zIndex: 2, type: 'Polygon', opacity: 0.8, fill: '#0098BD', extrude: (feature) => JSON.parse(feature.properties.aggregation).qty * 5 || 250}]
-            
-//                 cell: [{zIndex: 2, type: 'Polygon', opacity: 0.8, fill: '#0097BC', extrude: (feature) => JSON.parse(feature.properties.aggregation).qty * 10 * samplingRatioMap[currentSampling] || 250}]
-//             },
-    
-//             assign: function(feature, zoomlevel){
-//                 return 'cell';
-//                 // const qty = JSON.parse(feature.properties.aggregation).qty;
-//                 // const zl = Math.floor(zoomlevel);
-//                 // const v = Math.floor(standardValue[zl]/qty);
-//                 // if(v < 1) return 1;
-//                 // else if (v>5) return 5;
-//                 // else return v;
-//             }
-//         }
-//     });
-// }
 
 // setup the Map Display
 window.display = new here.xyz.maps.Map( document.getElementById("map"), {
@@ -235,7 +224,8 @@ standardsInputs.forEach(standard => {
 
 ratios.forEach((e)=>{
     e.addEventListener('pointerup', function() {
-        if(this.getAttribute('value') != currentSampling) {
+        const input = e.querySelector('input');
+        if(!input.disabled && this.getAttribute('value') != currentSampling) {
             currentSampling = this.getAttribute('value');
             
             this.querySelector('input').checked = true
@@ -251,6 +241,48 @@ ratios.forEach((e)=>{
 
         }
     })
+})
+
+const checkCurrentRatio = function(zoom){
+    var checkedDisabled = false;
+    ratios.forEach((e)=>{
+        const sampling = e.getAttribute('value');
+        const input = e.querySelector('input');
+        const label = e.querySelector('label');
+        // console.log(e, e.disabled)
+        if( zoom <= samplingRatioMap[sampling].maxZoom && zoom >= samplingRatioMap[sampling].minZoom){
+            input.disabled = false;
+            label.classList = [];
+            
+            if(checkedDisabled) {
+                input.checked = true;
+                checkedDisabled = false;
+                currentSampling = sampling;
+
+                const cellLayer = createCellLayer(1, 20, standards, currentSampling);
+                const cb = function(){
+                    const layers = display.getLayers();
+                    display.removeLayer(layers[1]);
+                    cellLayer.removeEventListener('viewportReady', cb);
+                }
+                cellLayer.addEventListener('viewportReady', cb)
+                display.addLayer(cellLayer)
+            }
+        } else {
+            input.disabled = true;
+            label.classList.add("disabled");
+            if(input.checked) {
+                input.checked = false;
+                checkedDisabled = true;
+            }
+        }
+    })
+}
+
+checkCurrentRatio(display.getZoomlevel());
+
+display.addObserver("zoomlevel", function(evt, newZoom, oldZoom){
+    checkCurrentRatio(newZoom)
 })
 
 
