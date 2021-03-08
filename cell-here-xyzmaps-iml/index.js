@@ -100,32 +100,32 @@ const samplingRatioMap = {
     "off": {
         ratio: 1,
         minZoom: 11,
-        maxZoom: 20
+        maxZoom: 21
     },
     "low": {
         ratio: 8,
         minZoom: 9,
-        maxZoom: 20
+        maxZoom: 11
     },
     "lowmed": {
         ratio: 32,
         minZoom: 7,
-        maxZoom: 20
+        maxZoom: 9
     },
     "med": {
         ratio: 128,
         minZoom: 5,
-        maxZoom: 20
+        maxZoom: 7
     },
     "medhigh": {
         ratio: 1024,
-        minZoom: 1,
-        maxZoom: 20
+        minZoom: 3,
+        maxZoom: 5
     },
     "high": {
         ratio: 4096,
         minZoom: 1,
-        maxZoom: 20
+        maxZoom: 3
     }
 };
 
@@ -222,13 +222,15 @@ standardsInputs.forEach(standard => {
   }
 })
 
-ratios.forEach((e)=>{
-    e.addEventListener('pointerup', function() {
-        const input = e.querySelector('input');
-        if(!input.disabled && this.getAttribute('value') != currentSampling) {
-            currentSampling = this.getAttribute('value');
+const checkCurrentRatio = function(zoom){
+    ratios.forEach((e)=>{
+        const sampling = e.getAttribute('value');
+        
+        if( zoom < samplingRatioMap[sampling].maxZoom && zoom >= samplingRatioMap[sampling].minZoom && sampling != currentSampling ){
             
-            this.querySelector('input').checked = true
+            e.classList.add('activated');
+            
+            currentSampling = sampling;
 
             const cellLayer = createCellLayer(1, 20, standards, currentSampling);
             const cb = function(){
@@ -237,44 +239,10 @@ ratios.forEach((e)=>{
                 cellLayer.removeEventListener('viewportReady', cb);
             }
             cellLayer.addEventListener('viewportReady', cb)
-            display.addLayer(cellLayer)
-
-        }
-    })
-})
-
-const checkCurrentRatio = function(zoom){
-    var checkedDisabled = false;
-    ratios.forEach((e)=>{
-        const sampling = e.getAttribute('value');
-        const input = e.querySelector('input');
-        const label = e.querySelector('label');
-        // console.log(e, e.disabled)
-        if( zoom <= samplingRatioMap[sampling].maxZoom && zoom >= samplingRatioMap[sampling].minZoom){
-            input.disabled = false;
-            label.classList = [];
-            
-            if(checkedDisabled) {
-                input.checked = true;
-                checkedDisabled = false;
-                currentSampling = sampling;
-
-                const cellLayer = createCellLayer(1, 20, standards, currentSampling);
-                const cb = function(){
-                    const layers = display.getLayers();
-                    display.removeLayer(layers[1]);
-                    cellLayer.removeEventListener('viewportReady', cb);
-                }
-                cellLayer.addEventListener('viewportReady', cb)
-                display.addLayer(cellLayer)
-            }
-        } else {
-            input.disabled = true;
-            label.classList.add("disabled");
-            if(input.checked) {
-                input.checked = false;
-                checkedDisabled = true;
-            }
+            display.addLayer(cellLayer);
+                
+        } else if (zoom >= samplingRatioMap[sampling].maxZoom || zoom < samplingRatioMap[sampling].minZoom){
+            e.classList.remove('activated');
         }
     })
 }

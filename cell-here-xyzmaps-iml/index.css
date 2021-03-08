@@ -30,12 +30,13 @@
     border-radius: 5px;
 }
 .sampling {
-    height: 25px;
+    padding: 4px 0 5px 5px;
+    height: 15px;
+    width: 145px;
 }
 
-.sampling input{
-    position: relative;
-    top:2px;
+.sampling div{
+    visibility: hidden;
 }
 
 .attribution a{
@@ -50,6 +51,23 @@
     opacity: 0.8;
 }
 
-.disabled {
-    color: grey;
+.activated {
+    color: black;
+    border-style: solid;
+    border-color: green;
+    border-width: 1px;
+    border-radius: 15px;
 }
+
+.activated div{
+    visibility:visible;
+}
+
+.ratio {
+    display: inline-block;
+    border-radius: 50%;
+    width: 13px;
+    height: 13px;
+    margin-right: 5px;
+ }
+ 
