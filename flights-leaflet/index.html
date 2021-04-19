@@ -111,7 +111,8 @@
     <script>
 
         var theMap = L.map('map', {maxZoom: 14});
-        L.tileLayer('http://tile.stamen.com/terrain/{z}/{x}/{y}.png').addTo(theMap);
+        L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png').addTo(theMap);
+
         theMap.attributionControl.addAttribution('Flight data via <a href="http://adsbexchange.com/">ADS-B Exchange</a>');
         theMap.attributionControl.addAttribution('Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Map data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>');
 
