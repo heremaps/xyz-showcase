@@ -227,7 +227,7 @@
         theMap.attributionControl.addAttribution('Air quality data via <a href="https://www.kaggle.com/decide-soluciones/air-quality-madrid/home">Kaggle</a>');
         theMap.attributionControl.addAttribution('Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Map data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>');
 
-        L.tileLayer('http://{s}.tile.stamen.com/terrain/{z}/{x}/{y}.png').addTo(theMap);
+        L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png').addTo(theMap);
         // center of madrid
         theMap.setView([40.416232, -3.703637], 13);
 
