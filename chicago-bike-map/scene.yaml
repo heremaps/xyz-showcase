@@ -4,7 +4,7 @@ cameras:
 sources:
     xyz_osm:
         type: MVT
-        url: https://xyz.api.here.com/tiles/osmbase/256/all/{z}/{x}/{y}.mvt
+        url: https://xyz.api.here.com/tiles/osmbase/512/all/{z}/{x}/{y}.mvt
         max_zoom: 16
         url_params:
             access_token: AZL4Ab9z2cBFt9d2PQ2hh0k
