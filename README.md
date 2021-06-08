@@ -16,7 +16,9 @@ An interactive map of Chicago bike routes. Explore which neighborhoods have the 
 
 ### Boston Liquor Licenses
 
-__[Source Code](https://github.com/heremaps/xyz-showcase/tree/master/boston-liquor) - [Live Map](https://heremaps.github.io/xyz-showcase/boston-liquor)__
+Space: __[Source Code](https://github.com/heremaps/xyz-showcase/tree/master/boston-liquor) - [Live Map](https://heremaps.github.io/xyz-showcase/boston-liquor)__
+
+Interactive Map Layer: __[Source Code](https://github.com/heremaps/xyz-showcase/tree/master/boston-liquor-iml) - [Live Map](https://heremaps.github.io/xyz-showcase/boston-liquor-iml)__
 
 Plan your next pub crawl with this interactive map listing all establishments that serve liquor in Boston. Using [HERE Location Services Routing](https://developer.here.com/documentation/routing/topics/request-isoline.html), filter establishments within a certain walking radius.
 
@@ -82,7 +84,9 @@ Map of air quality in Madrid.
 
 ### Amsterdam Solar Energy
 
-__[Source Code](https://github.com/heremaps/xyz-showcase/tree/master/amsterdam-solar) - [Live Map](https://heremaps.github.io/xyz-showcase/amsterdam-solar)__
+Space: __[Source Code](https://github.com/heremaps/xyz-showcase/tree/master/amsterdam-solar) - [Live Map](https://heremaps.github.io/xyz-showcase/amsterdam-solar)__
+
+Interactive Map Layer: __[Source Code](https://github.com/heremaps/xyz-showcase/tree/master/amsterdam-solar-iml) - [Live Map](https://heremaps.github.io/xyz-showcase/amsterdam-solar-iml)__
 
 Solar panels and trees in Amsterdam.
 
@@ -95,3 +99,14 @@ __Tangram: [Source Code](https://github.com/heremaps/xyz-showcase/tree/master/fl
 __Three.js: [Source Code](https://github.com/heremaps/xyz-showcase/tree/master/flights-threejs) - [Live Map](https://heremaps.github.io/xyz-showcase/flights-threejs)__
 
 Flight data visualized in three different renderers.
+
+### London Trees
+
+__[Source Code](https://github.com/heremaps/xyz-showcase/tree/master/london-tree) - [Live Map](https://heremaps.github.io/xyz-showcase/london-tree)__
+
+Interactive Map visualizes Trees in London, to which you can add new or remove dead trees from the map.
+### DC Transit 2030
+
+Interactive Map Layer: __[Source Code](https://github.com/heremaps/xyz-showcase/tree/master/transit-mapsjs-iml) - [Live Map](https://heremaps.github.io/xyz-showcase/transit-mapsjs-iml)__
+
+Visualize the proposed public transit system of Washington D.C. in 2030 with Here Maps API for JavaScript.

@@ -5,9 +5,9 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Madrid Urban Air Quality</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.3/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link rel="stylesheet" href="./leaflet.css" />
+    <link rel="stylesheet" href="./flatpickr.min.css">
+    <script src="./flatpickr.js"></script>
 
     <meta name="twitter:card" content="summary_large_image" />
    <meta name="twitter:site" content="@here" />
@@ -145,16 +145,16 @@
     </div>
 
     <!-- leaflet -->
-    <script src="https://unpkg.com/leaflet@1.3.3/dist/leaflet.js"></script>
+    <script src="./leaflet.js"></script>
 
     <!-- D3 -->
-    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="./d3.v5.min.js"></script>
 
     <!-- Demo setup -->
     <script>
         var circles = [];
-        var currDate = '2001-02-23t09:00:00';
-        var timeFormatter = d3.timeFormat('%Y-%m-%dt%H:%M:%S');
+        var currDate = '2001-02-23T09:00:00';
+        var timeFormatter = d3.timeFormat('%Y-%m-%dT%H:%M:%S');
         var numberFormatter = d3.format(".1f");
         var calendar = flatpickr("#datepicker", {
             enableTime: true,
@@ -227,7 +227,9 @@
         theMap.attributionControl.addAttribution('Air quality data via <a href="https://www.kaggle.com/decide-soluciones/air-quality-madrid/home">Kaggle</a>');
         theMap.attributionControl.addAttribution('Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Map data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>');
 
-        L.tileLayer('http://{s}.tile.stamen.com/terrain/{z}/{x}/{y}.png').addTo(theMap);
+
+        L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png').addTo(theMap);
+
         // center of madrid
         theMap.setView([40.416232, -3.703637], 13);
 
