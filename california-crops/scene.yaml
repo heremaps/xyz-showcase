@@ -68,7 +68,7 @@ global:
 sources:
     _here-satellite:
         type: Raster
-        url: https://1.aerial.maps.api.here.com/maptile/2.1/basetile/newest/satellite.day/{z}/{x}/{y}/256/png8?app_id=KwLXbg6LOTkhaYvdwXTT&app_code=2GPgUXdpheikFj24EYQVTw
+        url: https://1.aerial.maps.ls.hereapi.com/maptile/2.1/maptile/newest/satellite.day/{z}/{x}/{y}/512/png8?app_id=KwLXbg6LOTkhaYvdwXTT&app_code=2GPgUXdpheikFj24EYQVTw
 
     _xyz_crops_polygon:
         url: https://xyz.api.here.com/hub/spaces/mJhQSETo/tile/web/{z}_{x}_{y}

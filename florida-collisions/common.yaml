@@ -16,9 +16,9 @@ import:
 
 sources:
 
-  mapzen:
+  osm:
         type: MVT
-        url: https://xyz.api.here.com/tiles/osmbase/256/all/{z}/{x}/{y}.mvt
+        url: https://xyz.api.here.com/tiles/osmbase/512/all/{z}/{x}/{y}.mvt
         url_params:
             access_token: ACzhEVJGQguPsVU5c_JVjgA
   collisions:
