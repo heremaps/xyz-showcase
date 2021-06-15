@@ -16,7 +16,7 @@ import:
 
 sources:
 
-  mapzen:
+  osm:
         type: MVT
         url: https://xyz.api.here.com/tiles/osmbase/512/all/{z}/{x}/{y}.mvt
         url_params:
