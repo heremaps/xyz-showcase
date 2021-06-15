@@ -7,7 +7,7 @@ sources:
         url: https://xyz.api.here.com/tiles/osmbase/512/all/{z}/{x}/{y}.mvt
         max_zoom: 16
         url_params:
-            access_token: AZL4Ab9z2cBFt9d2PQ2hh0k
+            access_token: AHhYRw6-TyaQ1JuNBJp_qwA
 
 global:
     language: en
